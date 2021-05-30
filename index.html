@@ -1,27 +1,22 @@
 <html>
   <head>
     <style>
-		img.bg {
-		  /* Set rules to fill background */
-		  min-height: 100%;
-		  min-width: 2048px;
-			
-		  /* Set up proportionate scaling */
-		  width: 100%;
-		  height: auto;
-			
-		  /* Set up positioning */
-		  position: fixed;
-		  top: 0;
-		  left: 0;
-		}
+      img.bg {
+        min-height: 100%;
+        min-width: 2048px;
+        width: 100%;
+        height: auto;
+        position: fixed;
+        top: 0;
+        left: 0;
+      }
 
-		@media screen and (max-width: 2048px) { /* Specific to this particular image */
-		  img.bg {
-		    left: 50%;
-		    margin-left: -1024px;   /* 50% */
-		  }
-		}
+      @media screen and (max-width: 2048px) {
+        img.bg {
+          left: 50%;
+          margin-left: -1024px;
+        }
+      }
     </style>
   </head>
   <body>
@@ -29,10 +24,10 @@
     <script>
     var APP_ID = "bnv4a6wm";
     window.intercomSettings = {
-        app_id: APP_ID,
-        api_base: 'https://eu.intercom.io'
-	};
-	(function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/' + APP_ID;var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s, x);};if(document.readyState==='complete'){l();}else if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
+      app_id: APP_ID,
+      api_base: 'https://eu.intercom.io'
+    };
+    (function(){var w=window;var ic=w.Intercom;if(typeof ic==="function"){ic('reattach_activator');ic('update',w.intercomSettings);}else{var d=document;var i=function(){i.c(arguments);};i.q=[];i.c=function(args){i.q.push(args);};w.Intercom=i;var l=function(){var s=d.createElement('script');s.type='text/javascript';s.async=true;s.src='https://widget.intercom.io/widget/' + APP_ID;var x=d.getElementsByTagName('script')[0];x.parentNode.insertBefore(s, x);};if(document.readyState==='complete'){l();}else if(w.attachEvent){w.attachEvent('onload',l);}else{w.addEventListener('load',l,false);}}})();
     </script>
   </body>
 </html>
