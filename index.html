@@ -2,8 +2,10 @@
   <head>
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <style>
-      html {
-        background: url(images/bg.jpg) no-repeat center center fixed;
+      body {
+        background-repeat: no-repeat;
+        background-position: center center;
+        background-attachment: fixed;
         -webkit-background-size: cover;
         -moz-background-size: cover;
         -o-background-size: cover;
@@ -14,6 +16,11 @@
     </style>
   </head>
   <body>
+    <script>
+      const MAX_INDEX = 6;
+      const index = Math.floor(Math.random() * (MAX_INDEX + 1));
+      document.body.style.backgroundImage = "url(images/bg_" + index + ".jpg)";
+    </script>
     <script>
     var APP_ID = "bnv4a6wm";
     window.intercomSettings = {
