@@ -1,9 +1,11 @@
 {
   "title": "Washing Machine Repair",
-  "subtitle": "Carbon brushes were worn down to a nub",
-  "description": "Took me awhile to figure out what the root cause was but once I did, it was as simple as ordering new carbon brushes and installing them.",
+  "subtitle": "Root-caused a drive failure to worn motor brushes and restored the appliance.",
+  "description": "The drum had stopped turning under load. I opened the drive system, traced the fault to carbon brushes worn almost to their holders, replaced them and returned the machine to service.",
   "tags": [
-    "Home Appliance Fix"
+    "Fault Diagnosis",
+    "Motor Repair",
+    "Appliance Repair"
   ],
   "dates": "December 2025",
   "order": 2,

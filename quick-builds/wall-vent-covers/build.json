@@ -1,13 +1,13 @@
 {
   "title": "House Wall Vent Covers",
-  "subtitle": "Custom 3D Printed Low-Profile Replacement Grilles",
-  "description": "Designed (using OpenSCAD - a first for me) and 3D printed clean, low-profile replacement covers for house wall vents to replace standard builder-grade grilles.",
+  "subtitle": "Parametric OpenSCAD replacements for oversized builder-grade grilles.",
+  "description": "I used OpenSCAD for the first time to design low-profile covers sized to the existing wall openings, then iterated the model, printed the parts and installed the finished replacements.",
   "tags": [
     "3D Printing",
-    "OpenSCAD",
-    "Home Improvement"
+    "Parametric CAD",
+    "OpenSCAD"
   ],
-  "dates": "September 2026",
+  "dates": "October 2025 – September 2026",
   "order": 1,
   "cover_image": "PXL_20251108_160713233.jpg"
 }

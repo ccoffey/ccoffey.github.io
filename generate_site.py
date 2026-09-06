@@ -726,6 +726,7 @@ def sync_builds():
         rendered_qb = (quick_build_tmpl
             .replace('{{ TITLE }}', qb['title'])
             .replace('{{ SUBTITLE }}', qb['subtitle'])
+            .replace('{{ DATES }}', qb['dates'])
             .replace('{{ DESCRIPTION }}', desc_html)
             .replace('{{ TAGS }}', tags_html)
             .replace('{{ BUILD_ID }}', build_id)
