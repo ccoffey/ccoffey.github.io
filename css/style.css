@@ -449,6 +449,14 @@ header.hero {
   letter-spacing: -0.03em;
   line-height: 1.2;
 }
+.hero-role {
+  margin-top: 0.4rem;
+  color: var(--accent);
+  font-size: 1.12rem;
+  font-weight: 700;
+  line-height: 1.4;
+  letter-spacing: -0.01em;
+}
 .hero-bio {
   font-size: 1.05rem;
   color: var(--text);
