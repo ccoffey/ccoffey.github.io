@@ -21,7 +21,15 @@
       <a href="/" class="nav-brand">
         <span class="brand-name">Cathal Coffey</span>
       </a>
-      <div class="nav-links">
+      <button class="nav-menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">
+        <span>Menu</span>
+        <svg class="nav-menu-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16"></path>
+          <path d="M4 12h16"></path>
+          <path d="M4 17h16"></path>
+        </svg>
+      </button>
+      <div class="nav-links" id="site-navigation">
         {{ NAV_LINKS }}
       </div>
     </div>
@@ -217,23 +225,6 @@
       if (touchEndX > touchStartX + 50) prevLightbox();
     }, {passive: true});
 
-    document.querySelectorAll('.nav-dropdown-trigger').forEach(trigger => {
-      trigger.addEventListener('click', (e) => {
-        if (window.innerWidth <= 860) {
-          e.preventDefault();
-          const dropdown = trigger.closest('.nav-dropdown');
-          const wasOpen = dropdown.classList.contains('is-open');
-          document.querySelectorAll('.nav-dropdown.is-open').forEach(d => d.classList.remove('is-open'));
-          if (!wasOpen) dropdown.classList.add('is-open');
-        }
-      });
-    });
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.nav-dropdown')) {
-        document.querySelectorAll('.nav-dropdown.is-open').forEach(d => d.classList.remove('is-open'));
-      }
-    });
-
     // GA4 Event Tracking: Hero video plays
     const heroVid = document.querySelector('.hero-portrait-player, .video-actual-player');
     if (heroVid) {
@@ -247,5 +238,6 @@
       });
     }
   </script>
+  <script src="/js/navigation.js?v={{ BUILD_ID }}"></script>
 </body>
 </html>
