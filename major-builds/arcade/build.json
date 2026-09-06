@@ -1,0 +1,22 @@
+{
+  "title": "Arcade Cabinet",
+  "subtitle": "Handcrafted 2-Player Cabinet with 3D-Printed Skin, Sanwa Controls & Integrated N64/GameCube Controller Ports",
+  "tags": [
+    "Woodworking",
+    "3D Printing",
+    "Isopon P38 body filler",
+    "High build primer spraying",
+    "Raspberry Pi",
+    "RetroPie"
+  ],
+  "dates": "June 2026 \u2013 September 2026",
+  "order": 2,
+  "story": "<p>This was fundamentally a woodworking, 3D printing, and automotive finishing project. I framed the internal skeleton from 2&times;2 Planed White Deal timber and skinned it with MDF. To create the exterior contours, I skinned the cabinet with 3D-printed PLA panels\u2014piecing them together like a giant jigsaw puzzle because my Prusa build plate is only 200&times;200 mm. To eliminate the seams, I filled the joints with Isopon P38 body filler (typically used in car repair\u2014a first for me), followed by endless rounds of sanding, sprayed automotive filler primer (learning spray-can finishing technique on the fly), and finished with leftover paint from my attic that had been used for painting interior doors in my house.</p>\n<p>The electronics were intentionally kept straightforward: a Raspberry Pi 5 running RetroPie with an external hard drive and an Amazon sound system. To make the cabinet truly special, I bought and disassembled USB adapters for original Nintendo 64 and GameCube controllers, integrating the ports directly into the cabinet so I could play the games I loved as a kid together with my own children using my original childhood controllers.</p>\n<p>One of the hardest parts of the project was getting the joystick positions and button ergonomics correct, requiring multiple drilling templates and extensive trial-and-error. The control panel is wrapped in a custom wide-format vinyl graphic printed by Gorilla Graphics (<a href=\"https://gorillagraphics.ie\" target=\"_blank\" rel=\"noopener\" style=\"color: var(--accent);\">gorillagraphics.ie</a>).</p>",
+  "cover_image": "PXL_20260904_175325421.MP.jpg",
+  "hero_video": "PXL_20260906_115858017.mp4",
+  "next_steps": [
+    "Wrap control panel is custom vinyl graphic artwork from gorillagraphics.ie",
+    "Install GameCube controller ports and holders",
+    "Finish fine detailing around the monitor cutout"
+  ]
+}

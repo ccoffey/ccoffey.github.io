@@ -1,0 +1,570 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Magic Stairs | Cathal Coffey</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1788700536">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RJN8XNMCEG');
+  </script>
+</head>
+<body>
+  <nav class="top-nav">
+    <div class="container nav-inner">
+      <a href="/" class="nav-brand">
+        <span class="brand-name">Cathal Coffey</span>
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-item-link">Home</a>
+        <div class="nav-dropdown" id="navMajorDropdown">
+          <a href="/#major-builds" class="nav-item-link nav-dropdown-trigger active-nav">
+            <span>Major Builds</span>
+            <span class="nav-count-badge">5</span>
+            <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </a>
+          <div class="nav-dropdown-panel">
+            <div class="nav-dropdown-header">
+              <span class="dropdown-header-title">Major Builds</span>
+              <span class="dropdown-header-subtitle">5 Systems</span>
+            </div>
+            <div class="nav-dropdown-list">
+              
+              <a href="/major-builds/claw-machine/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Claw Machine</span>
+                  <span class="dropdown-item-desc">First-Principles Arcade Build Inspired by Tokyo's GiGO: From Breadboard to Custom KiCad PCB</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/major-builds/arcade/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Arcade Cabinet</span>
+                  <span class="dropdown-item-desc">Handcrafted 2-Player Cabinet with 3D-Printed Skin, Sanwa Controls & Integrated N64/GameCube Controller Ports</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/major-builds/chimera/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Chimera</span>
+                  <span class="dropdown-item-desc">Custom Handheld OS & Communicator Inspired by the Nokia 3210 and Game Boy Pocket</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/major-builds/mop-bot/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Mop Bot</span>
+                  <span class="dropdown-item-desc">Radio-Controlled Veranda Glass Cleaner Inspired by the Roborock S7</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/major-builds/magic-stairs/" class="nav-dropdown-item is-active">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Magic Stairs</span>
+                  <span class="dropdown-item-desc">Distributed 12-Node Stair Lighting with Laser Time-of-Flight Footstep Tracking</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+            </div>
+            <div class="nav-dropdown-footer">
+              <a href="/#major-builds" class="dropdown-footer-link">
+                <span>View All Major Builds</span>
+                <span class="footer-arrow">&rarr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="nav-dropdown" id="navQuickDropdown">
+          <a href="/#quick-builds" class="nav-item-link nav-dropdown-trigger">
+            <span>Quick Builds</span>
+            <span class="nav-count-badge">3</span>
+            <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </a>
+          <div class="nav-dropdown-panel">
+            <div class="nav-dropdown-header">
+              <span class="dropdown-header-title">Quick Builds</span>
+              <span class="dropdown-header-subtitle">3 Makes</span>
+            </div>
+            <div class="nav-dropdown-list">
+              
+              <a href="/quick-builds/wall-vent-covers/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">House Wall Vent Covers</span>
+                  <span class="dropdown-item-desc">Custom 3D Printed Low-Profile Replacement Grilles</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/quick-builds/washing-machine-repair/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Washing Machine Repair</span>
+                  <span class="dropdown-item-desc">Carbon brushes were worn down to a nub</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/quick-builds/office-chair-repair/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Home Office Chair Repair</span>
+                  <span class="dropdown-item-desc">Aeron Miller chair was falling apart</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+            </div>
+            <div class="nav-dropdown-footer">
+              <a href="/#quick-builds" class="dropdown-footer-link">
+                <span>View All Quick Builds</span>
+                <span class="footer-arrow">&rarr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header class="build-header-full">
+      <h1 class="build-heading">Magic Stairs</h1>
+      <p class="build-sub">Distributed 12-Node Stair Lighting with Laser Time-of-Flight Footstep Tracking</p>
+      <div class="tag-row">
+        <span class="tech-tag">ESP32</span>
+        <span class="tech-tag">ATtiny414</span>
+        <span class="tech-tag">VL53L0X ToF</span>
+        <span class="tech-tag">WS2815 LEDs</span>
+        <span class="tech-tag">3D Printing</span>
+      </div>
+    </header>
+
+    
+    <div class="hero-split-container">
+      <div class="hero-portrait-col">
+        <div class="hero-portrait-card">
+          <div class="hero-portrait-header">
+            <span class="hero-portrait-header-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Build Demonstration
+            </span>
+          </div>
+          <div class="hero-portrait-player-wrap">
+            <video class="hero-portrait-player" controls preload="metadata" playsinline poster="/major-builds/magic-stairs/thumbs/PXL_20260513_082421428_poster.jpg">
+              <source src="/major-builds/magic-stairs/PXL_20260513_082421428.mp4" type="video/mp4">
+              Your browser does not support HTML5 video.
+            </video>
+          </div>
+        </div>
+      </div>
+      <div class="hero-story-col">
+        
+    <section class="narrative-box">
+      <h2 class="narrative-heading">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+        <span>The Build Story</span>
+      </h2>
+      <div class="narrative-collapsible" id="narrativeCollapsible">
+        <div class="narrative-content" id="narrativeContent">
+          <p>Magic Stairs was inspired by my kids and their fear of the dark. I wanted to transform their journey up the stairs to bed at night from a spooky climb into a magical rainbow walk. I could have easily run an off-the-shelf LED strip up the wall, plugged in a motion sensor, and called it a day—but where is the fun in that? Instead, I took it as an opportunity to push my embedded firmware skills and challenge myself. The system is deliberately and delightfully over-engineered by design so that I could learn as much as possible in the process.</p>
+<p>My staircase has 12 steps. Rather than running a monolithic controller, every single step is an independent computing node equipped with its own ATtiny414 microcontroller, a 12V WS2815 addressable LED, and a VL53L0X laser Time-of-Flight (ToF) distance sensor. An I²C bus runs the entire length of the staircase connecting all 12 nodes. To solve the addressing problem without hardcoding IDs, each ATtiny sniffs the serial WS2815 LED data protocol at boot time to dynamically determine its own index (which step number it is) in the chain. At the top of the stairs, an ESP32 acts as the I²C bus master, running a tight polling loop querying each step in real time: <em>"Is there a foot on your step right now? How about now? How about now?"</em> and choreographing the lighting instantly.</p>
+<p>So what does a network of 12 microcontrollers, 12 LEDs, and 12 laser distance sensors buy you over a standard LED strip? Quite a lot. My kids invented "Ninja Mode," where they try to scale the dark staircase without triggering a single sensor; the moment they wobble or brush a step, the ESP32 spots them and instantly floods the entire staircase with light. It also enabled me to program a reactive "Spotlight Mode" that illuminates the step you are on, the step behind, and the step ahead—following you up or down and naturally reversing if you turn back. It seamlessly tracks multiple people on the stairs simultaneously. I have programmed five distinct interactive modes so far, but no matter how sophisticated the animations get, the kids still love the rainbow walk the best.</p>
+        </div>
+        <div class="narrative-fade" id="narrativeFade"></div>
+      </div>
+      <div class="narrative-toggle-wrap" id="narrativeToggleWrap">
+        <button class="narrative-toggle-btn" id="narrativeToggleBtn" onclick="toggleNarrative()">
+          <span id="narrativeToggleText">Read full story</span>
+          <svg class="narrative-toggle-icon" id="narrativeToggleIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+      </div>
+    </section>
+      </div>
+    </div>
+
+    
+
+    
+    <section class="next-steps-box">
+      <div class="next-steps-header">
+        <div class="next-steps-title-wrap">
+          <svg class="next-steps-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+          <h2 class="next-steps-title">Next Steps &amp; Planned Upgrades</h2>
+        </div>
+      </div>
+      <ul class="next-steps-list">
+        <li class="next-step-item">Hide the wiring between steps with custom 3d printed trunking that looks like it's just part of the staircase.</li>
+      </ul>
+    </section>
+
+    <div class="gallery-header">
+      <div class="gallery-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <span>Build Gallery</span>
+      </div>
+      <span class="gallery-subtitle">20 Chronological Photos</span>
+    </div>
+
+    <div class="photo-grid">
+      
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(0)">
+        <img src="/major-builds/magic-stairs/thumbs/PXL_20260419_155828005.jpg" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Apr 19, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(1)">
+        <img src="/major-builds/magic-stairs/thumbs/PXL_20260425_142540415.jpg" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Apr 25, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(2)">
+        <img src="/major-builds/magic-stairs/thumbs/PXL_20260514_180841483.jpg" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">May 14, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(3)">
+        <img src="/major-builds/magic-stairs/thumbs/PXL_20260514_180849860.jpg" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">May 14, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(4)">
+        <img src="/major-builds/magic-stairs/thumbs/PXL_20260525_123146216.jpg" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">May 25, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(5)">
+        <img src="/major-builds/magic-stairs/thumbs/PXL_20260602_190117270.jpg" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 2, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(6)">
+        <img src="/major-builds/magic-stairs/thumbs/PXL_20260602_193331808.jpg" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 2, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(7)">
+        <img src="/major-builds/magic-stairs/thumbs/PXL_20260603_154027912.jpg" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 3, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.667;" onclick="openLightbox(8)">
+        <img src="/major-builds/magic-stairs/thumbs/step-0-bare-board.png" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 4, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.667;" onclick="openLightbox(9)">
+        <img src="/major-builds/magic-stairs/thumbs/step-1-attiny-and-headers.png" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 4, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.667;" onclick="openLightbox(10)">
+        <img src="/major-builds/magic-stairs/thumbs/step-2-flash-the-board.png" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 4, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.667;" onclick="openLightbox(11)">
+        <img src="/major-builds/magic-stairs/thumbs/step-3-resistors-and-capacitors.png" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 4, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.667;" onclick="openLightbox(12)">
+        <img src="/major-builds/magic-stairs/thumbs/step-4-ws2815-led.png" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 4, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.667;" onclick="openLightbox(13)">
+        <img src="/major-builds/magic-stairs/thumbs/step-5-vl53l0x-sensor.png" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 4, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.707;" onclick="openLightbox(14)">
+        <img src="/major-builds/magic-stairs/thumbs/step-6-finished-board.jpeg" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 4, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(15)">
+        <img src="/major-builds/magic-stairs/thumbs/PXL_20260607_093542166.jpg" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 7, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(16)">
+        <img src="/major-builds/magic-stairs/thumbs/IMG-20260607-WA0003.jpg" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 7, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(17)">
+        <img src="/major-builds/magic-stairs/thumbs/IMG-20260607-WA0004.jpg" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 7, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(18)">
+        <img src="/major-builds/magic-stairs/thumbs/PXL_20260622_200459358.MP.jpg" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 22, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(19)">
+        <img src="/major-builds/magic-stairs/thumbs/PXL_20260622_200639616.jpg" alt="Magic Stairs build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 22, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="lightbox" class="lightbox" aria-hidden="true" onclick="handleBackdropClick(event)">
+    <div class="lightbox-backdrop"></div>
+    <button class="lightbox-btn lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
+    <button class="lightbox-btn lightbox-prev" onclick="prevLightbox(event)" aria-label="Previous">&lsaquo;</button>
+    <button class="lightbox-btn lightbox-next" onclick="nextLightbox(event)" aria-label="Next">&rsaquo;</button>
+    <div class="lightbox-stage">
+      <img id="lightbox-img" class="lightbox-img" src="" alt="Enlarged build photo">
+      <div class="lightbox-caption">
+        <span id="lightbox-title"></span>
+        <span>&bull;</span>
+        <span id="lightbox-date"></span>
+        <span class="lightbox-counter" id="lightbox-counter"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleNarrative() {
+      const container = document.getElementById("narrativeCollapsible");
+      const text = document.getElementById("narrativeToggleText");
+      const icon = document.getElementById("narrativeToggleIcon");
+      if (!container) return;
+      const isExpanded = container.classList.toggle("expanded");
+      if (text) text.textContent = isExpanded ? "Collapse story" : "Read full story";
+      if (icon) {
+        icon.style.transform = isExpanded ? "rotate(180deg)" : "rotate(0deg)";
+      }
+      if (!isExpanded) {
+        const box = container.closest('.narrative-box');
+        if (box && box.getBoundingClientRect().top < 80) {
+          box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const container = document.getElementById("narrativeCollapsible");
+      const content = document.getElementById("narrativeContent");
+      const toggleWrap = document.getElementById("narrativeToggleWrap");
+      const fade = document.getElementById("narrativeFade");
+      if (content && container) {
+        const isDesktopSplit = container.closest('.hero-split-container') && window.innerWidth > 860;
+        const threshold = isDesktopSplit ? 530 : 180;
+        if (content.scrollHeight <= threshold + 25) {
+          container.classList.add("expanded");
+          if (fade) fade.style.display = "none";
+          if (toggleWrap) toggleWrap.style.display = "none";
+        }
+      }
+    });
+
+    const gallery = [{"filename": "PXL_20260419_155828005.jpg", "full": "/major-builds/magic-stairs/PXL_20260419_155828005.jpg", "thumb": "/major-builds/magic-stairs/thumbs/PXL_20260419_155828005.jpg", "date": "April 19, 2026", "short_date": "Apr 19, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260425_142540415.jpg", "full": "/major-builds/magic-stairs/PXL_20260425_142540415.jpg", "thumb": "/major-builds/magic-stairs/thumbs/PXL_20260425_142540415.jpg", "date": "April 25, 2026", "short_date": "Apr 25, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260514_180841483.jpg", "full": "/major-builds/magic-stairs/PXL_20260514_180841483.jpg", "thumb": "/major-builds/magic-stairs/thumbs/PXL_20260514_180841483.jpg", "date": "May 14, 2026", "short_date": "May 14, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260514_180849860.jpg", "full": "/major-builds/magic-stairs/PXL_20260514_180849860.jpg", "thumb": "/major-builds/magic-stairs/thumbs/PXL_20260514_180849860.jpg", "date": "May 14, 2026", "short_date": "May 14, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260525_123146216.jpg", "full": "/major-builds/magic-stairs/PXL_20260525_123146216.jpg", "thumb": "/major-builds/magic-stairs/thumbs/PXL_20260525_123146216.jpg", "date": "May 25, 2026", "short_date": "May 25, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260602_190117270.jpg", "full": "/major-builds/magic-stairs/PXL_20260602_190117270.jpg", "thumb": "/major-builds/magic-stairs/thumbs/PXL_20260602_190117270.jpg", "date": "June 2, 2026", "short_date": "Jun 2, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260602_193331808.jpg", "full": "/major-builds/magic-stairs/PXL_20260602_193331808.jpg", "thumb": "/major-builds/magic-stairs/thumbs/PXL_20260602_193331808.jpg", "date": "June 2, 2026", "short_date": "Jun 2, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260603_154027912.jpg", "full": "/major-builds/magic-stairs/PXL_20260603_154027912.jpg", "thumb": "/major-builds/magic-stairs/thumbs/PXL_20260603_154027912.jpg", "date": "June 3, 2026", "short_date": "Jun 3, 2026", "aspect_ratio": 0.75}, {"filename": "step-0-bare-board.png", "full": "/major-builds/magic-stairs/step-0-bare-board.png", "thumb": "/major-builds/magic-stairs/thumbs/step-0-bare-board.png", "date": "June 4, 2026", "short_date": "Jun 4, 2026", "aspect_ratio": 0.667}, {"filename": "step-1-attiny-and-headers.png", "full": "/major-builds/magic-stairs/step-1-attiny-and-headers.png", "thumb": "/major-builds/magic-stairs/thumbs/step-1-attiny-and-headers.png", "date": "June 4, 2026", "short_date": "Jun 4, 2026", "aspect_ratio": 0.667}, {"filename": "step-2-flash-the-board.png", "full": "/major-builds/magic-stairs/step-2-flash-the-board.png", "thumb": "/major-builds/magic-stairs/thumbs/step-2-flash-the-board.png", "date": "June 4, 2026", "short_date": "Jun 4, 2026", "aspect_ratio": 0.667}, {"filename": "step-3-resistors-and-capacitors.png", "full": "/major-builds/magic-stairs/step-3-resistors-and-capacitors.png", "thumb": "/major-builds/magic-stairs/thumbs/step-3-resistors-and-capacitors.png", "date": "June 4, 2026", "short_date": "Jun 4, 2026", "aspect_ratio": 0.667}, {"filename": "step-4-ws2815-led.png", "full": "/major-builds/magic-stairs/step-4-ws2815-led.png", "thumb": "/major-builds/magic-stairs/thumbs/step-4-ws2815-led.png", "date": "June 4, 2026", "short_date": "Jun 4, 2026", "aspect_ratio": 0.667}, {"filename": "step-5-vl53l0x-sensor.png", "full": "/major-builds/magic-stairs/step-5-vl53l0x-sensor.png", "thumb": "/major-builds/magic-stairs/thumbs/step-5-vl53l0x-sensor.png", "date": "June 4, 2026", "short_date": "Jun 4, 2026", "aspect_ratio": 0.667}, {"filename": "step-6-finished-board.jpeg", "full": "/major-builds/magic-stairs/step-6-finished-board.jpeg", "thumb": "/major-builds/magic-stairs/thumbs/step-6-finished-board.jpeg", "date": "June 4, 2026", "short_date": "Jun 4, 2026", "aspect_ratio": 0.707}, {"filename": "PXL_20260607_093542166.jpg", "full": "/major-builds/magic-stairs/PXL_20260607_093542166.jpg", "thumb": "/major-builds/magic-stairs/thumbs/PXL_20260607_093542166.jpg", "date": "June 7, 2026", "short_date": "Jun 7, 2026", "aspect_ratio": 0.75}, {"filename": "IMG-20260607-WA0003.jpg", "full": "/major-builds/magic-stairs/IMG-20260607-WA0003.jpg", "thumb": "/major-builds/magic-stairs/thumbs/IMG-20260607-WA0003.jpg", "date": "June 7, 2026", "short_date": "Jun 7, 2026", "aspect_ratio": 0.75}, {"filename": "IMG-20260607-WA0004.jpg", "full": "/major-builds/magic-stairs/IMG-20260607-WA0004.jpg", "thumb": "/major-builds/magic-stairs/thumbs/IMG-20260607-WA0004.jpg", "date": "June 7, 2026", "short_date": "Jun 7, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260622_200459358.MP.jpg", "full": "/major-builds/magic-stairs/PXL_20260622_200459358.MP.jpg", "thumb": "/major-builds/magic-stairs/thumbs/PXL_20260622_200459358.MP.jpg", "date": "June 22, 2026", "short_date": "Jun 22, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260622_200639616.jpg", "full": "/major-builds/magic-stairs/PXL_20260622_200639616.jpg", "thumb": "/major-builds/magic-stairs/thumbs/PXL_20260622_200639616.jpg", "date": "June 22, 2026", "short_date": "Jun 22, 2026", "aspect_ratio": 0.75}];
+    let currentIndex = 0;
+
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+    const lightboxTitle = document.getElementById("lightbox-title");
+    const lightboxDate = document.getElementById("lightbox-date");
+    const lightboxCounter = document.getElementById("lightbox-counter");
+
+    function openLightbox(index) {
+      if (index < 0 || index >= gallery.length) return;
+      currentIndex = index;
+      updateLightboxContent();
+      lightbox.classList.add("active");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+
+      if (typeof gtag === 'function') {
+        const item = gallery[index];
+        gtag('event', 'view_photo', {
+          project_title: "Magic Stairs",
+          photo_filename: item.filename,
+          photo_index: index,
+          photo_date: item.date
+        });
+      }
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove("active");
+      lightbox.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      lightboxImg.src = "";
+    }
+
+    function handleBackdropClick(e) {
+      if (e.target.classList.contains("lightbox-backdrop") || e.target.classList.contains("lightbox")) {
+        closeLightbox();
+      }
+    }
+
+    function updateLightboxContent() {
+      const item = gallery[currentIndex];
+      lightboxImg.src = item.full;
+      lightboxTitle.textContent = "Magic Stairs";
+      lightboxDate.textContent = item.date;
+      lightboxCounter.textContent = `Photo ${currentIndex + 1} of ${gallery.length}`;
+
+      if (currentIndex + 1 < gallery.length) {
+        const nextImg = new Image();
+        nextImg.src = gallery[currentIndex + 1].full;
+      }
+      if (currentIndex - 1 >= 0) {
+        const prevImg = new Image();
+        prevImg.src = gallery[currentIndex - 1].full;
+      }
+    }
+
+    function nextLightbox(e) {
+      if (e) e.stopPropagation();
+      if (gallery.length === 0) return;
+      currentIndex = (currentIndex + 1) % gallery.length;
+      updateLightboxContent();
+
+      if (typeof gtag === 'function') {
+        const item = gallery[currentIndex];
+        gtag('event', 'view_photo', {
+          project_title: "Magic Stairs",
+          photo_filename: item.filename,
+          photo_index: currentIndex,
+          photo_date: item.date,
+          nav_method: 'next'
+        });
+      }
+    }
+
+    function prevLightbox(e) {
+      if (e) e.stopPropagation();
+      if (gallery.length === 0) return;
+      currentIndex = (currentIndex - 1 + gallery.length) % gallery.length;
+      updateLightboxContent();
+
+      if (typeof gtag === 'function') {
+        const item = gallery[currentIndex];
+        gtag('event', 'view_photo', {
+          project_title: "Magic Stairs",
+          photo_filename: item.filename,
+          photo_index: currentIndex,
+          photo_date: item.date,
+          nav_method: 'prev'
+        });
+      }
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (!lightbox.classList.contains("active")) return;
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") nextLightbox();
+      if (e.key === "ArrowLeft") prevLightbox();
+    });
+
+    let touchStartX = 0;
+    lightbox.addEventListener("touchstart", (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, {passive: true});
+    lightbox.addEventListener("touchend", (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      if (touchEndX < touchStartX - 50) nextLightbox();
+      if (touchEndX > touchStartX + 50) prevLightbox();
+    }, {passive: true});
+
+    document.querySelectorAll('.nav-dropdown-trigger').forEach(trigger => {
+      trigger.addEventListener('click', (e) => {
+        if (window.innerWidth <= 860) {
+          e.preventDefault();
+          const dropdown = trigger.closest('.nav-dropdown');
+          const wasOpen = dropdown.classList.contains('is-open');
+          document.querySelectorAll('.nav-dropdown.is-open').forEach(d => d.classList.remove('is-open'));
+          if (!wasOpen) dropdown.classList.add('is-open');
+        }
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.nav-dropdown')) {
+        document.querySelectorAll('.nav-dropdown.is-open').forEach(d => d.classList.remove('is-open'));
+      }
+    });
+
+    // GA4 Event Tracking: Hero video plays
+    const heroVid = document.querySelector('.hero-portrait-player, .video-actual-player');
+    if (heroVid) {
+      heroVid.addEventListener('play', () => {
+        if (typeof gtag === 'function') {
+          gtag('event', 'play_hero_video', {
+            project_title: "Magic Stairs",
+            video_url: heroVid.currentSrc || ''
+          });
+        }
+      });
+    }
+  </script>
+</body>
+</html>

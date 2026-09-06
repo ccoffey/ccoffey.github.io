@@ -1,0 +1,707 @@
+#!/usr/bin/env python3
+import os, sys, json, re, subprocess
+from datetime import datetime
+from PIL import Image
+
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+MAJOR_BUILDS_DIR = os.path.join(BASE_DIR, 'major-builds')
+QUICK_BUILDS_DIR = os.path.join(BASE_DIR, 'quick-builds')
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
+
+GA_MEASUREMENT_ID = os.environ.get('GA_MEASUREMENT_ID', 'G-RJN8XNMCEG')
+
+def load_template(name):
+    path = os.path.join(TEMPLATES_DIR, name)
+    with open(path, 'r', encoding='utf-8') as f:
+        return f.read()
+
+def parse_photo_date(filename):
+    if 'control_panel_graphic' in filename:
+        return 'September 5, 2026 — Control Panel Vinyl Graphic (gorillagraphics.ie)', 'Control Panel Artwork'
+    
+    m_step = re.search(r'step-(\d+)', filename)
+    if m_step:
+        return 'June 4, 2026', 'Jun 4, 2026'
+
+    m_pxl = re.search(r'PXL_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})', filename)
+    if m_pxl:
+        y, mo, d, h, mi, s = m_pxl.groups()
+        dt = datetime(int(y), int(mo), int(d), int(h), int(mi), int(s))
+        return dt.strftime('%B %-d, %Y'), dt.strftime('%b %-d, %Y')
+    
+    m_wa = re.search(r'IMG-(\d{4})(\d{2})(\d{2})-WA(\d+)', filename)
+    if m_wa:
+        y, mo, d, seq = m_wa.groups()
+        dt = datetime(int(y), int(mo), int(d))
+        return dt.strftime('%B %-d, %Y'), dt.strftime('%b %-d, %Y')
+
+    return 'Build Photo', 'Photo'
+
+def get_photo_sort_key(filename):
+    if 'control_panel_graphic' in filename:
+        return (2026, 9, 5, 18, 9, 0)
+    m_step = re.search(r'step-(\d+)', filename)
+    if m_step:
+        return (2026, 6, 4, 10, int(m_step.group(1)), 0)
+    m_pxl = re.search(r'PXL_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})', filename)
+    if m_pxl:
+        y, mo, d, h, mi, s = m_pxl.groups()
+        return (int(y), int(mo), int(d), int(h), int(mi), int(s))
+    m_wa = re.search(r'IMG-(\d{4})(\d{2})(\d{2})-WA(\d+)', filename)
+    if m_wa:
+        y, mo, d, seq = m_wa.groups()
+        return (int(y), int(mo), int(d), 12, 0, int(seq))
+    return (1970, 1, 1, 0, 0, 0)
+
+def strip_exif_from_file(filepath):
+    """Losslessly strips APP1 (EXIF / GPS / device metadata / XMP) from JPEG files."""
+    try:
+        with open(filepath, 'rb') as f:
+            data = f.read()
+        if not data.startswith(b'\xff\xd8'):
+            return False
+        pos = 2
+        out = [data[:2]]
+        has_exif = False
+        while pos < len(data):
+            if data[pos] != 0xff:
+                out.append(data[pos:])
+                break
+            marker = data[pos+1]
+            if marker in (0xd8, 0xd9) or 0xd0 <= marker <= 0xd7:
+                out.append(data[pos:pos+2])
+                pos += 2
+                continue
+            length = int.from_bytes(data[pos+2:pos+4], 'big')
+            segment = data[pos:pos+2+length]
+            if marker == 0xe1:  # APP1 (EXIF, GPS, camera metadata)
+                has_exif = True
+            else:
+                out.append(segment)
+            pos += 2 + length
+        if has_exif:
+            with open(filepath, 'wb') as f:
+                f.write(b''.join(out))
+            return True
+    except Exception as e:
+        print(f"Error stripping EXIF from {filepath}: {e}")
+    return False
+
+def optimize_video_if_needed(video_path):
+    """Re-encode video with libx264 + aac + faststart and strip metadata if > 25MB."""
+    if not os.path.exists(video_path):
+        return
+    try:
+        size_mb = os.path.getsize(video_path) / (1024 * 1024)
+        if size_mb > 25:
+            print(f"[Video Optimizer] Optimizing {os.path.basename(video_path)} ({size_mb:.1f} MB)...")
+            tmp_out = video_path + ".optimized.mp4"
+            cmd = [
+                "ffmpeg", "-y", "-i", video_path,
+                "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "25", "-preset", "medium",
+                "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart",
+                "-map_metadata", "-1", tmp_out
+            ]
+            res = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            if res.returncode == 0 and os.path.exists(tmp_out):
+                new_size = os.path.getsize(tmp_out) / (1024 * 1024)
+                os.replace(tmp_out, video_path)
+                print(f"[Video Optimizer] Successfully compressed {os.path.basename(video_path)}: {size_mb:.1f}MB -> {new_size:.1f}MB")
+            elif os.path.exists(tmp_out):
+                os.remove(tmp_out)
+    except Exception as e:
+        print(f"[Video Optimizer] Error optimizing {video_path}: {e}")
+
+def get_video_metadata(video_path):
+    """
+    Returns (width, height, aspect_ratio, is_portrait) using ffprobe.
+    """
+    try:
+        cmd = [
+            'ffprobe', '-v', 'error',
+            '-select_streams', 'v:0',
+            '-show_entries', 'stream=width,height',
+            '-of', 'csv=s=x:p=0',
+            video_path
+        ]
+        res = subprocess.run(cmd, capture_output=True, text=True, check=True)
+        out = res.stdout.strip()
+        if 'x' in out:
+            parts = out.split('\n')[0].split('x')
+            w, h = int(parts[0]), int(parts[1])
+            ar = round(w / h, 3) if h > 0 else 1.778
+            return {
+                'width': w,
+                'height': h,
+                'aspect_ratio': ar,
+                'is_portrait': (h > w)
+            }
+    except Exception as e:
+        print(f"ffprobe warning for {video_path}: {e}")
+    return {
+        'width': 1920,
+        'height': 1080,
+        'aspect_ratio': 1.778,
+        'is_portrait': False
+    }
+
+def render_story_box(story_html):
+    if not story_html:
+        return ''
+    return f'''
+    <section class="narrative-box">
+      <h2 class="narrative-heading">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+        <span>The Build Story</span>
+      </h2>
+      <div class="narrative-collapsible" id="narrativeCollapsible">
+        <div class="narrative-content" id="narrativeContent">
+          {story_html}
+        </div>
+        <div class="narrative-fade" id="narrativeFade"></div>
+      </div>
+      <div class="narrative-toggle-wrap" id="narrativeToggleWrap">
+        <button class="narrative-toggle-btn" id="narrativeToggleBtn" onclick="toggleNarrative()">
+          <span id="narrativeToggleText">Read full story</span>
+          <svg class="narrative-toggle-icon" id="narrativeToggleIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+      </div>
+    </section>'''
+
+def render_next_steps(next_steps):
+    if not next_steps:
+        return ''
+    items_html = []
+    for step in next_steps:
+        if ':' in step and step.find(':') < 45:
+            title, desc = step.split(':', 1)
+            formatted = f'<strong>{title.strip()}:</strong>{desc}'
+        else:
+            formatted = step
+        items_html.append(f'        <li class="next-step-item">{formatted}</li>')
+    
+    return f'''
+    <section class="next-steps-box">
+      <div class="next-steps-header">
+        <div class="next-steps-title-wrap">
+          <svg class="next-steps-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+          <h2 class="next-steps-title">Next Steps &amp; Planned Upgrades</h2>
+        </div>
+      </div>
+      <ul class="next-steps-list">
+{'\n'.join(items_html)}
+      </ul>
+    </section>'''
+
+def process_build_dir(base_dir, slug, url_prefix):
+    folder_path = os.path.join(base_dir, slug)
+    config_path = os.path.join(folder_path, 'build.json')
+    if not os.path.exists(config_path):
+        config_path = os.path.join(folder_path, 'project.json')
+
+    config = {}
+    if os.path.exists(config_path) and os.path.getsize(config_path) > 0:
+        try:
+            with open(config_path, 'r', encoding='utf-8') as f:
+                config = json.load(f)
+        except Exception as e:
+            print(f"[{slug}] Warning: Error loading {config_path}: {e}")
+            config = {}
+
+    defaults = {
+        'title': slug.replace('-', ' ').title(),
+        'subtitle': 'Hardware Build',
+        'description': '',
+        'tags': ['Hardware'],
+        'dates': 'Active',
+        'order': 99,
+        'story': '<p>Build details coming soon.</p>'
+    }
+    for k, v in defaults.items():
+        if k not in config or not config[k]:
+            config[k] = v
+
+    thumbs_dir = os.path.join(folder_path, 'thumbs')
+    os.makedirs(thumbs_dir, exist_ok=True)
+
+    raw_files = [f for f in os.listdir(folder_path) 
+                 if not f.startswith('.') and f not in ('thumbs', 'index.html', 'build.json', 'project.json')]
+
+    # 1. Sanitize photos (EXIF)
+    for f in raw_files:
+        if f.lower().endswith(('.jpg', '.jpeg')):
+            strip_exif_from_file(os.path.join(folder_path, f))
+
+    # 2. Prune deleted thumbnails
+    for thumb in os.listdir(thumbs_dir):
+        if thumb not in raw_files and not thumb.endswith('_poster.jpg'):
+            try:
+                os.remove(os.path.join(thumbs_dir, thumb))
+                print(f"[{slug}] Pruned deleted thumbnail: {thumb}")
+            except OSError:
+                pass
+
+    # 3. Generate missing thumbnails
+    for f in raw_files:
+        f_lower = f.lower()
+        if f_lower.endswith(('.jpg', '.jpeg', '.png', '.webp')):
+            src = os.path.join(folder_path, f)
+            dst = os.path.join(thumbs_dir, f)
+            if not os.path.exists(dst):
+                try:
+                    with Image.open(src) as img:
+                        img.thumbnail((600, 600), Image.Resampling.LANCZOS)
+                        if img.mode in ('RGBA', 'P') and not f_lower.endswith('.png'):
+                            img = img.convert('RGB')
+                        img.save(dst, optimize=True, quality=82)
+                        print(f"[{slug}] Generated thumbnail: {f}")
+                except Exception as e:
+                    print(f"[{slug}] Error thumbnailing {f}: {e}")
+
+    # 4. Check for videos to optimize
+    for f in raw_files:
+        if f.lower().endswith(('.mp4', '.mov', '.webm')):
+            optimize_video_if_needed(os.path.join(folder_path, f))
+
+    # 5. Collect media files
+    raw_files.sort()
+    photos = []
+    videos = []
+
+    for f in raw_files:
+        f_lower = f.lower()
+        if f_lower.endswith(('.mp4', '.mov', '.webm')):
+            videos.append(f)
+        elif f_lower.endswith(('.jpg', '.jpeg', '.png', '.webp')):
+            date_str, short_date = parse_photo_date(f)
+            # Calculate aspect ratio
+            src = os.path.join(folder_path, f)
+            thumb = os.path.join(thumbs_dir, f)
+            ar = 1.333
+            try:
+                img_path = thumb if os.path.exists(thumb) else src
+                with Image.open(img_path) as img:
+                    w, h = img.size
+                    if h > 0:
+                        ar = round(w / h, 3)
+            except Exception:
+                pass
+
+            photos.append({
+                'filename': f,
+                'full': f"{url_prefix}/{slug}/{f}",
+                'thumb': f"{url_prefix}/{slug}/thumbs/{f}",
+                'date': date_str,
+                'short_date': short_date,
+                'aspect_ratio': ar
+            })
+
+    # Sort photos chronologically (oldest first: start of build through completion)
+    photos.sort(key=lambda p: get_photo_sort_key(p['filename']))
+
+    # Determine cover image: check build.json config first, fallback to latest photo
+    configured_cover = config.get('cover_image') or config.get('cover_img') or ''
+    if configured_cover and os.path.exists(os.path.join(folder_path, configured_cover)):
+        cover_img = configured_cover
+    else:
+        if configured_cover:
+            print(f"[{slug}] Note: Configured cover_image '{configured_cover}' not found, defaulting.")
+        cover_img = photos[-1]['filename'] if photos else ''
+
+    # Determine hero video: check build.json config first
+    configured_video = config.get('hero_video') or ''
+    if configured_video and os.path.exists(os.path.join(folder_path, configured_video)):
+        hero_video = configured_video
+    elif configured_video:
+        print(f"[{slug}] Note: Configured hero_video '{configured_video}' not found.")
+        hero_video = ''
+    elif videos:
+        hero_video = videos[0]
+    else:
+        hero_video = ''
+
+    # Extract first frame as video poster thumbnail
+    hero_video_poster = ''
+    if hero_video:
+        poster_fn = f"{os.path.splitext(hero_video)[0]}_poster.jpg"
+        poster_dst = os.path.join(thumbs_dir, poster_fn)
+        vid_src = os.path.join(folder_path, hero_video)
+        if not os.path.exists(poster_dst) or (os.path.exists(vid_src) and os.path.getmtime(vid_src) > os.path.getmtime(poster_dst)):
+            try:
+                cmd = ['ffmpeg', '-y', '-ss', '00:00:00.05', '-i', vid_src, '-frames:v', '1', '-update', '1', '-q:v', '2', poster_dst]
+                subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+                strip_exif_from_file(poster_dst)
+                print(f"[{slug}] Extracted hero video poster: {poster_fn}")
+            except Exception as e:
+                print(f"[{slug}] Error extracting hero video poster for {hero_video}: {e}")
+        if os.path.exists(poster_dst):
+            hero_video_poster = poster_fn
+
+    return {
+        'slug': slug,
+        'title': config.get('title', slug),
+        'subtitle': config.get('subtitle', ''),
+        'description': config.get('description', ''),
+        'tags': config.get('tags', []),
+        'dates': config.get('dates', ''),
+        'order': config.get('order', 99),
+        'story': config.get('story', ''),
+        'cover_img': cover_img,
+        'hero_video': hero_video,
+        'hero_video_poster': hero_video_poster,
+        'next_steps': config.get('next_steps', []),
+        'photos': photos,
+        'videos': videos,
+        'url_prefix': url_prefix
+    }
+
+process_project_dir = process_build_dir
+
+def sync_builds():
+    if not os.path.exists(MAJOR_BUILDS_DIR):
+        print(f"Major builds directory not found: {MAJOR_BUILDS_DIR}")
+        return
+
+    home_tmpl = load_template('home.html')
+    major_build_tmpl = load_template('major_build.html')
+    quick_build_tmpl = load_template('quick_build.html')
+
+    # Collect Major Builds
+    major_slugs = [d for d in os.listdir(MAJOR_BUILDS_DIR) 
+                   if os.path.isdir(os.path.join(MAJOR_BUILDS_DIR, d)) and not d.startswith('.')]
+    major_builds = [process_build_dir(MAJOR_BUILDS_DIR, s, '/major-builds') for s in major_slugs]
+    major_builds.sort(key=lambda x: x['order'])
+
+    # Collect Quick Builds
+    quick_builds = []
+    if os.path.exists(QUICK_BUILDS_DIR):
+        quick_slugs = [d for d in os.listdir(QUICK_BUILDS_DIR)
+                       if os.path.isdir(os.path.join(QUICK_BUILDS_DIR, d)) and not d.startswith('.')]
+        quick_builds = [process_build_dir(QUICK_BUILDS_DIR, s, '/quick-builds') for s in quick_slugs]
+        quick_builds.sort(key=lambda x: x['order'])
+
+    # Build navigation helper
+    def render_nav(active_type, active_slug=''):
+        home_cls = ' class="nav-item-link active-nav"' if active_type == 'home' else ' class="nav-item-link"'
+        major_trigger_cls = 'nav-item-link nav-dropdown-trigger active-nav' if active_type == 'major' else 'nav-item-link nav-dropdown-trigger'
+        quick_trigger_cls = 'nav-item-link nav-dropdown-trigger active-nav' if active_type == 'quick' else 'nav-item-link nav-dropdown-trigger'
+
+        # Major builds items
+        major_items = []
+        for b in major_builds:
+            item_act = ' is-active' if (active_type == 'major' and b['slug'] == active_slug) else ''
+            subtitle = b['subtitle'] if b['subtitle'] else 'Hardware Build'
+            major_items.append(f'''
+              <a href="/major-builds/{b['slug']}/" class="nav-dropdown-item{item_act}">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">{b['title']}</span>
+                  <span class="dropdown-item-desc">{subtitle}</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>''')
+
+        # Quick builds items
+        quick_items = []
+        for qb in quick_builds:
+            item_act = ' is-active' if (active_type == 'quick' and qb['slug'] == active_slug) else ''
+            subtitle = qb['subtitle'] if qb['subtitle'] else 'Quick Build'
+            quick_items.append(f'''
+              <a href="/quick-builds/{qb['slug']}/" class="nav-dropdown-item{item_act}">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">{qb['title']}</span>
+                  <span class="dropdown-item-desc">{subtitle}</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>''')
+
+        return f'''<a href="/"{home_cls}>Home</a>
+        <div class="nav-dropdown" id="navMajorDropdown">
+          <a href="/#major-builds" class="{major_trigger_cls}">
+            <span>Major Builds</span>
+            <span class="nav-count-badge">{len(major_builds)}</span>
+            <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </a>
+          <div class="nav-dropdown-panel">
+            <div class="nav-dropdown-header">
+              <span class="dropdown-header-title">Major Builds</span>
+              <span class="dropdown-header-subtitle">{len(major_builds)} Systems</span>
+            </div>
+            <div class="nav-dropdown-list">
+              {''.join(major_items)}
+            </div>
+            <div class="nav-dropdown-footer">
+              <a href="/#major-builds" class="dropdown-footer-link">
+                <span>View All Major Builds</span>
+                <span class="footer-arrow">&rarr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="nav-dropdown" id="navQuickDropdown">
+          <a href="/#quick-builds" class="{quick_trigger_cls}">
+            <span>Quick Builds</span>
+            <span class="nav-count-badge">{len(quick_builds)}</span>
+            <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </a>
+          <div class="nav-dropdown-panel">
+            <div class="nav-dropdown-header">
+              <span class="dropdown-header-title">Quick Builds</span>
+              <span class="dropdown-header-subtitle">{len(quick_builds)} {'Make' if len(quick_builds) == 1 else 'Makes'}</span>
+            </div>
+            <div class="nav-dropdown-list">
+              {''.join(quick_items)}
+            </div>
+            <div class="nav-dropdown-footer">
+              <a href="/#quick-builds" class="dropdown-footer-link">
+                <span>View All Quick Builds</span>
+                <span class="footer-arrow">&rarr;</span>
+              </a>
+            </div>
+          </div>
+        </div>'''
+
+    build_id = str(int(datetime.now().timestamp()))
+
+    # 1. Render Major Build Cards for Homepage
+    major_cards_html = []
+    for b in major_builds:
+        thumb_src = f"/major-builds/{b['slug']}/thumbs/{b['cover_img']}" if b['cover_img'] else ''
+        tags_html = ''.join(f'<span class="tech-tag">{tag}</span>' for tag in b['tags'])
+        major_cards_html.append(f'''
+      <a href="/major-builds/{b['slug']}/" class="major-build-card-link">
+        <div class="major-build-card">
+          <div class="grid-card-media">
+            <div class="card-media-backdrop" style="background-image: url('{thumb_src}');"></div>
+            <img src="{thumb_src}" alt="{b['title']}" loading="lazy">
+            <div class="media-badges" style="justify-content: flex-end;">
+              <span class="media-badge count-badge">{len(b['photos'])} Photos</span>
+            </div>
+          </div>
+          <div class="grid-card-body">
+            <div class="grid-card-header">
+              <h3 class="grid-card-title">{b['title']}</h3>
+              <span class="grid-card-arrow">&rarr;</span>
+            </div>
+            <p class="grid-card-subtitle">{b['subtitle']}</p>
+            <div class="grid-card-tags">
+              {tags_html}
+            </div>
+          </div>
+        </div>
+      </a>''')
+
+    # 2. Render Quick Build Cards for Homepage
+    quick_cards_html = []
+    for qb in quick_builds:
+        tags_html = ''.join(f'<span class="tech-tag">{tag}</span>' for tag in qb['tags'])
+        thumb_src = f"/quick-builds/{qb['slug']}/thumbs/{qb['cover_img']}" if qb['cover_img'] else ''
+        if thumb_src:
+            media_markup = f'''
+          <div class="grid-card-media">
+            <div class="card-media-backdrop" style="background-image: url('{thumb_src}');"></div>
+            <img src="{thumb_src}" alt="{qb['title']}" loading="lazy">
+            <div class="media-badges" style="justify-content: flex-end;">
+              <span class="media-badge count-badge">{len(qb['photos'])} Photos</span>
+            </div>
+          </div>'''
+        else:
+            media_markup = '''
+          <div class="grid-card-media">
+            <div class="quick-card-placeholder">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path><polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline><line x1="12" y1="22.08" x2="12" y2="12"></line></svg>
+              <span class="quick-placeholder-label">3D Print / CAD Build</span>
+            </div>
+          </div>'''
+
+        quick_cards_html.append(f'''
+      <a href="/quick-builds/{qb['slug']}/" class="major-build-card-link">
+        <div class="major-build-card">
+          {media_markup}
+          <div class="grid-card-body">
+            <div class="grid-card-header">
+              <h3 class="grid-card-title">{qb['title']}</h3>
+              <span class="grid-card-arrow">&rarr;</span>
+            </div>
+            <p class="grid-card-subtitle">{qb['subtitle']}</p>
+            <div class="grid-card-tags">
+              {tags_html}
+            </div>
+          </div>
+        </div>
+      </a>''')
+
+    rendered_home = (home_tmpl
+        .replace('{{ NAV_LINKS }}', render_nav('home'))
+        .replace('{{ BUILD_ID }}', build_id)
+        .replace('{{ GA_MEASUREMENT_ID }}', GA_MEASUREMENT_ID)
+        .replace('{{ MAJOR_BUILD_COUNT }}', f"{len(major_builds)} {'Build' if len(major_builds) == 1 else 'Builds'}")
+        .replace('{{ MAJOR_BUILD_CARDS }}', '\n'.join(major_cards_html))
+        .replace('{{ QUICK_BUILD_COUNT }}', f"{len(quick_builds)} {'Build' if len(quick_builds) == 1 else 'Builds'}")
+        .replace('{{ QUICK_BUILD_CARDS }}', '\n'.join(quick_cards_html)))
+
+    with open(os.path.join(BASE_DIR, 'index.html'), 'w', encoding='utf-8') as f:
+        f.write(rendered_home)
+    print("Rendered root index.html")
+
+    # 3. Render Major Build Pages (major-builds/{slug}/index.html)
+    for b in major_builds:
+        tags_html = '\n        '.join(f'<span class="tech-tag">{tag}</span>' for tag in b['tags'])
+        
+        story_box_html = render_story_box(b['story'])
+        next_steps_html = render_next_steps(b.get('next_steps', []))
+
+        # Hero Video Section: Adaptive Portrait vs Landscape
+        if b['hero_video']:
+            video_fn = b['hero_video']
+            video_path = os.path.join(MAJOR_BUILDS_DIR, b['slug'], video_fn)
+            meta = get_video_metadata(video_path)
+            if b.get('hero_video_poster'):
+                poster_attr = f' poster="/major-builds/{b["slug"]}/thumbs/{b["hero_video_poster"]}"'
+            elif b["cover_img"]:
+                poster_attr = f' poster="/major-builds/{b["slug"]}/thumbs/{b["cover_img"]}"'
+            else:
+                poster_attr = ''
+
+            if meta['is_portrait']:
+                # Portrait Split Layout: Video alongside The Build Story
+                hero_section_html = f'''
+    <div class="hero-split-container">
+      <div class="hero-portrait-col">
+        <div class="hero-portrait-card">
+          <div class="hero-portrait-header">
+            <span class="hero-portrait-header-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Build Demonstration
+            </span>
+          </div>
+          <div class="hero-portrait-player-wrap">
+            <video class="hero-portrait-player" controls preload="metadata" playsinline{poster_attr}>
+              <source src="/major-builds/{b['slug']}/{video_fn}" type="video/mp4">
+              Your browser does not support HTML5 video.
+            </video>
+          </div>
+        </div>
+      </div>
+      <div class="hero-story-col">
+        {story_box_html}
+      </div>
+    </div>'''
+                story_section_html = ''
+                next_steps_section_html = next_steps_html
+            else:
+                # Landscape Video: Custom fitted aspect-ratio container
+                ar = meta['aspect_ratio']
+                hero_section_html = f'''
+    <div class="hero-video-wrapper landscape-hero" style="max-width: 960px; margin: 1.5rem auto 2.25rem auto;">
+      <div class="landscape-video-box" style="aspect-ratio: {ar}; width: 100%;">
+        <video class="video-actual-player" controls preload="metadata" playsinline{poster_attr} style="width: 100%; height: 100%; object-fit: contain;">
+          <source src="/major-builds/{b['slug']}/{video_fn}" type="video/mp4">
+          Your browser does not support HTML5 video.
+        </video>
+      </div>
+    </div>'''
+                story_section_html = story_box_html
+                next_steps_section_html = next_steps_html
+        else:
+            # Placeholder Video
+            hero_section_html = f'''
+    <div class="hero-video-wrapper placeholder-hero">
+      <div class="hero-video-placeholder">
+        <div class="video-play-btn">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="video-placeholder-title">Full Build &amp; Demonstration Video Coming Soon</div>
+        <div class="video-placeholder-desc">A detailed walkthrough showing live operation, mechanical tolerances, and internal electronics.</div>
+      </div>
+    </div>'''
+            story_section_html = story_box_html
+            next_steps_section_html = next_steps_html
+
+        # Google Photos style justified photo grid
+        photos_html = []
+        for idx, photo in enumerate(b['photos']):
+            ar = photo.get('aspect_ratio', 1.333)
+            photos_html.append(f'''
+      <div class="photo-card" style="--ar: {ar};" onclick="openLightbox({idx})">
+        <img src="{photo['thumb']}" alt="{b['title']} build photo" loading="lazy">
+        <span class="photo-date-pill">{photo['short_date']}</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>''')
+
+        gallery_json = json.dumps(b['photos'])
+
+        rendered_build = (major_build_tmpl
+            .replace('{{ TITLE }}', b['title'])
+            .replace('{{ SUBTITLE }}', b['subtitle'])
+            .replace('{{ DATES }}', b['dates'])
+            .replace('{{ TAGS }}', tags_html)
+            .replace('{{ BUILD_ID }}', build_id)
+            .replace('{{ GA_MEASUREMENT_ID }}', GA_MEASUREMENT_ID)
+            .replace('{{ NAV_LINKS }}', render_nav('major', b['slug']))
+            .replace('{{ HERO_SECTION }}', hero_section_html)
+            .replace('{{ STORY_SECTION }}', story_section_html)
+            .replace('{{ NEXT_STEPS_SECTION }}', next_steps_section_html)
+            .replace('{{ PHOTO_COUNT }}', str(len(b['photos'])))
+            .replace('{{ PHOTO_GRID }}', '\n'.join(photos_html))
+            .replace('{{ GALLERY_JSON }}', gallery_json))
+
+        build_out = os.path.join(MAJOR_BUILDS_DIR, b['slug'], 'index.html')
+        with open(build_out, 'w', encoding='utf-8') as f:
+            f.write(rendered_build)
+        print(f"Rendered major-builds/{b['slug']}/index.html ({len(b['photos'])} photos)")
+
+    # 4. Render Quick Build Pages (quick-builds/{slug}/index.html)
+    for qb in quick_builds:
+        tags_html = '\n        '.join(f'<span class="tech-tag">{tag}</span>' for tag in qb['tags'])
+
+        if qb['photos']:
+            photos_html = []
+            for idx, photo in enumerate(qb['photos']):
+                ar = photo.get('aspect_ratio', 1.333)
+                photos_html.append(f'''
+      <div class="photo-card" style="--ar: {ar};" onclick="openLightbox({idx})">
+        <img src="{photo['thumb']}" alt="{qb['title']} photo" loading="lazy">
+        <span class="photo-date-pill">{photo['short_date']}</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>''')
+            gallery_markup = '\n'.join(photos_html)
+        else:
+            gallery_markup = '''
+      <div class="empty-photos-box" style="grid-column: 1 / -1; width: 100%;">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <div class="empty-photos-title">Photos In Progress</div>
+        <div class="empty-photos-desc">Photos of the design, 3D printing process, and installed wall covers are being prepared.</div>
+      </div>'''
+
+        gallery_json = json.dumps(qb['photos'])
+        desc_html = f'<div class="build-description"><p>{qb["description"]}</p></div>' if qb.get('description') else ''
+
+        rendered_qb = (quick_build_tmpl
+            .replace('{{ TITLE }}', qb['title'])
+            .replace('{{ SUBTITLE }}', qb['subtitle'])
+            .replace('{{ DESCRIPTION }}', desc_html)
+            .replace('{{ TAGS }}', tags_html)
+            .replace('{{ BUILD_ID }}', build_id)
+            .replace('{{ GA_MEASUREMENT_ID }}', GA_MEASUREMENT_ID)
+            .replace('{{ NAV_LINKS }}', render_nav('quick', qb['slug']))
+            .replace('{{ PHOTO_COUNT }}', str(len(qb['photos'])))
+            .replace('{{ PHOTO_GRID }}', gallery_markup)
+            .replace('{{ GALLERY_JSON }}', gallery_json))
+
+        qb_out = os.path.join(QUICK_BUILDS_DIR, qb['slug'], 'index.html')
+        with open(qb_out, 'w', encoding='utf-8') as f:
+            f.write(rendered_qb)
+        print(f"Rendered quick-builds/{qb['slug']}/index.html ({len(qb['photos'])} photos)")
+
+sync_projects = sync_builds
+
+if __name__ == '__main__':
+    sync_builds()

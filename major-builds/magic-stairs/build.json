@@ -1,0 +1,19 @@
+{
+  "title": "Magic Stairs",
+  "subtitle": "Distributed 12-Node Stair Lighting with Laser Time-of-Flight Footstep Tracking",
+  "tags": [
+    "ESP32",
+    "ATtiny414",
+    "VL53L0X ToF",
+    "WS2815 LEDs",
+    "3D Printing"
+  ],
+  "dates": "April 2026 \u2013 June 2026",
+  "order": 5,
+  "story": "<p>Magic Stairs was inspired by my kids and their fear of the dark. I wanted to transform their journey up the stairs to bed at night from a spooky climb into a magical rainbow walk. I could have easily run an off-the-shelf LED strip up the wall, plugged in a motion sensor, and called it a day\u2014but where is the fun in that? Instead, I took it as an opportunity to push my embedded firmware skills and challenge myself. The system is deliberately and delightfully over-engineered by design so that I could learn as much as possible in the process.</p>\n<p>My staircase has 12 steps. Rather than running a monolithic controller, every single step is an independent computing node equipped with its own ATtiny414 microcontroller, a 12V WS2815 addressable LED, and a VL53L0X laser Time-of-Flight (ToF) distance sensor. An I\u00b2C bus runs the entire length of the staircase connecting all 12 nodes. To solve the addressing problem without hardcoding IDs, each ATtiny sniffs the serial WS2815 LED data protocol at boot time to dynamically determine its own index (which step number it is) in the chain. At the top of the stairs, an ESP32 acts as the I\u00b2C bus master, running a tight polling loop querying each step in real time: <em>\"Is there a foot on your step right now? How about now? How about now?\"</em> and choreographing the lighting instantly.</p>\n<p>So what does a network of 12 microcontrollers, 12 LEDs, and 12 laser distance sensors buy you over a standard LED strip? Quite a lot. My kids invented \"Ninja Mode,\" where they try to scale the dark staircase without triggering a single sensor; the moment they wobble or brush a step, the ESP32 spots them and instantly floods the entire staircase with light. It also enabled me to program a reactive \"Spotlight Mode\" that illuminates the step you are on, the step behind, and the step ahead\u2014following you up or down and naturally reversing if you turn back. It seamlessly tracks multiple people on the stairs simultaneously. I have programmed five distinct interactive modes so far, but no matter how sophisticated the animations get, the kids still love the rainbow walk the best.</p>",
+  "cover_image": "PXL_20260622_200639616.jpg",
+  "hero_video": "PXL_20260513_082421428.mp4",
+  "next_steps": [
+    "Hide the wiring between steps with custom 3d printed trunking that looks like it's just part of the staircase."
+  ]
+}

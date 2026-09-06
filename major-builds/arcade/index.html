@@ -1,0 +1,677 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Arcade Cabinet | Cathal Coffey</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1788700536">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RJN8XNMCEG');
+  </script>
+</head>
+<body>
+  <nav class="top-nav">
+    <div class="container nav-inner">
+      <a href="/" class="nav-brand">
+        <span class="brand-name">Cathal Coffey</span>
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-item-link">Home</a>
+        <div class="nav-dropdown" id="navMajorDropdown">
+          <a href="/#major-builds" class="nav-item-link nav-dropdown-trigger active-nav">
+            <span>Major Builds</span>
+            <span class="nav-count-badge">5</span>
+            <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </a>
+          <div class="nav-dropdown-panel">
+            <div class="nav-dropdown-header">
+              <span class="dropdown-header-title">Major Builds</span>
+              <span class="dropdown-header-subtitle">5 Systems</span>
+            </div>
+            <div class="nav-dropdown-list">
+              
+              <a href="/major-builds/claw-machine/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Claw Machine</span>
+                  <span class="dropdown-item-desc">First-Principles Arcade Build Inspired by Tokyo's GiGO: From Breadboard to Custom KiCad PCB</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/major-builds/arcade/" class="nav-dropdown-item is-active">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Arcade Cabinet</span>
+                  <span class="dropdown-item-desc">Handcrafted 2-Player Cabinet with 3D-Printed Skin, Sanwa Controls & Integrated N64/GameCube Controller Ports</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/major-builds/chimera/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Chimera</span>
+                  <span class="dropdown-item-desc">Custom Handheld OS & Communicator Inspired by the Nokia 3210 and Game Boy Pocket</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/major-builds/mop-bot/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Mop Bot</span>
+                  <span class="dropdown-item-desc">Radio-Controlled Veranda Glass Cleaner Inspired by the Roborock S7</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/major-builds/magic-stairs/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Magic Stairs</span>
+                  <span class="dropdown-item-desc">Distributed 12-Node Stair Lighting with Laser Time-of-Flight Footstep Tracking</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+            </div>
+            <div class="nav-dropdown-footer">
+              <a href="/#major-builds" class="dropdown-footer-link">
+                <span>View All Major Builds</span>
+                <span class="footer-arrow">&rarr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
+        <div class="nav-dropdown" id="navQuickDropdown">
+          <a href="/#quick-builds" class="nav-item-link nav-dropdown-trigger">
+            <span>Quick Builds</span>
+            <span class="nav-count-badge">3</span>
+            <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </a>
+          <div class="nav-dropdown-panel">
+            <div class="nav-dropdown-header">
+              <span class="dropdown-header-title">Quick Builds</span>
+              <span class="dropdown-header-subtitle">3 Makes</span>
+            </div>
+            <div class="nav-dropdown-list">
+              
+              <a href="/quick-builds/wall-vent-covers/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">House Wall Vent Covers</span>
+                  <span class="dropdown-item-desc">Custom 3D Printed Low-Profile Replacement Grilles</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/quick-builds/washing-machine-repair/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Washing Machine Repair</span>
+                  <span class="dropdown-item-desc">Carbon brushes were worn down to a nub</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/quick-builds/office-chair-repair/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Home Office Chair Repair</span>
+                  <span class="dropdown-item-desc">Aeron Miller chair was falling apart</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+            </div>
+            <div class="nav-dropdown-footer">
+              <a href="/#quick-builds" class="dropdown-footer-link">
+                <span>View All Quick Builds</span>
+                <span class="footer-arrow">&rarr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header class="build-header-full">
+      <h1 class="build-heading">Arcade Cabinet</h1>
+      <p class="build-sub">Handcrafted 2-Player Cabinet with 3D-Printed Skin, Sanwa Controls & Integrated N64/GameCube Controller Ports</p>
+      <div class="tag-row">
+        <span class="tech-tag">Woodworking</span>
+        <span class="tech-tag">3D Printing</span>
+        <span class="tech-tag">Isopon P38 body filler</span>
+        <span class="tech-tag">High build primer spraying</span>
+        <span class="tech-tag">Raspberry Pi</span>
+        <span class="tech-tag">RetroPie</span>
+      </div>
+    </header>
+
+    
+    <div class="hero-split-container">
+      <div class="hero-portrait-col">
+        <div class="hero-portrait-card">
+          <div class="hero-portrait-header">
+            <span class="hero-portrait-header-title">
+              <svg width="14" height="14" viewBox="0 0 24 24" fill="currentColor"><polygon points="5 3 19 12 5 21 5 3"/></svg>
+              Build Demonstration
+            </span>
+          </div>
+          <div class="hero-portrait-player-wrap">
+            <video class="hero-portrait-player" controls preload="metadata" playsinline poster="/major-builds/arcade/thumbs/PXL_20260906_115858017_poster.jpg">
+              <source src="/major-builds/arcade/PXL_20260906_115858017.mp4" type="video/mp4">
+              Your browser does not support HTML5 video.
+            </video>
+          </div>
+        </div>
+      </div>
+      <div class="hero-story-col">
+        
+    <section class="narrative-box">
+      <h2 class="narrative-heading">
+        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"></path><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"></path></svg>
+        <span>The Build Story</span>
+      </h2>
+      <div class="narrative-collapsible" id="narrativeCollapsible">
+        <div class="narrative-content" id="narrativeContent">
+          <p>This was fundamentally a woodworking, 3D printing, and automotive finishing project. I framed the internal skeleton from 2&times;2 Planed White Deal timber and skinned it with MDF. To create the exterior contours, I skinned the cabinet with 3D-printed PLA panels—piecing them together like a giant jigsaw puzzle because my Prusa build plate is only 200&times;200 mm. To eliminate the seams, I filled the joints with Isopon P38 body filler (typically used in car repair—a first for me), followed by endless rounds of sanding, sprayed automotive filler primer (learning spray-can finishing technique on the fly), and finished with leftover paint from my attic that had been used for painting interior doors in my house.</p>
+<p>The electronics were intentionally kept straightforward: a Raspberry Pi 5 running RetroPie with an external hard drive and an Amazon sound system. To make the cabinet truly special, I bought and disassembled USB adapters for original Nintendo 64 and GameCube controllers, integrating the ports directly into the cabinet so I could play the games I loved as a kid together with my own children using my original childhood controllers.</p>
+<p>One of the hardest parts of the project was getting the joystick positions and button ergonomics correct, requiring multiple drilling templates and extensive trial-and-error. The control panel is wrapped in a custom wide-format vinyl graphic printed by Gorilla Graphics (<a href="https://gorillagraphics.ie" target="_blank" rel="noopener" style="color: var(--accent);">gorillagraphics.ie</a>).</p>
+        </div>
+        <div class="narrative-fade" id="narrativeFade"></div>
+      </div>
+      <div class="narrative-toggle-wrap" id="narrativeToggleWrap">
+        <button class="narrative-toggle-btn" id="narrativeToggleBtn" onclick="toggleNarrative()">
+          <span id="narrativeToggleText">Read full story</span>
+          <svg class="narrative-toggle-icon" id="narrativeToggleIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
+        </button>
+      </div>
+    </section>
+      </div>
+    </div>
+
+    
+
+    
+    <section class="next-steps-box">
+      <div class="next-steps-header">
+        <div class="next-steps-title-wrap">
+          <svg class="next-steps-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+            <polygon points="12 2 2 7 12 12 22 7 12 2"></polygon>
+            <polyline points="2 17 12 22 22 17"></polyline>
+            <polyline points="2 12 12 17 22 12"></polyline>
+          </svg>
+          <h2 class="next-steps-title">Next Steps &amp; Planned Upgrades</h2>
+        </div>
+      </div>
+      <ul class="next-steps-list">
+        <li class="next-step-item">Wrap control panel is custom vinyl graphic artwork from gorillagraphics.ie</li>
+        <li class="next-step-item">Install GameCube controller ports and holders</li>
+        <li class="next-step-item">Finish fine detailing around the monitor cutout</li>
+      </ul>
+    </section>
+
+    <div class="gallery-header">
+      <div class="gallery-title">
+        <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
+        <span>Build Gallery</span>
+      </div>
+      <span class="gallery-subtitle">33 Chronological Photos</span>
+    </div>
+
+    <div class="photo-grid">
+      
+      <div class="photo-card" style="--ar: 1.609;" onclick="openLightbox(0)">
+        <img src="/major-builds/arcade/thumbs/IMG-20260610-WA0011.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 10, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.538;" onclick="openLightbox(1)">
+        <img src="/major-builds/arcade/thumbs/IMG-20260610-WA0013.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 10, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(2)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260612_131602499.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 12, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(3)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260612_134740700.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 12, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(4)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260613_165933266.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 13, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(5)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260614_114810509.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 14, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(6)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260614_114829437.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 14, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(7)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260614_191114359.MP.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 14, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(8)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260622_104305404.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 22, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(9)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260622_200320372.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 22, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(10)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260623_063527281.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 23, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(11)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260624_140130605.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 24, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(12)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260826_075001152.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Aug 26, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(13)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260829_115733622.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Aug 29, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(14)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260831_094322392.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Aug 31, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(15)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260831_193202774.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Aug 31, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(16)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260831_193207041.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Aug 31, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(17)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260831_193211593.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Aug 31, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(18)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260902_093252061.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Sep 2, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(19)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260902_093257203.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Sep 2, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(20)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260902_093307602.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Sep 2, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(21)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260904_074801296.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Sep 4, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(22)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260904_135618640.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Sep 4, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(23)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260904_135624145.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Sep 4, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(24)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260904_135626990.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Sep 4, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(25)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260904_135631840.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Sep 4, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(26)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260904_143335221.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Sep 4, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(27)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260904_175325421.MP.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Sep 4, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 3.209;" onclick="openLightbox(28)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260905_180900000_control_panel_graphic.png" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Control Panel Artwork</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(29)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260906_082159801.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Sep 6, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(30)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260906_114753701.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Sep 6, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(31)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260906_115121912.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Sep 6, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(32)">
+        <img src="/major-builds/arcade/thumbs/PXL_20260906_115406018.jpg" alt="Arcade Cabinet build photo" loading="lazy">
+        <span class="photo-date-pill">Sep 6, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="lightbox" class="lightbox" aria-hidden="true" onclick="handleBackdropClick(event)">
+    <div class="lightbox-backdrop"></div>
+    <button class="lightbox-btn lightbox-close" onclick="closeLightbox()" aria-label="Close">&times;</button>
+    <button class="lightbox-btn lightbox-prev" onclick="prevLightbox(event)" aria-label="Previous">&lsaquo;</button>
+    <button class="lightbox-btn lightbox-next" onclick="nextLightbox(event)" aria-label="Next">&rsaquo;</button>
+    <div class="lightbox-stage">
+      <img id="lightbox-img" class="lightbox-img" src="" alt="Enlarged build photo">
+      <div class="lightbox-caption">
+        <span id="lightbox-title"></span>
+        <span>&bull;</span>
+        <span id="lightbox-date"></span>
+        <span class="lightbox-counter" id="lightbox-counter"></span>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    function toggleNarrative() {
+      const container = document.getElementById("narrativeCollapsible");
+      const text = document.getElementById("narrativeToggleText");
+      const icon = document.getElementById("narrativeToggleIcon");
+      if (!container) return;
+      const isExpanded = container.classList.toggle("expanded");
+      if (text) text.textContent = isExpanded ? "Collapse story" : "Read full story";
+      if (icon) {
+        icon.style.transform = isExpanded ? "rotate(180deg)" : "rotate(0deg)";
+      }
+      if (!isExpanded) {
+        const box = container.closest('.narrative-box');
+        if (box && box.getBoundingClientRect().top < 80) {
+          box.scrollIntoView({ behavior: 'smooth', block: 'start' });
+        }
+      }
+    }
+
+    window.addEventListener("DOMContentLoaded", () => {
+      const container = document.getElementById("narrativeCollapsible");
+      const content = document.getElementById("narrativeContent");
+      const toggleWrap = document.getElementById("narrativeToggleWrap");
+      const fade = document.getElementById("narrativeFade");
+      if (content && container) {
+        const isDesktopSplit = container.closest('.hero-split-container') && window.innerWidth > 860;
+        const threshold = isDesktopSplit ? 530 : 180;
+        if (content.scrollHeight <= threshold + 25) {
+          container.classList.add("expanded");
+          if (fade) fade.style.display = "none";
+          if (toggleWrap) toggleWrap.style.display = "none";
+        }
+      }
+    });
+
+    const gallery = [{"filename": "IMG-20260610-WA0011.jpg", "full": "/major-builds/arcade/IMG-20260610-WA0011.jpg", "thumb": "/major-builds/arcade/thumbs/IMG-20260610-WA0011.jpg", "date": "June 10, 2026", "short_date": "Jun 10, 2026", "aspect_ratio": 1.609}, {"filename": "IMG-20260610-WA0013.jpg", "full": "/major-builds/arcade/IMG-20260610-WA0013.jpg", "thumb": "/major-builds/arcade/thumbs/IMG-20260610-WA0013.jpg", "date": "June 10, 2026", "short_date": "Jun 10, 2026", "aspect_ratio": 1.538}, {"filename": "PXL_20260612_131602499.jpg", "full": "/major-builds/arcade/PXL_20260612_131602499.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260612_131602499.jpg", "date": "June 12, 2026", "short_date": "Jun 12, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260612_134740700.jpg", "full": "/major-builds/arcade/PXL_20260612_134740700.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260612_134740700.jpg", "date": "June 12, 2026", "short_date": "Jun 12, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260613_165933266.jpg", "full": "/major-builds/arcade/PXL_20260613_165933266.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260613_165933266.jpg", "date": "June 13, 2026", "short_date": "Jun 13, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260614_114810509.jpg", "full": "/major-builds/arcade/PXL_20260614_114810509.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260614_114810509.jpg", "date": "June 14, 2026", "short_date": "Jun 14, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260614_114829437.jpg", "full": "/major-builds/arcade/PXL_20260614_114829437.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260614_114829437.jpg", "date": "June 14, 2026", "short_date": "Jun 14, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260614_191114359.MP.jpg", "full": "/major-builds/arcade/PXL_20260614_191114359.MP.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260614_191114359.MP.jpg", "date": "June 14, 2026", "short_date": "Jun 14, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260622_104305404.jpg", "full": "/major-builds/arcade/PXL_20260622_104305404.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260622_104305404.jpg", "date": "June 22, 2026", "short_date": "Jun 22, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260622_200320372.jpg", "full": "/major-builds/arcade/PXL_20260622_200320372.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260622_200320372.jpg", "date": "June 22, 2026", "short_date": "Jun 22, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260623_063527281.jpg", "full": "/major-builds/arcade/PXL_20260623_063527281.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260623_063527281.jpg", "date": "June 23, 2026", "short_date": "Jun 23, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260624_140130605.jpg", "full": "/major-builds/arcade/PXL_20260624_140130605.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260624_140130605.jpg", "date": "June 24, 2026", "short_date": "Jun 24, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260826_075001152.jpg", "full": "/major-builds/arcade/PXL_20260826_075001152.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260826_075001152.jpg", "date": "August 26, 2026", "short_date": "Aug 26, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260829_115733622.jpg", "full": "/major-builds/arcade/PXL_20260829_115733622.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260829_115733622.jpg", "date": "August 29, 2026", "short_date": "Aug 29, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260831_094322392.jpg", "full": "/major-builds/arcade/PXL_20260831_094322392.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260831_094322392.jpg", "date": "August 31, 2026", "short_date": "Aug 31, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260831_193202774.jpg", "full": "/major-builds/arcade/PXL_20260831_193202774.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260831_193202774.jpg", "date": "August 31, 2026", "short_date": "Aug 31, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260831_193207041.jpg", "full": "/major-builds/arcade/PXL_20260831_193207041.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260831_193207041.jpg", "date": "August 31, 2026", "short_date": "Aug 31, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260831_193211593.jpg", "full": "/major-builds/arcade/PXL_20260831_193211593.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260831_193211593.jpg", "date": "August 31, 2026", "short_date": "Aug 31, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260902_093252061.jpg", "full": "/major-builds/arcade/PXL_20260902_093252061.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260902_093252061.jpg", "date": "September 2, 2026", "short_date": "Sep 2, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260902_093257203.jpg", "full": "/major-builds/arcade/PXL_20260902_093257203.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260902_093257203.jpg", "date": "September 2, 2026", "short_date": "Sep 2, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260902_093307602.jpg", "full": "/major-builds/arcade/PXL_20260902_093307602.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260902_093307602.jpg", "date": "September 2, 2026", "short_date": "Sep 2, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260904_074801296.jpg", "full": "/major-builds/arcade/PXL_20260904_074801296.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260904_074801296.jpg", "date": "September 4, 2026", "short_date": "Sep 4, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260904_135618640.jpg", "full": "/major-builds/arcade/PXL_20260904_135618640.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260904_135618640.jpg", "date": "September 4, 2026", "short_date": "Sep 4, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260904_135624145.jpg", "full": "/major-builds/arcade/PXL_20260904_135624145.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260904_135624145.jpg", "date": "September 4, 2026", "short_date": "Sep 4, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260904_135626990.jpg", "full": "/major-builds/arcade/PXL_20260904_135626990.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260904_135626990.jpg", "date": "September 4, 2026", "short_date": "Sep 4, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260904_135631840.jpg", "full": "/major-builds/arcade/PXL_20260904_135631840.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260904_135631840.jpg", "date": "September 4, 2026", "short_date": "Sep 4, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260904_143335221.jpg", "full": "/major-builds/arcade/PXL_20260904_143335221.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260904_143335221.jpg", "date": "September 4, 2026", "short_date": "Sep 4, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260904_175325421.MP.jpg", "full": "/major-builds/arcade/PXL_20260904_175325421.MP.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260904_175325421.MP.jpg", "date": "September 4, 2026", "short_date": "Sep 4, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260905_180900000_control_panel_graphic.png", "full": "/major-builds/arcade/PXL_20260905_180900000_control_panel_graphic.png", "thumb": "/major-builds/arcade/thumbs/PXL_20260905_180900000_control_panel_graphic.png", "date": "September 5, 2026 \u2014 Control Panel Vinyl Graphic (gorillagraphics.ie)", "short_date": "Control Panel Artwork", "aspect_ratio": 3.209}, {"filename": "PXL_20260906_082159801.jpg", "full": "/major-builds/arcade/PXL_20260906_082159801.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260906_082159801.jpg", "date": "September 6, 2026", "short_date": "Sep 6, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260906_114753701.jpg", "full": "/major-builds/arcade/PXL_20260906_114753701.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260906_114753701.jpg", "date": "September 6, 2026", "short_date": "Sep 6, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260906_115121912.jpg", "full": "/major-builds/arcade/PXL_20260906_115121912.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260906_115121912.jpg", "date": "September 6, 2026", "short_date": "Sep 6, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260906_115406018.jpg", "full": "/major-builds/arcade/PXL_20260906_115406018.jpg", "thumb": "/major-builds/arcade/thumbs/PXL_20260906_115406018.jpg", "date": "September 6, 2026", "short_date": "Sep 6, 2026", "aspect_ratio": 1.333}];
+    let currentIndex = 0;
+
+    const lightbox = document.getElementById("lightbox");
+    const lightboxImg = document.getElementById("lightbox-img");
+    const lightboxTitle = document.getElementById("lightbox-title");
+    const lightboxDate = document.getElementById("lightbox-date");
+    const lightboxCounter = document.getElementById("lightbox-counter");
+
+    function openLightbox(index) {
+      if (index < 0 || index >= gallery.length) return;
+      currentIndex = index;
+      updateLightboxContent();
+      lightbox.classList.add("active");
+      lightbox.setAttribute("aria-hidden", "false");
+      document.body.style.overflow = "hidden";
+
+      if (typeof gtag === 'function') {
+        const item = gallery[index];
+        gtag('event', 'view_photo', {
+          project_title: "Arcade Cabinet",
+          photo_filename: item.filename,
+          photo_index: index,
+          photo_date: item.date
+        });
+      }
+    }
+
+    function closeLightbox() {
+      lightbox.classList.remove("active");
+      lightbox.setAttribute("aria-hidden", "true");
+      document.body.style.overflow = "";
+      lightboxImg.src = "";
+    }
+
+    function handleBackdropClick(e) {
+      if (e.target.classList.contains("lightbox-backdrop") || e.target.classList.contains("lightbox")) {
+        closeLightbox();
+      }
+    }
+
+    function updateLightboxContent() {
+      const item = gallery[currentIndex];
+      lightboxImg.src = item.full;
+      lightboxTitle.textContent = "Arcade Cabinet";
+      lightboxDate.textContent = item.date;
+      lightboxCounter.textContent = `Photo ${currentIndex + 1} of ${gallery.length}`;
+
+      if (currentIndex + 1 < gallery.length) {
+        const nextImg = new Image();
+        nextImg.src = gallery[currentIndex + 1].full;
+      }
+      if (currentIndex - 1 >= 0) {
+        const prevImg = new Image();
+        prevImg.src = gallery[currentIndex - 1].full;
+      }
+    }
+
+    function nextLightbox(e) {
+      if (e) e.stopPropagation();
+      if (gallery.length === 0) return;
+      currentIndex = (currentIndex + 1) % gallery.length;
+      updateLightboxContent();
+
+      if (typeof gtag === 'function') {
+        const item = gallery[currentIndex];
+        gtag('event', 'view_photo', {
+          project_title: "Arcade Cabinet",
+          photo_filename: item.filename,
+          photo_index: currentIndex,
+          photo_date: item.date,
+          nav_method: 'next'
+        });
+      }
+    }
+
+    function prevLightbox(e) {
+      if (e) e.stopPropagation();
+      if (gallery.length === 0) return;
+      currentIndex = (currentIndex - 1 + gallery.length) % gallery.length;
+      updateLightboxContent();
+
+      if (typeof gtag === 'function') {
+        const item = gallery[currentIndex];
+        gtag('event', 'view_photo', {
+          project_title: "Arcade Cabinet",
+          photo_filename: item.filename,
+          photo_index: currentIndex,
+          photo_date: item.date,
+          nav_method: 'prev'
+        });
+      }
+    }
+
+    document.addEventListener("keydown", (e) => {
+      if (!lightbox.classList.contains("active")) return;
+      if (e.key === "Escape") closeLightbox();
+      if (e.key === "ArrowRight") nextLightbox();
+      if (e.key === "ArrowLeft") prevLightbox();
+    });
+
+    let touchStartX = 0;
+    lightbox.addEventListener("touchstart", (e) => {
+      touchStartX = e.changedTouches[0].screenX;
+    }, {passive: true});
+    lightbox.addEventListener("touchend", (e) => {
+      const touchEndX = e.changedTouches[0].screenX;
+      if (touchEndX < touchStartX - 50) nextLightbox();
+      if (touchEndX > touchStartX + 50) prevLightbox();
+    }, {passive: true});
+
+    document.querySelectorAll('.nav-dropdown-trigger').forEach(trigger => {
+      trigger.addEventListener('click', (e) => {
+        if (window.innerWidth <= 860) {
+          e.preventDefault();
+          const dropdown = trigger.closest('.nav-dropdown');
+          const wasOpen = dropdown.classList.contains('is-open');
+          document.querySelectorAll('.nav-dropdown.is-open').forEach(d => d.classList.remove('is-open'));
+          if (!wasOpen) dropdown.classList.add('is-open');
+        }
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.nav-dropdown')) {
+        document.querySelectorAll('.nav-dropdown.is-open').forEach(d => d.classList.remove('is-open'));
+      }
+    });
+
+    // GA4 Event Tracking: Hero video plays
+    const heroVid = document.querySelector('.hero-portrait-player, .video-actual-player');
+    if (heroVid) {
+      heroVid.addEventListener('play', () => {
+        if (typeof gtag === 'function') {
+          gtag('event', 'play_hero_video', {
+            project_title: "Arcade Cabinet",
+            video_url: heroVid.currentSrc || ''
+          });
+        }
+      });
+    }
+  </script>
+</body>
+</html>

@@ -1,0 +1,21 @@
+{
+  "title": "Chimera",
+  "subtitle": "Custom Handheld OS & Communicator Inspired by the Nokia 3210 and Game Boy Pocket",
+  "tags": [
+    "ESP32",
+    "Embedded OS",
+    "3D Printing"
+  ],
+  "dates": "July 2026 \u2013 Present",
+  "order": 3,
+  "story": "<p>The road to Chimera actually started with a private messaging server. Long before designing hardware, I built a security-obsessed Android messaging app and home server for my brother and me, using Diffie-Hellman (DH) key exchange for truly private communication. We used it daily for about a year until he switched to a locked-down company phone that blocked sideloading unpublished APKs outside the Google Play Store. Losing our channel sparked an idea: <em>what if we had our own private messaging app running on our own custom hardware\u2014a simple, distraction-free phone like the Nokia 3210s we carried in secondary school?</em></p>\n<p>That was the spark, but building a standalone hardware communicator took much longer than anticipated because I basically had to build an entire embedded operating system from scratch first. I created a dynamic status bar with battery and Wi-Fi icons, and a full Wi-Fi manager that scans for SSIDs, lets you enter passwords, persists credentials in flash storage, and automatically reconnects whenever known networks are in range. Then came device settings for volume and screen brightness, along with a PIN-to-unlock security screen.</p>\n<p>Along the way, I got gloriously sidetracked by retro gaming. I wrote native implementations of Nokia Snake, Tetris, and Pong. Naturally, games needed 8-bit sound effects and background music, which opened another rabbit hole into audio synthesis, followed by flash persistence for high scores. To ensure the device had a tamper-resistant foundation for private communication, I dove deep into ESP32 hardware security: configuring Secure Boot, Flash Encryption, and seamless Over-The-Air (OTA) firmware updates distributed directly via GitHub Releases.</p>\n<p>When I finally circled back to messaging, typing on a handheld with only a rotary encoder and push-button presented a major UX challenge. I designed a custom virtual keyboard that is genuinely tactile and a joy to rotate through. To make communication even richer, I integrated an I\u00b2S MEMS microphone and digital audio pipeline so we could exchange voice snippets, just like voice notes on WhatsApp. Today, Chimera has evolved into a rock-solid embedded operating system housed in an enclosure that channels the nostalgic ergonomics of a Game Boy Pocket\u2014providing a battle-tested hardware and software foundation upon which I am actively building the final secure messaging app.</p>",
+  "cover_image": "PXL_20260906_083726119_frame_8s.jpg",
+  "hero_video": "PXL_20260906_083726119.mp4",
+  "next_steps": [
+    "Build a second Chimera so that I can test 2 way messaging",
+    "Build the secure messaging app",
+    "Downsize the rotary encoder (it's too tall)",
+    "Better cable management",
+    "Better fitting case"
+  ]
+}

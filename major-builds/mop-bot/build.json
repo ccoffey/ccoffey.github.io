@@ -1,0 +1,20 @@
+{
+  "title": "Mop Bot",
+  "subtitle": "Radio-Controlled Veranda Glass Cleaner Inspired by the Roborock S7",
+  "tags": [
+    "Robotics",
+    "ESP32",
+    "3D Printing"
+  ],
+  "dates": "May 2026 \u2013 Present",
+  "order": 4,
+  "story": "<p>Mop Bot was born from the intersection of four very specific things: loving my home robot vacuum (a Roborock S7), wanting to build a physical ground-up robot for years, having an outdoor glass veranda canopy that was chronically dirty, and having a beautiful radio transmitter sitting in my attic for 15 years. That radio controller was a relic from an ambitious quadcopter I tried to build back in college\u2014a drone that unfortunately crashed far more often than it ever flew. I always hated seeing that lovely transmitter sit idle in a box, and I was itching for a project worthy of putting it back to work.</p>\n<p>The result was Mop Bot V1: an ESP32-powered outdoor cleaning rover. You drive it across the veranda canopy using the joysticks on the radio controller, and flip a dedicated toggle switch to spin the motorized scrubbing mop head. While the electronics and microsecond RC PWM pulse decoding came together smoothly, wet glass is an unforgiving terrain. V1 is functional and an absolute blast to pilot, but it is very much an early prototype rather than a finished cleaning appliance.</p>\n<p>Having proven the core idea, I already have clear goals for V2. The biggest challenge is traction on slick, sloped wet glass, which I plan to solve with softer high-friction tire compounds and a redesigned chassis with better weight distribution over the drive wheels. I also want to integrate a miniature liquid pump and onboard water reservoir so it can wet the glass on demand rather than relying on a rainy day to clean. Finally, I plan to design and 3D print a sleek protective shell to cleanly enclose the motor drivers, battery, and electronics. V1 proved the concept; V2 will turn it into a proper cleaning machine.</p>",
+  "cover_image": "PXL_20260619_164056995.jpg",
+  "hero_video": "PXL_20260906_120530308.mp4",
+  "next_steps": [
+    "V2 Chassis & traction redesign: Rebalance weight distribution and test softer, high-friction tires to conquer sloped, wet veranda glass.",
+    "Onboard water reservoir & mini pump: Integrate a small water reservoir and liquid pump so it can wet the mop pad on demand without waiting for a rainy day.",
+    "Custom protective chassis cover: Design and 3D print a sleek, aerodynamic shell to protect the battery, motor drivers, and electronics from spray.",
+    "Edge-detection sensors: Add downward optical sensors or physical bumpers to prevent the robot from driving over glass edges."
+  ]
+}
