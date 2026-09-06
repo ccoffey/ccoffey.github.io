@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arcade Cabinet | Cathal Coffey</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788706468">
+  <link rel="stylesheet" href="/css/style.css?v=1788708536">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -21,10 +21,18 @@
       <a href="/" class="nav-brand">
         <span class="brand-name">Cathal Coffey</span>
       </a>
-      <div class="nav-links">
+      <button class="nav-menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">
+        <span>Menu</span>
+        <svg class="nav-menu-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16"></path>
+          <path d="M4 12h16"></path>
+          <path d="M4 17h16"></path>
+        </svg>
+      </button>
+      <div class="nav-links" id="site-navigation">
         <a href="/" class="nav-item-link">Home</a>
         <div class="nav-dropdown" id="navMajorDropdown">
-          <a href="/#major-builds" class="nav-item-link nav-dropdown-trigger active-nav">
+          <a href="/#major-builds" class="nav-item-link nav-dropdown-trigger active-nav" aria-haspopup="true" aria-expanded="false">
             <span>Major Builds</span>
             <span class="nav-count-badge">5</span>
             <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
@@ -81,7 +89,7 @@
           </div>
         </div>
         <div class="nav-dropdown" id="navQuickDropdown">
-          <a href="/#quick-builds" class="nav-item-link nav-dropdown-trigger">
+          <a href="/#quick-builds" class="nav-item-link nav-dropdown-trigger" aria-haspopup="true" aria-expanded="false">
             <span>Quick Builds</span>
             <span class="nav-count-badge">3</span>
             <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
@@ -643,23 +651,6 @@
       if (touchEndX > touchStartX + 50) prevLightbox();
     }, {passive: true});
 
-    document.querySelectorAll('.nav-dropdown-trigger').forEach(trigger => {
-      trigger.addEventListener('click', (e) => {
-        if (window.innerWidth <= 860) {
-          e.preventDefault();
-          const dropdown = trigger.closest('.nav-dropdown');
-          const wasOpen = dropdown.classList.contains('is-open');
-          document.querySelectorAll('.nav-dropdown.is-open').forEach(d => d.classList.remove('is-open'));
-          if (!wasOpen) dropdown.classList.add('is-open');
-        }
-      });
-    });
-    document.addEventListener('click', (e) => {
-      if (!e.target.closest('.nav-dropdown')) {
-        document.querySelectorAll('.nav-dropdown.is-open').forEach(d => d.classList.remove('is-open'));
-      }
-    });
-
     // GA4 Event Tracking: Hero video plays
     const heroVid = document.querySelector('.hero-portrait-player, .video-actual-player');
     if (heroVid) {
@@ -673,5 +664,6 @@
       });
     }
   </script>
+  <script src="/js/navigation.js?v=1788708536"></script>
 </body>
 </html>

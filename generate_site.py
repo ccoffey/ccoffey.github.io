@@ -420,7 +420,7 @@ def sync_builds():
 
         return f'''<a href="/"{home_cls}>Home</a>
         <div class="nav-dropdown" id="navMajorDropdown">
-          <a href="/#major-builds" class="{major_trigger_cls}">
+          <a href="/#major-builds" class="{major_trigger_cls}" aria-haspopup="true" aria-expanded="false">
             <span>Major Builds</span>
             <span class="nav-count-badge">{len(major_builds)}</span>
             <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
@@ -442,7 +442,7 @@ def sync_builds():
           </div>
         </div>
         <div class="nav-dropdown" id="navQuickDropdown">
-          <a href="/#quick-builds" class="{quick_trigger_cls}">
+          <a href="/#quick-builds" class="{quick_trigger_cls}" aria-haspopup="true" aria-expanded="false">
             <span>Quick Builds</span>
             <span class="nav-count-badge">{len(quick_builds)}</span>
             <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
