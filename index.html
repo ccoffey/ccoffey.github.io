@@ -3,536 +3,403 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cathal Coffey — Staff Software Engineer & Builder</title>
-  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-  <link rel="manifest" href="/site.webmanifest">
-  <style>
-    :root {
-      --bg: #0d1117;
-      --card-bg: #161b22;
-      --card-border: #30363d;
-      --text-main: #e6edf3;
-      --text-muted: #8b949e;
-      --accent: #58a6ff;
-      --accent-glow: rgba(88, 166, 255, 0.15);
-      --tag-bg: #21262d;
-      --tag-text: #79c0ff;
-      --border-light: #21262d;
-    }
-
-    @media (prefers-color-scheme: light) {
-      :root {
-        --bg: #f6f8fa;
-        --card-bg: #ffffff;
-        --card-border: #d0d7de;
-        --text-main: #1f2328;
-        --text-muted: #656d76;
-        --accent: #0969da;
-        --accent-glow: rgba(9, 105, 218, 0.1);
-        --tag-bg: #eff2f5;
-        --tag-text: #0550ae;
-        --border-light: #e1e4e8;
-      }
-    }
-
-    * {
-      box-sizing: border-box;
-      margin: 0;
-      padding: 0;
-    }
-
-    body {
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-      background-color: var(--bg);
-      color: var(--text-main);
-      line-height: 1.6;
-      padding: 0 1.25rem 4rem 1.25rem;
-    }
-
-    .container {
-      max-width: 980px;
-      margin: 0 auto;
-    }
-
-    header {
-      padding: 4rem 0 2.5rem 0;
-      border-bottom: 1px solid var(--border-light);
-    }
-
-    .header-content {
-      display: flex;
-      flex-direction: column;
-      gap: 0.75rem;
-    }
-
-    h1 {
-      font-size: 2.5rem;
-      font-weight: 800;
-      letter-spacing: -0.03em;
-      line-height: 1.15;
-    }
-
-    .tagline {
-      font-size: 1.25rem;
-      color: var(--accent);
-      font-weight: 600;
-    }
-
-    .bio {
-      font-size: 1.05rem;
-      color: var(--text-muted);
-      max-width: 780px;
-      margin-top: 0.25rem;
-    }
-
-    .links {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 1rem;
-      margin-top: 1rem;
-      font-size: 0.95rem;
-    }
-
-    .links a {
-      color: var(--accent);
-      text-decoration: none;
-      display: inline-flex;
-      align-items: center;
-      gap: 0.35rem;
-      font-weight: 500;
-      padding: 0.35rem 0.75rem;
-      border-radius: 6px;
-      background: var(--tag-bg);
-      border: 1px solid var(--card-border);
-      transition: all 0.2s ease;
-    }
-
-    .links a:hover {
-      background: var(--accent-glow);
-      border-color: var(--accent);
-    }
-
-    section {
-      margin-top: 3.5rem;
-    }
-
-    .section-header {
-      margin-bottom: 1.5rem;
-    }
-
-    h2 {
-      font-size: 1.6rem;
-      font-weight: 700;
-      letter-spacing: -0.02em;
-      display: flex;
-      align-items: center;
-      gap: 0.5rem;
-    }
-
-    .section-subtitle {
-      color: var(--text-muted);
-      font-size: 0.95rem;
-      margin-top: 0.25rem;
-    }
-
-    .projects-grid {
-      display: grid;
-      grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
-      gap: 1.5rem;
-    }
-
-    .project-card {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      justify-content: space-between;
-      transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
-    }
-
-    .project-card:hover {
-      transform: translateY(-2px);
-      border-color: var(--accent);
-      box-shadow: 0 6px 20px var(--accent-glow);
-    }
-
-    .project-title {
-      font-size: 1.25rem;
-      font-weight: 700;
-      color: var(--text-main);
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
-
-    .project-desc {
-      font-size: 0.92rem;
-      color: var(--text-muted);
-      margin: 0.75rem 0 1.25rem 0;
-      line-height: 1.5;
-    }
-
-    .project-details {
-      margin-bottom: 1rem;
-      font-size: 0.88rem;
-      color: var(--text-main);
-    }
-
-    .project-details li {
-      margin-left: 1.25rem;
-      margin-bottom: 0.35rem;
-    }
-
-    .tags {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 0.4rem;
-      margin-top: auto;
-    }
-
-    .tag {
-      font-size: 0.75rem;
-      font-weight: 600;
-      background: var(--tag-bg);
-      color: var(--tag-text);
-      padding: 0.2rem 0.55rem;
-      border-radius: 20px;
-      border: 1px solid var(--card-border);
-    }
-
-    .timeline {
-      display: flex;
-      flex-direction: column;
-      gap: 1.5rem;
-    }
-
-    .timeline-item {
-      background: var(--card-bg);
-      border: 1px solid var(--card-border);
-      border-radius: 10px;
-      padding: 1.5rem;
-    }
-
-    .timeline-header {
-      display: flex;
-      justify-content: space-between;
-      align-items: baseline;
-      flex-wrap: wrap;
-      gap: 0.5rem;
-      margin-bottom: 0.5rem;
-    }
-
-    .company-title {
-      font-size: 1.2rem;
-      font-weight: 700;
-    }
-
-    .company-title span {
-      color: var(--accent);
-    }
-
-    .company-date {
-      font-size: 0.85rem;
-      color: var(--text-muted);
-      font-weight: 500;
-    }
-
-    .timeline-item ul {
-      margin-left: 1.25rem;
-      margin-top: 0.5rem;
-      font-size: 0.92rem;
-      color: var(--text-muted);
-    }
-
-    .timeline-item li {
-      margin-bottom: 0.4rem;
-      line-height: 1.45;
-    }
-
-    .timeline-item strong {
-      color: var(--text-main);
-    }
-
-    footer {
-      margin-top: 4rem;
-      padding-top: 2rem;
-      border-top: 1px solid var(--border-light);
-      text-align: center;
-      font-size: 0.85rem;
-      color: var(--text-muted);
-    }
-
-    footer a {
-      color: var(--accent);
-      text-decoration: none;
-    }
-  </style>
+  <title>Cathal Coffey</title>
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v=1788700536">
+  <!-- Google tag (gtag.js) -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
+  <script>
+    window.dataLayer = window.dataLayer || [];
+    function gtag(){dataLayer.push(arguments);}
+    gtag('js', new Date());
+    gtag('config', 'G-RJN8XNMCEG');
+  </script>
 </head>
 <body>
-  <div class="container">
-    <header>
-      <div class="header-content">
-        <h1>Cathal Coffey</h1>
-        <div class="tagline">Staff Software Engineer &amp; Physical Systems Builder</div>
-        <p class="bio">
-          Based in Dublin, Ireland. Over a decade designing, scaling, and operating mission-critical distributed systems, developer platforms, and computational engines across companies spanning every order of magnitude: Equals (~10), Intercom (100 &rarr; 1,000+), HubSpot (~8,000), and Amazon (150,000+).
-        </p>
-        <p class="bio">
-          Beyond cloud infrastructure, I am a hands-on physical computing builder: designing custom microcontrollers (ESP32-C5, ATtiny), robotics, motor drive electronics, time-of-flight laser sensor networks, CAD/CNC fabrication, and mathematical energy storage optimization.
-        </p>
-        <div class="links">
-          <a href="https://github.com/ccoffey" target="_blank" rel="noopener">GitHub: @ccoffey</a>
-          <a href="https://linkedin.com/in/cathalcoffey" target="_blank" rel="noopener">LinkedIn</a>
-          <a href="mailto:coffey.cathal@gmail.com">coffey.cathal@gmail.com</a>
+  <nav class="top-nav">
+    <div class="container nav-inner">
+      <a href="/" class="nav-brand">
+        <span class="brand-name">Cathal Coffey</span>
+      </a>
+      <div class="nav-links">
+        <a href="/" class="nav-item-link active-nav">Home</a>
+        <div class="nav-dropdown" id="navMajorDropdown">
+          <a href="/#major-builds" class="nav-item-link nav-dropdown-trigger">
+            <span>Major Builds</span>
+            <span class="nav-count-badge">5</span>
+            <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </a>
+          <div class="nav-dropdown-panel">
+            <div class="nav-dropdown-header">
+              <span class="dropdown-header-title">Major Builds</span>
+              <span class="dropdown-header-subtitle">5 Systems</span>
+            </div>
+            <div class="nav-dropdown-list">
+              
+              <a href="/major-builds/claw-machine/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Claw Machine</span>
+                  <span class="dropdown-item-desc">First-Principles Arcade Build Inspired by Tokyo's GiGO: From Breadboard to Custom KiCad PCB</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/major-builds/arcade/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Arcade Cabinet</span>
+                  <span class="dropdown-item-desc">Handcrafted 2-Player Cabinet with 3D-Printed Skin, Sanwa Controls & Integrated N64/GameCube Controller Ports</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/major-builds/chimera/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Chimera</span>
+                  <span class="dropdown-item-desc">Custom Handheld OS & Communicator Inspired by the Nokia 3210 and Game Boy Pocket</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/major-builds/mop-bot/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Mop Bot</span>
+                  <span class="dropdown-item-desc">Radio-Controlled Veranda Glass Cleaner Inspired by the Roborock S7</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/major-builds/magic-stairs/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Magic Stairs</span>
+                  <span class="dropdown-item-desc">Distributed 12-Node Stair Lighting with Laser Time-of-Flight Footstep Tracking</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+            </div>
+            <div class="nav-dropdown-footer">
+              <a href="/#major-builds" class="dropdown-footer-link">
+                <span>View All Major Builds</span>
+                <span class="footer-arrow">&rarr;</span>
+              </a>
+            </div>
+          </div>
         </div>
+        <div class="nav-dropdown" id="navQuickDropdown">
+          <a href="/#quick-builds" class="nav-item-link nav-dropdown-trigger">
+            <span>Quick Builds</span>
+            <span class="nav-count-badge">3</span>
+            <svg class="nav-chevron" width="10" height="10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="6 9 12 15 18 9"/></svg>
+          </a>
+          <div class="nav-dropdown-panel">
+            <div class="nav-dropdown-header">
+              <span class="dropdown-header-title">Quick Builds</span>
+              <span class="dropdown-header-subtitle">3 Makes</span>
+            </div>
+            <div class="nav-dropdown-list">
+              
+              <a href="/quick-builds/wall-vent-covers/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">House Wall Vent Covers</span>
+                  <span class="dropdown-item-desc">Custom 3D Printed Low-Profile Replacement Grilles</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/quick-builds/washing-machine-repair/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Washing Machine Repair</span>
+                  <span class="dropdown-item-desc">Carbon brushes were worn down to a nub</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+              <a href="/quick-builds/office-chair-repair/" class="nav-dropdown-item">
+                <div class="dropdown-item-content">
+                  <span class="dropdown-item-title">Home Office Chair Repair</span>
+                  <span class="dropdown-item-desc">Aeron Miller chair was falling apart</span>
+                </div>
+                <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
+              </a>
+            </div>
+            <div class="nav-dropdown-footer">
+              <a href="/#quick-builds" class="dropdown-footer-link">
+                <span>View All Quick Builds</span>
+                <span class="footer-arrow">&rarr;</span>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header class="hero">
+      <h1 class="hero-title">Cathal Coffey</h1>
+      <p class="hero-bio">
+        Based in Dublin, Ireland. Over a decade building software systems across companies of almost every order of magnitude: from early-stage startups of ~10 people (<a href="https://equals.com" target="_blank" rel="noopener noreferrer" class="bio-company-link">Equals</a>), through hypergrowth scale-ups from 100 to over 1,000 people (<a href="https://www.intercom.com" target="_blank" rel="noopener noreferrer" class="bio-company-link">Intercom</a>), to large enterprise platforms of ~10,000 people (<a href="https://www.hubspot.com" target="_blank" rel="noopener noreferrer" class="bio-company-link">HubSpot</a>), and hyperscale cloud providers of 150,000+ people (<a href="https://www.amazon.com" target="_blank" rel="noopener noreferrer" class="bio-company-link">Amazon</a>).
+      </p>
+      <p class="hero-bio">
+        Outside of work, I am a builder, a hacker, a tinkerer. I combine woodworking, 3D printing, spray painting, and custom KiCad PCB design to bring physical builds to life using microcontrollers (ESP32, ATtiny), motors, and sensors.
+      </p>
+      <div class="hero-actions">
+        <a href="https://github.com/ccoffey" target="_blank" rel="noopener noreferrer" class="action-link" data-contact="github">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="https://linkedin.com/in/cathalcoffey" target="_blank" rel="noopener noreferrer" class="action-link" data-contact="linkedin">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+          LinkedIn
+        </a>
+        <a href="mailto:coffey.cathal@gmail.com" class="action-link" data-contact="email">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          Email
+        </a>
       </div>
     </header>
 
-    <!-- PERSONAL PROJECTS / BUILDER PORTFOLIO -->
-    <section id="projects">
-      <div class="section-header">
-        <h2>🛠️ Personal Projects &amp; Physical Systems</h2>
-        <p class="section-subtitle">Hands-on hardware, robotics, embedded firmware, clean energy, and physical computing built from first principles.</p>
+    <div class="section-title-wrap" id="major-builds">
+      <div class="section-title-row">
+        <h2 class="section-main-title">Major Builds</h2>
+        <span class="builds-count-pill">5 Builds</span>
       </div>
+      <p class="section-main-desc">Multi-month physical systems: woodworking, custom KiCad PCBs, embedded firmware, 3D printing, and mechanical design.</p>
+    </div>
 
-      <div class="projects-grid">
-        <!-- CHIMERA -->
-        <div class="project-card">
-          <div>
-            <div class="project-title">
-              <span>Chimera Handheld</span>
+    <div class="major-builds-grid">
+      
+      <a href="/major-builds/claw-machine/" class="major-build-card-link">
+        <div class="major-build-card">
+          <div class="grid-card-media">
+            <div class="card-media-backdrop" style="background-image: url('/major-builds/claw-machine/thumbs/PXL_20260330_174425759.jpg');"></div>
+            <img src="/major-builds/claw-machine/thumbs/PXL_20260330_174425759.jpg" alt="Claw Machine" loading="lazy">
+            <div class="media-badges" style="justify-content: flex-end;">
+              <span class="media-badge count-badge">29 Photos</span>
             </div>
-            <p class="project-desc">
-              A bespoke, minimalist handheld mobile device inspired by the tactile industrial design and durability of the Nokia 3210.
-            </p>
-            <ul class="project-details">
-              <li><strong>SoC:</strong> ESP32-C5 (32-bit RISC-V core with dual-band 2.4/5 GHz Wi-Fi 6 &amp; BLE 5).</li>
-              <li><strong>Peripherals:</strong> SSD1309 OLED display, MAX98357A I2S Class D DAC, INMP441 MEMS microphone.</li>
-              <li><strong>Firmware:</strong> Native ESP-IDF C/C++ managing ultra-low-power sleep states, matrix keypad scanning, and custom CMake build tooling.</li>
-            </ul>
           </div>
-          <div class="tags">
-            <span class="tag">ESP32-C5</span>
-            <span class="tag">RISC-V</span>
-            <span class="tag">ESP-IDF</span>
-            <span class="tag">Embedded C/C++</span>
-            <span class="tag">I2S Audio</span>
-            <span class="tag">Hardware Design</span>
+          <div class="grid-card-body">
+            <div class="grid-card-header">
+              <h3 class="grid-card-title">Claw Machine</h3>
+              <span class="grid-card-arrow">&rarr;</span>
+            </div>
+            <p class="grid-card-subtitle">First-Principles Arcade Build Inspired by Tokyo's GiGO: From Breadboard to Custom KiCad PCB</p>
+            <div class="grid-card-tags">
+              <span class="tech-tag">ESP32</span><span class="tech-tag">KiCad PCB Design</span><span class="tech-tag">3D Printing</span><span class="tech-tag">Gear Design</span>
+            </div>
           </div>
         </div>
+      </a>
 
-        <!-- MAGIC STAIRS -->
-        <div class="project-card">
-          <div>
-            <div class="project-title">
-              <span>Magic Stairs</span>
+      <a href="/major-builds/arcade/" class="major-build-card-link">
+        <div class="major-build-card">
+          <div class="grid-card-media">
+            <div class="card-media-backdrop" style="background-image: url('/major-builds/arcade/thumbs/PXL_20260904_175325421.MP.jpg');"></div>
+            <img src="/major-builds/arcade/thumbs/PXL_20260904_175325421.MP.jpg" alt="Arcade Cabinet" loading="lazy">
+            <div class="media-badges" style="justify-content: flex-end;">
+              <span class="media-badge count-badge">33 Photos</span>
             </div>
-            <p class="project-desc">
-              Interactive architectural staircase illumination system that senses movement and triggers responsive dynamic animations ("rainbow run") for my kids.
-            </p>
-            <ul class="project-details">
-              <li><strong>Two-Tier Distributed Network:</strong> Central ESP32-WROOM-32 orchestrator + individual ATtiny414 microcontrollers per step.</li>
-              <li><strong>Bus Decoupling:</strong> Solved single-address VL53L0X Time-of-Flight (ToF) sensor hardware constraint via bit-banged I2C masters on ATtiny nodes.</li>
-              <li><strong>Autonomous Indexing:</strong> WS2815 LED data line sniffing to deduce physical step riser positions on boot without DIP switches.</li>
-            </ul>
           </div>
-          <div class="tags">
-            <span class="tag">ATtiny414</span>
-            <span class="tag">ESP32</span>
-            <span class="tag">VL53L0X ToF</span>
-            <span class="tag">I2C Bit-Banging</span>
-            <span class="tag">WS2815 LEDs</span>
-            <span class="tag">Distributed IoT</span>
+          <div class="grid-card-body">
+            <div class="grid-card-header">
+              <h3 class="grid-card-title">Arcade Cabinet</h3>
+              <span class="grid-card-arrow">&rarr;</span>
+            </div>
+            <p class="grid-card-subtitle">Handcrafted 2-Player Cabinet with 3D-Printed Skin, Sanwa Controls & Integrated N64/GameCube Controller Ports</p>
+            <div class="grid-card-tags">
+              <span class="tech-tag">Woodworking</span><span class="tech-tag">3D Printing</span><span class="tech-tag">Isopon P38 body filler</span><span class="tech-tag">High build primer spraying</span><span class="tech-tag">Raspberry Pi</span><span class="tech-tag">RetroPie</span>
+            </div>
           </div>
         </div>
+      </a>
 
-        <!-- VERANDA BOT / MOP BOT -->
-        <div class="project-card">
-          <div>
-            <div class="project-title">
-              <span>Autonomous Veranda Bot</span>
+      <a href="/major-builds/chimera/" class="major-build-card-link">
+        <div class="major-build-card">
+          <div class="grid-card-media">
+            <div class="card-media-backdrop" style="background-image: url('/major-builds/chimera/thumbs/PXL_20260906_083726119_frame_8s.jpg');"></div>
+            <img src="/major-builds/chimera/thumbs/PXL_20260906_083726119_frame_8s.jpg" alt="Chimera" loading="lazy">
+            <div class="media-badges" style="justify-content: flex-end;">
+              <span class="media-badge count-badge">13 Photos</span>
             </div>
-            <p class="project-desc">
-              High-risk outdoor cleaning robot engineered to navigate and clean the high-elevation, sloped glass roof of a garden veranda where human maintenance is dangerous.
-            </p>
-            <ul class="project-details">
-              <li><strong>Actuation &amp; Power:</strong> Dual BTS7960 43A H-Bridge motor drivers for differential drive; dedicated MOSFET switch for scrubbing head.</li>
-              <li><strong>Radio Control:</strong> ESP-IDF component decoding 9-channel Turnigy TGY-9X RC PWM pulses using microsecond-precision hardware interrupts.</li>
-              <li><strong>Fail-safes:</strong> Signal loss watchdog, thermal motor limits, and differential steering kinematics.</li>
-            </ul>
           </div>
-          <div class="tags">
-            <span class="tag">Robotics</span>
-            <span class="tag">ESP32</span>
-            <span class="tag">BTS7960 H-Bridge</span>
-            <span class="tag">Turnigy RC PWM</span>
-            <span class="tag">FreeRTOS</span>
-            <span class="tag">Electro-Mechanical</span>
+          <div class="grid-card-body">
+            <div class="grid-card-header">
+              <h3 class="grid-card-title">Chimera</h3>
+              <span class="grid-card-arrow">&rarr;</span>
+            </div>
+            <p class="grid-card-subtitle">Custom Handheld OS & Communicator Inspired by the Nokia 3210 and Game Boy Pocket</p>
+            <div class="grid-card-tags">
+              <span class="tech-tag">ESP32</span><span class="tech-tag">Embedded OS</span><span class="tech-tag">3D Printing</span>
+            </div>
           </div>
         </div>
+      </a>
 
-        <!-- SOLAR ORCHESTRATOR -->
-        <div class="project-card">
-          <div>
-            <div class="project-title">
-              <span>Solar &amp; Storage Orchestrator</span>
+      <a href="/major-builds/mop-bot/" class="major-build-card-link">
+        <div class="major-build-card">
+          <div class="grid-card-media">
+            <div class="card-media-backdrop" style="background-image: url('/major-builds/mop-bot/thumbs/PXL_20260619_164056995.jpg');"></div>
+            <img src="/major-builds/mop-bot/thumbs/PXL_20260619_164056995.jpg" alt="Mop Bot" loading="lazy">
+            <div class="media-badges" style="justify-content: flex-end;">
+              <span class="media-badge count-badge">9 Photos</span>
             </div>
-            <p class="project-desc">
-              Closed-loop clean energy forecasting and scheduling system optimizing a 10.12 kWp dual-aspect PV array, 18.08 kWh battery, Wallbox EV charger, and Tesla.
-            </p>
-            <ul class="project-details">
-              <li><strong>Telemetry Ingestion:</strong> Interfaces with SigenStor/SigenCloud APIs, local Modbus/TCP registers, and solar irradiance forecasts.</li>
-              <li><strong>MILP Optimization:</strong> 24-hour lookahead Mixed-Integer Linear Programming model that evaluates dynamic wholesale electricity tariffs to calculate globally cost-optimal battery and EV charging schedules.</li>
-              <li><strong>Vehicle Telemetry:</strong> Real-time integration with Tesla Fleet Telemetry API for dynamic throttling (1.38–7.36 kW).</li>
-            </ul>
           </div>
-          <div class="tags">
-            <span class="tag">MILP Optimization</span>
-            <span class="tag">Python</span>
-            <span class="tag">Clean Energy</span>
-            <span class="tag">Modbus/TCP</span>
-            <span class="tag">Tesla API</span>
-            <span class="tag">Time-Series</span>
+          <div class="grid-card-body">
+            <div class="grid-card-header">
+              <h3 class="grid-card-title">Mop Bot</h3>
+              <span class="grid-card-arrow">&rarr;</span>
+            </div>
+            <p class="grid-card-subtitle">Radio-Controlled Veranda Glass Cleaner Inspired by the Roborock S7</p>
+            <div class="grid-card-tags">
+              <span class="tech-tag">Robotics</span><span class="tech-tag">ESP32</span><span class="tech-tag">3D Printing</span>
+            </div>
           </div>
         </div>
+      </a>
 
-        <!-- CLAW MACHINE & ARCADE -->
-        <div class="project-card">
-          <div>
-            <div class="project-title">
-              <span>Arcade &amp; Claw Machines</span>
+      <a href="/major-builds/magic-stairs/" class="major-build-card-link">
+        <div class="major-build-card">
+          <div class="grid-card-media">
+            <div class="card-media-backdrop" style="background-image: url('/major-builds/magic-stairs/thumbs/PXL_20260622_200639616.jpg');"></div>
+            <img src="/major-builds/magic-stairs/thumbs/PXL_20260622_200639616.jpg" alt="Magic Stairs" loading="lazy">
+            <div class="media-badges" style="justify-content: flex-end;">
+              <span class="media-badge count-badge">20 Photos</span>
             </div>
-            <p class="project-desc">
-              Custom-engineered physical gaming hardware: from custom PCBs and silent stepper motor drivers to millimeter-tolerance CAD/CNC control panels.
-            </p>
-            <ul class="project-details">
-              <li><strong>Claw Machine:</strong> Custom KiCad PCB, Trinamic TMC2209 stepper driver over single-wire UART (stealthChop2, stallGuard), custom <code>AnalogMultiplexor</code> library, and Flask/WebSocket telemetry dashboard.</li>
-              <li><strong>Arcade Control Panel:</strong> Parametric CAD layout generator in Python with absolute millimeter coordinates for zero-tolerance CNC drilling; multi-band image blending for high-DPI acrylic marquee artwork.</li>
-            </ul>
           </div>
-          <div class="tags">
-            <span class="tag">KiCad PCB</span>
-            <span class="tag">TMC2209 UART</span>
-            <span class="tag">CNC / CAD</span>
-            <span class="tag">Arduino</span>
-            <span class="tag">Computer Vision</span>
-            <span class="tag">Fabrication</span>
+          <div class="grid-card-body">
+            <div class="grid-card-header">
+              <h3 class="grid-card-title">Magic Stairs</h3>
+              <span class="grid-card-arrow">&rarr;</span>
+            </div>
+            <p class="grid-card-subtitle">Distributed 12-Node Stair Lighting with Laser Time-of-Flight Footstep Tracking</p>
+            <div class="grid-card-tags">
+              <span class="tech-tag">ESP32</span><span class="tech-tag">ATtiny414</span><span class="tech-tag">VL53L0X ToF</span><span class="tech-tag">WS2815 LEDs</span><span class="tech-tag">3D Printing</span>
+            </div>
           </div>
         </div>
+      </a>
+    </div>
 
-        <!-- CHAT BACKEND -->
-        <div class="project-card">
-          <div>
-            <div class="project-title">
-              <span>Real-Time Chat Backend</span>
-            </div>
-            <p class="project-desc">
-              Concurrent, high-performance messaging backend service with sub-millisecond persistence and instant push notification dispatch.
-            </p>
-            <ul class="project-details">
-              <li><strong>Stack:</strong> Java 24, Spring Boot, MySQL 8.0, Maven.</li>
-              <li><strong>Mobile Push Notifications:</strong> Integrated Firebase Cloud Messaging (FCM) Admin SDK for real-time alert delivery to mobile clients.</li>
-              <li><strong>APIs:</strong> Concurrent RESTful endpoints for user provisioning, message pagination, and bi-directional message synchronization.</li>
-            </ul>
-          </div>
-          <div class="tags">
-            <span class="tag">Java 24</span>
-            <span class="tag">Spring Boot</span>
-            <span class="tag">MySQL 8.0</span>
-            <span class="tag">Firebase FCM</span>
-            <span class="tag">REST APIs</span>
-          </div>
-        </div>
+    <div class="section-title-wrap section-quick-builds" id="quick-builds">
+      <div class="section-title-row">
+        <h2 class="section-main-title">Quick Builds</h2>
+        <span class="builds-count-pill">3 Builds</span>
       </div>
-    </section>
+      <p class="section-main-desc">Focused utility makes, standalone 3D prints, and functional home upgrades.</p>
+    </div>
 
-    <!-- CAREER HIGHLIGHTS -->
-    <section id="career">
-      <div class="section-header">
-        <h2>🏢 Career Highlights</h2>
-        <p class="section-subtitle">Engineering leadership and distributed systems architecture across startups, hypergrowth, and hyperscale tech.</p>
-      </div>
-
-      <div class="timeline">
-        <!-- HUBSPOT -->
-        <div class="timeline-item">
-          <div class="timeline-header">
-            <div class="company-title">Staff Software Engineer &mdash; <span>HubSpot</span> (Flywheel Org)</div>
-            <div class="company-date">June 2024 &ndash; Present | Dublin, Ireland</div>
+    <div class="major-builds-grid quick-builds-grid">
+      
+      <a href="/quick-builds/wall-vent-covers/" class="major-build-card-link">
+        <div class="major-build-card">
+          
+          <div class="grid-card-media">
+            <div class="card-media-backdrop" style="background-image: url('/quick-builds/wall-vent-covers/thumbs/PXL_20251108_160713233.jpg');"></div>
+            <img src="/quick-builds/wall-vent-covers/thumbs/PXL_20251108_160713233.jpg" alt="House Wall Vent Covers" loading="lazy">
+            <div class="media-badges" style="justify-content: flex-end;">
+              <span class="media-badge count-badge">7 Photos</span>
+            </div>
           </div>
-          <ul>
-            <li><strong>LookAlikes Prospecting Engine:</strong> Architected automated opportunity generation engine analyzing closed-won customer attributes to automatically uncover and provision high-affinity enterprise prospects not yet in the CRM, directly generating closed sales.</li>
-            <li><strong>Curated Sales View (Collaborative Filtering):</strong> Eliminated CRM data fatigue by engineering a 3-rep dismissal collaborative filter and defaults based on top 10% performers, driving near-total migration from the legacy CRM view.</li>
-            <li><strong>Company Hierarchy &amp; Entity Resolution:</strong> Solved complex sales territory disputes by crawling parent/subsidiary disclosures and analyzing account overlaps to build deterministic hierarchy graphs.</li>
-            <li><strong>Org-wide RFC Culture &amp; Technical Standards:</strong> Authored standardized Technical Design templates and ran workshops across teams, raising architectural rigor and code review quality.</li>
-          </ul>
-        </div>
-
-        <!-- EQUALS -->
-        <div class="timeline-item">
-          <div class="timeline-header">
-            <div class="company-title">Software Engineer &mdash; <span>Equals</span> (Core Engine Team)</div>
-            <div class="company-date">January 2023 &ndash; March 2024 | Series A Startup (~10 people)</div>
+          <div class="grid-card-body">
+            <div class="grid-card-header">
+              <h3 class="grid-card-title">House Wall Vent Covers</h3>
+              <span class="grid-card-arrow">&rarr;</span>
+            </div>
+            <p class="grid-card-subtitle">Custom 3D Printed Low-Profile Replacement Grilles</p>
+            <div class="grid-card-tags">
+              <span class="tech-tag">3D Printing</span><span class="tech-tag">OpenSCAD</span><span class="tech-tag">Home Improvement</span>
+            </div>
           </div>
-          <ul>
-            <li><strong>Core Computational Engine &amp; Dependency DAG:</strong> Core engineer on 3-person engine team; optimized formula dependency graph evaluation (DAG propagation) using B-trees and skip lists to calculate minimal dependent cell updates without UI thread locks.</li>
-            <li><strong>WebSocket State Catch-Up:</strong> Designed client delta synchronization over WebSockets to seamlessly catch up state when client laptops wake from sleep.</li>
-            <li><strong>Engine Port &amp; Connectors:</strong> Built secure SSH database connectors for live queries (Postgres, Snowflake) and led runtime migration from Rust-Wasm to high-performance TypeScript.</li>
-          </ul>
         </div>
+      </a>
 
-        <!-- INTERCOM -->
-        <div class="timeline-item">
-          <div class="timeline-header">
-            <div class="company-title">Staff Engineer &bull; Senior Engineer &bull; Engineer &mdash; <span>Intercom</span></div>
-            <div class="company-date">December 2015 &ndash; December 2022 (7 yrs 1 mo) | Dublin, Ireland</div>
+      <a href="/quick-builds/washing-machine-repair/" class="major-build-card-link">
+        <div class="major-build-card">
+          
+          <div class="grid-card-media">
+            <div class="card-media-backdrop" style="background-image: url('/quick-builds/washing-machine-repair/thumbs/PXL_20251203_113625174.jpg');"></div>
+            <img src="/quick-builds/washing-machine-repair/thumbs/PXL_20251203_113625174.jpg" alt="Washing Machine Repair" loading="lazy">
+            <div class="media-badges" style="justify-content: flex-end;">
+              <span class="media-badge count-badge">5 Photos</span>
+            </div>
           </div>
-          <ul>
-            <li><strong>Lead Architect on Project Europe:</strong> Served as lead technical architect on a 3-person Skunk Works team transitioning Intercom from a 13-year single AWS region to multi-region deployments in Europe and Australia, unblocking major enterprise contracts requiring EU data residency.</li>
-            <li><strong>Cross-Org Billing Decoupling:</strong> Architected multi-region routing for Intercom's standalone billing service; designed global App/Admin ID namespaces and automated US/EU invoice bake-off testing ensuring zero billing discrepancies on Day 1.</li>
-            <li><strong>CI/CD Bin-Packing Optimization:</strong> Analyzed runtime histograms of 45,447 tests across 30 CI containers; implemented bin-packing test distribution, saving <strong>2,000 engineering minutes per day</strong> across ~100 daily production deploys.</li>
-            <li><strong>Founding Engineer, Team Datastores:</strong> Served as interim EM and Tech Lead; resolved upstream Elasticsearch bug with Elastic Principal Engineers, unblocking a zero-downtime upgrade spanning 54 releases.</li>
-            <li><strong>Contrail Cold Storage:</strong> Re-architected a 42-billion-row (60TB) append-only DynamoDB event store under strict 6-week SOC2 deadline, eliminating throttling and saving <strong>$144k/year</strong>.</li>
-            <li><strong>Real-Time Systems &amp; Machine Learning:</strong> Consolidated real-time WebSocket infrastructure into <code>nexus-go</code>; built ML binary classifier (<code>Merlin</code>) boosting article recommendation precision.</li>
-          </ul>
-        </div>
-
-        <!-- AMAZON -->
-        <div class="timeline-item">
-          <div class="timeline-header">
-            <div class="company-title">Software Development Engineer (SDE) &mdash; <span>Amazon</span></div>
-            <div class="company-date">March 2014 &ndash; October 2015 | Dublin, Ireland</div>
+          <div class="grid-card-body">
+            <div class="grid-card-header">
+              <h3 class="grid-card-title">Washing Machine Repair</h3>
+              <span class="grid-card-arrow">&rarr;</span>
+            </div>
+            <p class="grid-card-subtitle">Carbon brushes were worn down to a nub</p>
+            <div class="grid-card-tags">
+              <span class="tech-tag">Home Appliance Fix</span>
+            </div>
           </div>
-          <ul>
-            <li>Engineered real-time streaming log enrichment platform processing, storing, and indexing millions of temporally evolving unique entities updated every second using AWS Kinesis, DynamoDB, SQS, Spark, Java, and Scala.</li>
-            <li>Handled Tier-1 24/7 operational on-call rotations, configured deep metric alarms, and authored operational runbooks.</li>
-          </ul>
         </div>
-      </div>
-    </section>
+      </a>
 
-    <!-- OPEN SOURCE & RESEARCH -->
-    <section id="research">
-      <div class="section-header">
-        <h2>🌐 Open Source &amp; Research</h2>
-      </div>
-      <div class="timeline-item">
-        <ul>
-          <li><strong>GitHub <code>gh-ost</code> (<a href="https://github.com/github/gh-ost/pull/921" target="_blank" rel="noopener">PR #921</a>):</strong> Diagnosed and resolved critical production failure mode in MySQL online schema migrations timing out during atomic cut-over under heavy write load. Engineered <code>CurrentHeartbeatLag</code> in Go to gate cut-over until binlog lag dropped below safety thresholds.</li>
-          <li><strong>DocX (<a href="https://github.com/xceedsoftware/DocX" target="_blank" rel="noopener">github.com/xceedsoftware/DocX</a>):</strong> Created popular open-source .NET library for Word document manipulation without Office dependencies; surpassed 100,000+ downloads.</li>
-          <li><strong>IBM Smarter Cities Technology Center (2011, 2012):</strong> Researched multimodal transit synchronization algorithms; published peer-reviewed papers at <a href="https://ieeexplore.ieee.org/document/6265005" target="_blank" rel="noopener">IEEE MDM 2012</a> (<em>Missed Connections</em>) and <a href="https://dl.acm.org/doi/10.1145/2068984.2068985" target="_blank" rel="noopener">ACM SIGSPATIAL 2011</a> (<em>Predictability Horizons</em>).</li>
-          <li><strong>Academic Background:</strong> Ph.D. Candidate at UC Berkeley (CEE Systems, ML, 2014) &bull; M.Sc. in Machine Learning &amp; Geocomputation at NUI Maynooth &bull; B.Sc. (Honours) in Computer Science at NUI Maynooth (Intel Medal for Best CS Student, 2010).</li>
-        </ul>
-      </div>
-    </section>
-
-    <footer>
-      <p>&copy; Cathal Coffey &bull; Dublin, Ireland &bull; <a href="https://cathalcoffey.com">cathalcoffey.com</a> &bull; <a href="https://github.com/ccoffey">github.com/ccoffey</a></p>
-    </footer>
+      <a href="/quick-builds/office-chair-repair/" class="major-build-card-link">
+        <div class="major-build-card">
+          
+          <div class="grid-card-media">
+            <div class="card-media-backdrop" style="background-image: url('/quick-builds/office-chair-repair/thumbs/PXL_20260716_114159827.MP.jpg');"></div>
+            <img src="/quick-builds/office-chair-repair/thumbs/PXL_20260716_114159827.MP.jpg" alt="Home Office Chair Repair" loading="lazy">
+            <div class="media-badges" style="justify-content: flex-end;">
+              <span class="media-badge count-badge">6 Photos</span>
+            </div>
+          </div>
+          <div class="grid-card-body">
+            <div class="grid-card-header">
+              <h3 class="grid-card-title">Home Office Chair Repair</h3>
+              <span class="grid-card-arrow">&rarr;</span>
+            </div>
+            <p class="grid-card-subtitle">Aeron Miller chair was falling apart</p>
+            <div class="grid-card-tags">
+              <span class="tech-tag">Disassemble</span><span class="tech-tag">Replace</span><span class="tech-tag">Reassemble</span>
+            </div>
+          </div>
+        </div>
+      </a>
+    </div>
   </div>
+
+  <script>
+    document.querySelectorAll('.nav-dropdown-trigger').forEach(trigger => {
+      trigger.addEventListener('click', (e) => {
+        if (window.innerWidth <= 860) {
+          e.preventDefault();
+          const dropdown = trigger.closest('.nav-dropdown');
+          const wasOpen = dropdown.classList.contains('is-open');
+          document.querySelectorAll('.nav-dropdown.is-open').forEach(d => d.classList.remove('is-open'));
+          if (!wasOpen) dropdown.classList.add('is-open');
+        }
+      });
+    });
+    document.addEventListener('click', (e) => {
+      if (!e.target.closest('.nav-dropdown')) {
+        document.querySelectorAll('.nav-dropdown.is-open').forEach(d => d.classList.remove('is-open'));
+      }
+    });
+
+    // GA4 Event Tracking: Contact buttons (GitHub, LinkedIn, Email)
+    document.querySelectorAll('.hero-actions .action-link').forEach(link => {
+      link.addEventListener('click', function() {
+        const method = this.getAttribute('data-contact') || this.textContent.trim().toLowerCase();
+        if (typeof gtag === 'function') {
+          gtag('event', 'click_contact', {
+            contact_method: method,
+            link_url: this.getAttribute('href')
+          });
+        }
+      });
+    });
+
+    // GA4 Event Tracking: Project card clicks
+    document.querySelectorAll('.major-build-card-link').forEach(link => {
+      link.addEventListener('click', function() {
+        const title = this.querySelector('.grid-card-title')?.textContent?.trim() || '';
+        const href = this.getAttribute('href') || '';
+        const isQuick = href.includes('/quick-builds/');
+        if (typeof gtag === 'function') {
+          gtag('event', 'select_project', {
+            project_title: title,
+            project_url: href,
+            build_type: isQuick ? 'quick' : 'major'
+          });
+        }
+      });
+    });
+  </script>
 </body>
 </html>
