@@ -1165,6 +1165,11 @@ header.hero {
   object-fit: contain;
   border-radius: 6px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+  opacity: 1;
+  transition: opacity 0.1s ease;
+}
+.lightbox-img.is-loading {
+  opacity: 0;
 }
 .lightbox-caption {
   margin-top: 0.85rem;

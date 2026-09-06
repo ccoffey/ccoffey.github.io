@@ -77,6 +77,7 @@
   <script>
     const gallery = {{ GALLERY_JSON }};
     let currentIndex = 0;
+    let lightboxImageRequestId = 0;
 
     const lightbox = document.getElementById("lightbox");
     const lightboxImg = document.getElementById("lightbox-img");
@@ -104,9 +105,11 @@
     }
 
     function closeLightbox() {
+      lightboxImageRequestId++;
       lightbox.classList.remove("active");
       lightbox.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
+      lightboxImg.classList.remove("is-loading");
       lightboxImg.src = "";
     }
 
@@ -116,21 +119,63 @@
       }
     }
 
+    function preloadGalleryImage(index) {
+      if (index < 0 || index >= gallery.length) return;
+      const item = gallery[index];
+      const previewSrc = item.thumb || item.full;
+      const previewImage = new Image();
+      previewImage.src = previewSrc;
+      if (item.full !== previewSrc) {
+        const fullImage = new Image();
+        fullImage.src = item.full;
+      }
+    }
+
     function updateLightboxContent() {
       const item = gallery[currentIndex];
-      lightboxImg.src = item.full;
+      const requestedIndex = currentIndex;
+      const requestId = ++lightboxImageRequestId;
+      const previewSrc = item.thumb || item.full;
+
       lightboxTitle.textContent = "{{ TITLE }}";
       lightboxDate.textContent = item.date;
       lightboxCounter.textContent = `Photo ${currentIndex + 1} of ${gallery.length}`;
+      lightboxImg.alt = `{{ TITLE }} photo ${currentIndex + 1}`;
 
-      if (currentIndex + 1 < gallery.length) {
-        const nextImg = new Image();
-        nextImg.src = gallery[currentIndex + 1].full;
+      // Swap to the small gallery image immediately. This keeps the image and
+      // caption in sync even when someone advances faster than the full-size
+      // photos can download.
+      lightboxImg.classList.add("is-loading");
+      lightboxImg.onload = () => {
+        if (requestId === lightboxImageRequestId) {
+          lightboxImg.classList.remove("is-loading");
+        }
+      };
+      lightboxImg.onerror = () => {
+        if (requestId === lightboxImageRequestId) {
+          lightboxImg.classList.remove("is-loading");
+        }
+      };
+      lightboxImg.src = previewSrc;
+      if (lightboxImg.complete && lightboxImg.naturalWidth > 0) {
+        lightboxImg.classList.remove("is-loading");
       }
-      if (currentIndex - 1 >= 0) {
-        const prevImg = new Image();
-        prevImg.src = gallery[currentIndex - 1].full;
+
+      if (item.full !== previewSrc) {
+        const fullImage = new Image();
+        fullImage.decoding = "async";
+        fullImage.onload = () => {
+          if (requestId !== lightboxImageRequestId || requestedIndex !== currentIndex) return;
+          lightboxImg.onload = null;
+          lightboxImg.onerror = null;
+          lightboxImg.src = item.full;
+          lightboxImg.classList.remove("is-loading");
+        };
+        fullImage.src = item.full;
       }
+
+      preloadGalleryImage(currentIndex + 1);
+      preloadGalleryImage(currentIndex - 1);
     }
 
     function nextLightbox(e) {
