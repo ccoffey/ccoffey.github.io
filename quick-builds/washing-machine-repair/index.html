@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Washing Machine Repair | Cathal Coffey</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788708536">
+  <link rel="stylesheet" href="/css/style.css?v=1788709085">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -216,6 +216,7 @@
   <script>
     const gallery = [{"filename": "PXL_20251203_113625174.jpg", "full": "/quick-builds/washing-machine-repair/PXL_20251203_113625174.jpg", "thumb": "/quick-builds/washing-machine-repair/thumbs/PXL_20251203_113625174.jpg", "date": "December 3, 2025", "short_date": "Dec 3, 2025", "aspect_ratio": 0.75}, {"filename": "PXL_20251203_113918118.jpg", "full": "/quick-builds/washing-machine-repair/PXL_20251203_113918118.jpg", "thumb": "/quick-builds/washing-machine-repair/thumbs/PXL_20251203_113918118.jpg", "date": "December 3, 2025", "short_date": "Dec 3, 2025", "aspect_ratio": 0.75}, {"filename": "PXL_20251203_115406606.jpg", "full": "/quick-builds/washing-machine-repair/PXL_20251203_115406606.jpg", "thumb": "/quick-builds/washing-machine-repair/thumbs/PXL_20251203_115406606.jpg", "date": "December 3, 2025", "short_date": "Dec 3, 2025", "aspect_ratio": 0.75}, {"filename": "PXL_20251205_114333414.MP.jpg", "full": "/quick-builds/washing-machine-repair/PXL_20251205_114333414.MP.jpg", "thumb": "/quick-builds/washing-machine-repair/thumbs/PXL_20251205_114333414.MP.jpg", "date": "December 5, 2025", "short_date": "Dec 5, 2025", "aspect_ratio": 0.75}, {"filename": "PXL_20251205_121850142.jpg", "full": "/quick-builds/washing-machine-repair/PXL_20251205_121850142.jpg", "thumb": "/quick-builds/washing-machine-repair/thumbs/PXL_20251205_121850142.jpg", "date": "December 5, 2025", "short_date": "Dec 5, 2025", "aspect_ratio": 0.75}];
     let currentIndex = 0;
+    let lightboxImageRequestId = 0;
 
     const lightbox = document.getElementById("lightbox");
     const lightboxImg = document.getElementById("lightbox-img");
@@ -243,9 +244,11 @@
     }
 
     function closeLightbox() {
+      lightboxImageRequestId++;
       lightbox.classList.remove("active");
       lightbox.setAttribute("aria-hidden", "true");
       document.body.style.overflow = "";
+      lightboxImg.classList.remove("is-loading");
       lightboxImg.src = "";
     }
 
@@ -255,21 +258,63 @@
       }
     }
 
+    function preloadGalleryImage(index) {
+      if (index < 0 || index >= gallery.length) return;
+      const item = gallery[index];
+      const previewSrc = item.thumb || item.full;
+      const previewImage = new Image();
+      previewImage.src = previewSrc;
+      if (item.full !== previewSrc) {
+        const fullImage = new Image();
+        fullImage.src = item.full;
+      }
+    }
+
     function updateLightboxContent() {
       const item = gallery[currentIndex];
-      lightboxImg.src = item.full;
+      const requestedIndex = currentIndex;
+      const requestId = ++lightboxImageRequestId;
+      const previewSrc = item.thumb || item.full;
+
       lightboxTitle.textContent = "Washing Machine Repair";
       lightboxDate.textContent = item.date;
       lightboxCounter.textContent = `Photo ${currentIndex + 1} of ${gallery.length}`;
+      lightboxImg.alt = `Washing Machine Repair photo ${currentIndex + 1}`;
 
-      if (currentIndex + 1 < gallery.length) {
-        const nextImg = new Image();
-        nextImg.src = gallery[currentIndex + 1].full;
+      // Swap to the small gallery image immediately. This keeps the image and
+      // caption in sync even when someone advances faster than the full-size
+      // photos can download.
+      lightboxImg.classList.add("is-loading");
+      lightboxImg.onload = () => {
+        if (requestId === lightboxImageRequestId) {
+          lightboxImg.classList.remove("is-loading");
+        }
+      };
+      lightboxImg.onerror = () => {
+        if (requestId === lightboxImageRequestId) {
+          lightboxImg.classList.remove("is-loading");
+        }
+      };
+      lightboxImg.src = previewSrc;
+      if (lightboxImg.complete && lightboxImg.naturalWidth > 0) {
+        lightboxImg.classList.remove("is-loading");
       }
-      if (currentIndex - 1 >= 0) {
-        const prevImg = new Image();
-        prevImg.src = gallery[currentIndex - 1].full;
+
+      if (item.full !== previewSrc) {
+        const fullImage = new Image();
+        fullImage.decoding = "async";
+        fullImage.onload = () => {
+          if (requestId !== lightboxImageRequestId || requestedIndex !== currentIndex) return;
+          lightboxImg.onload = null;
+          lightboxImg.onerror = null;
+          lightboxImg.src = item.full;
+          lightboxImg.classList.remove("is-loading");
+        };
+        fullImage.src = item.full;
       }
+
+      preloadGalleryImage(currentIndex + 1);
+      preloadGalleryImage(currentIndex - 1);
     }
 
     function nextLightbox(e) {
@@ -326,6 +371,6 @@
     }, {passive: true});
 
   </script>
-  <script src="/js/navigation.js?v=1788708536"></script>
+  <script src="/js/navigation.js?v=1788709085"></script>
 </body>
 </html>
