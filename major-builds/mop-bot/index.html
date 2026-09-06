@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mop Bot | Cathal Coffey</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788710207">
+  <link rel="stylesheet" href="/css/style.css?v=1788727850">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -47,35 +47,35 @@
               <a href="/major-builds/claw-machine/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Claw Machine</span>
-                  <span class="dropdown-item-desc">First-Principles Arcade Build Inspired by Tokyo's GiGO: From Breadboard to Custom KiCad PCB</span>
+                  <span class="dropdown-item-desc">A full-size, coin-operated arcade machine built from first principles: mechanics, custom electronics, firmware and cabinet.</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
               <a href="/major-builds/arcade/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Arcade Cabinet</span>
-                  <span class="dropdown-item-desc">Handcrafted 2-Player Cabinet with 3D-Printed Skin, Sanwa Controls & Integrated N64/GameCube Controller Ports</span>
+                  <span class="dropdown-item-desc">A two-player cabinet combining precision controls, custom fabrication, 3D-printed surfacing and original-console input.</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
               <a href="/major-builds/chimera/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Chimera</span>
-                  <span class="dropdown-item-desc">Custom Handheld OS & Communicator Inspired by the Nokia 3210 and Game Boy Pocket</span>
+                  <span class="dropdown-item-desc">A custom ESP32-C5 handheld computer with a monochrome UI, audio, storage, Wi-Fi, hardware security and OTA updates.</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
               <a href="/major-builds/mop-bot/" class="nav-dropdown-item is-active">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Mop Bot</span>
-                  <span class="dropdown-item-desc">Radio-Controlled Veranda Glass Cleaner Inspired by the Roborock S7</span>
+                  <span class="dropdown-item-desc">An ESP32-based radio-controlled cleaning rover built to traverse a sloped glass veranda.</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
               <a href="/major-builds/magic-stairs/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Magic Stairs</span>
-                  <span class="dropdown-item-desc">Distributed 12-Node Stair Lighting with Laser Time-of-Flight Footstep Tracking</span>
+                  <span class="dropdown-item-desc">A distributed staircase lighting system with one microcontroller and laser distance sensor per step.</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
@@ -137,11 +137,18 @@
 
   <div class="container">
     <header class="build-header-full">
+      <div class="build-context-row">
+        <span>Self-directed project</span>
+        <span class="build-context-separator" aria-hidden="true">&middot;</span>
+        <span>May 2026 – Present</span>
+      </div>
       <h1 class="build-heading">Mop Bot</h1>
-      <p class="build-sub">Radio-Controlled Veranda Glass Cleaner Inspired by the Roborock S7</p>
+      <p class="build-sub">An ESP32-based radio-controlled cleaning rover built to traverse a sloped glass veranda.</p>
       <div class="tag-row">
-        <span class="tech-tag">Robotics</span>
-        <span class="tech-tag">ESP32</span>
+        <span class="tech-tag">ESP-IDF</span>
+        <span class="tech-tag">RC PWM</span>
+        <span class="tech-tag">Differential Drive</span>
+        <span class="tech-tag">Motor Control</span>
         <span class="tech-tag">3D Printing</span>
       </div>
     </header>
@@ -190,6 +197,40 @@
     </div>
 
     
+
+
+    <section class="engineering-summary" aria-labelledby="engineering-summary-title">
+      <div class="engineering-summary-header">
+        <div>
+          <p class="engineering-summary-kicker">Working-system evidence</p>
+          <h2 id="engineering-summary-title">Engineering at a glance</h2>
+        </div>
+        <p class="engineering-status">V1 working prototype · V2 traction redesign planned</p>
+      </div>
+      <div class="engineering-highlight-grid">
+
+        <article class="engineering-highlight-card">
+          <p class="engineering-highlight-label">Radio input</p>
+          <h3>A reusable decoder for a 15-year-old RC transmitter</h3>
+          <p>An ESP-IDF component captures microsecond PWM pulses from three receiver channels, applies measured calibration and deadbands, normalises the values, and reports signal timeouts through callbacks.</p>
+        </article>
+        <article class="engineering-highlight-card">
+          <p class="engineering-highlight-label">Drive control</p>
+          <h3>Host-tested differential steering for two high-current motors</h3>
+          <p>The arcade-drive mixer combines throttle and steering, preserves their ratio under saturation, supports mirrored motors and caps output before two BTS7960 H-bridges drive the wheels.</p>
+        </article>
+        <article class="engineering-highlight-card">
+          <p class="engineering-highlight-label">Fail-safe behaviour</p>
+          <h3>Loss of control signal becomes a stop, not an undefined state</h3>
+          <p>Either required RC channel timing out immediately stops both drive motors. The mop channel also requires a known LOW state after boot before a HIGH command is accepted, preventing an unsafe startup.</p>
+        </article>
+        <article class="engineering-highlight-card">
+          <p class="engineering-highlight-label">Prototype learning</p>
+          <h3>The software worked; wet-glass traction became the real constraint</h3>
+          <p>V1 proved the complete radio, drivetrain and powered-mop path on the physical canopy. Its failure mode redirected V2 toward softer tyres, weight distribution, edge detection and onboard water delivery.</p>
+        </article>
+      </div>
+    </section>
 
     
     <section class="next-steps-box">
@@ -515,6 +556,6 @@
       });
     }
   </script>
-  <script src="/js/navigation.js?v=1788710207"></script>
+  <script src="/js/navigation.js?v=1788727850"></script>
 </body>
 </html>

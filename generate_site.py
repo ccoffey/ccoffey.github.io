@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
 import os, sys, json, re, subprocess
+from html import escape
 from datetime import datetime
 from PIL import Image
 
@@ -165,6 +166,37 @@ def render_story_box(story_html):
           <span id="narrativeToggleText">Read full story</span>
           <svg class="narrative-toggle-icon" id="narrativeToggleIcon" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 12 15 18 9"></polyline></svg>
         </button>
+      </div>
+    </section>'''
+
+def render_engineering_section(highlights, status=''):
+    if not highlights:
+        return ''
+
+    cards = []
+    for highlight in highlights:
+        cards.append(f'''
+        <article class="engineering-highlight-card">
+          <p class="engineering-highlight-label">{escape(highlight.get('label', ''))}</p>
+          <h3>{escape(highlight.get('title', ''))}</h3>
+          <p>{escape(highlight.get('description', ''))}</p>
+        </article>''')
+
+    status_html = ''
+    if status:
+        status_html = f'<p class="engineering-status">{escape(status)}</p>'
+
+    return f'''
+    <section class="engineering-summary" aria-labelledby="engineering-summary-title">
+      <div class="engineering-summary-header">
+        <div>
+          <p class="engineering-summary-kicker">Working-system evidence</p>
+          <h2 id="engineering-summary-title">Engineering at a glance</h2>
+        </div>
+        {status_html}
+      </div>
+      <div class="engineering-highlight-grid">
+{''.join(cards)}
       </div>
     </section>'''
 
@@ -350,6 +382,8 @@ def process_build_dir(base_dir, slug, url_prefix):
         'dates': config.get('dates', ''),
         'order': config.get('order', 99),
         'story': config.get('story', ''),
+        'status': config.get('status', ''),
+        'engineering_highlights': config.get('engineering_highlights', []),
         'cover_img': cover_img,
         'hero_video': hero_video,
         'hero_video_poster': hero_video_poster,
@@ -552,6 +586,10 @@ def sync_builds():
         tags_html = '\n        '.join(f'<span class="tech-tag">{tag}</span>' for tag in b['tags'])
         
         story_box_html = render_story_box(b['story'])
+        engineering_section_html = render_engineering_section(
+            b.get('engineering_highlights', []),
+            b.get('status', '')
+        )
         next_steps_html = render_next_steps(b.get('next_steps', []))
 
         # Hero Video Section: Adaptive Portrait vs Landscape
@@ -646,6 +684,7 @@ def sync_builds():
             .replace('{{ NAV_LINKS }}', render_nav('major', b['slug']))
             .replace('{{ HERO_SECTION }}', hero_section_html)
             .replace('{{ STORY_SECTION }}', story_section_html)
+            .replace('{{ ENGINEERING_SECTION }}', engineering_section_html)
             .replace('{{ NEXT_STEPS_SECTION }}', next_steps_section_html)
             .replace('{{ PHOTO_COUNT }}', str(len(b['photos'])))
             .replace('{{ PHOTO_GRID }}', '\n'.join(photos_html))

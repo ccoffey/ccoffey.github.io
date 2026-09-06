@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chimera | Cathal Coffey</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788710207">
+  <link rel="stylesheet" href="/css/style.css?v=1788727850">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -47,35 +47,35 @@
               <a href="/major-builds/claw-machine/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Claw Machine</span>
-                  <span class="dropdown-item-desc">First-Principles Arcade Build Inspired by Tokyo's GiGO: From Breadboard to Custom KiCad PCB</span>
+                  <span class="dropdown-item-desc">A full-size, coin-operated arcade machine built from first principles: mechanics, custom electronics, firmware and cabinet.</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
               <a href="/major-builds/arcade/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Arcade Cabinet</span>
-                  <span class="dropdown-item-desc">Handcrafted 2-Player Cabinet with 3D-Printed Skin, Sanwa Controls & Integrated N64/GameCube Controller Ports</span>
+                  <span class="dropdown-item-desc">A two-player cabinet combining precision controls, custom fabrication, 3D-printed surfacing and original-console input.</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
               <a href="/major-builds/chimera/" class="nav-dropdown-item is-active">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Chimera</span>
-                  <span class="dropdown-item-desc">Custom Handheld OS & Communicator Inspired by the Nokia 3210 and Game Boy Pocket</span>
+                  <span class="dropdown-item-desc">A custom ESP32-C5 handheld computer with a monochrome UI, audio, storage, Wi-Fi, hardware security and OTA updates.</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
               <a href="/major-builds/mop-bot/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Mop Bot</span>
-                  <span class="dropdown-item-desc">Radio-Controlled Veranda Glass Cleaner Inspired by the Roborock S7</span>
+                  <span class="dropdown-item-desc">An ESP32-based radio-controlled cleaning rover built to traverse a sloped glass veranda.</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
               <a href="/major-builds/magic-stairs/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Magic Stairs</span>
-                  <span class="dropdown-item-desc">Distributed 12-Node Stair Lighting with Laser Time-of-Flight Footstep Tracking</span>
+                  <span class="dropdown-item-desc">A distributed staircase lighting system with one microcontroller and laser distance sensor per step.</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
@@ -137,12 +137,19 @@
 
   <div class="container">
     <header class="build-header-full">
+      <div class="build-context-row">
+        <span>Self-directed project</span>
+        <span class="build-context-separator" aria-hidden="true">&middot;</span>
+        <span>July 2026 – Present</span>
+      </div>
       <h1 class="build-heading">Chimera</h1>
-      <p class="build-sub">Custom Handheld OS & Communicator Inspired by the Nokia 3210 and Game Boy Pocket</p>
+      <p class="build-sub">A custom ESP32-C5 handheld computer with a monochrome UI, audio, storage, Wi-Fi, hardware security and OTA updates.</p>
       <div class="tag-row">
-        <span class="tech-tag">ESP32</span>
-        <span class="tech-tag">Embedded OS</span>
-        <span class="tech-tag">3D Printing</span>
+        <span class="tech-tag">ESP32-C5</span>
+        <span class="tech-tag">ESP-IDF</span>
+        <span class="tech-tag">Embedded C++</span>
+        <span class="tech-tag">LVGL</span>
+        <span class="tech-tag">Hardware Security</span>
       </div>
     </header>
 
@@ -191,6 +198,40 @@
     </div>
 
     
+
+
+    <section class="engineering-summary" aria-labelledby="engineering-summary-title">
+      <div class="engineering-summary-header">
+        <div>
+          <p class="engineering-summary-kicker">Working-system evidence</p>
+          <h2 id="engineering-summary-title">Engineering at a glance</h2>
+        </div>
+        <p class="engineering-status">Working handheld OS v1.5.6 · Secure messaging still in development</p>
+      </div>
+      <div class="engineering-highlight-grid">
+
+        <article class="engineering-highlight-card">
+          <p class="engineering-highlight-label">Embedded architecture</p>
+          <h3>A maintainable application platform, not a monolithic sketch</h3>
+          <p>An explicit composition root wires narrow service contracts for display, input, audio, storage, power, Wi-Fi and updates. Apps activate without dynamic heap allocation and can be exercised with independent fakes off-device.</p>
+        </article>
+        <article class="engineering-highlight-card">
+          <p class="engineering-highlight-label">Hardware product</p>
+          <h3>Display, input, sound, recording, storage and battery in one enclosure</h3>
+          <p>The ESP32-C5 drives a 128×64 OLED and rotary interface, shares I²S clocks between a digital microphone and amplifier, streams files from SD, and monitors both LiPo voltage and USB power.</p>
+        </article>
+        <article class="engineering-highlight-card">
+          <p class="engineering-highlight-label">Security and delivery</p>
+          <h3>Encrypted storage with two recoverable update paths</h3>
+          <p>Flash encryption, encrypted NVS, salted PIN hashes and persistent lockout state protect the device. Dual OTA partitions support both a custom zero-button USB flasher and signed releases delivered through a credential-isolating Cloudflare proxy.</p>
+        </article>
+        <article class="engineering-highlight-card">
+          <p class="engineering-highlight-label">Verification</p>
+          <h3>Host tests plus pixel-level UI regression coverage</h3>
+          <p>The repository contains 57 host-side test sources and 101 native-resolution visual snapshots. The production LVGL renderer is checked at the OLED&#x27;s actual 128×64 framebuffer alongside formatting, static analysis and firmware builds in CI.</p>
+        </article>
+      </div>
+    </section>
 
     
     <section class="next-steps-box">
@@ -549,6 +590,6 @@
       });
     }
   </script>
-  <script src="/js/navigation.js?v=1788710207"></script>
+  <script src="/js/navigation.js?v=1788727850"></script>
 </body>
 </html>

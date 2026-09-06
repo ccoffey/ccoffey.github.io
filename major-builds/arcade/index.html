@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arcade Cabinet | Cathal Coffey</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788710207">
+  <link rel="stylesheet" href="/css/style.css?v=1788727850">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -47,35 +47,35 @@
               <a href="/major-builds/claw-machine/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Claw Machine</span>
-                  <span class="dropdown-item-desc">First-Principles Arcade Build Inspired by Tokyo's GiGO: From Breadboard to Custom KiCad PCB</span>
+                  <span class="dropdown-item-desc">A full-size, coin-operated arcade machine built from first principles: mechanics, custom electronics, firmware and cabinet.</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
               <a href="/major-builds/arcade/" class="nav-dropdown-item is-active">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Arcade Cabinet</span>
-                  <span class="dropdown-item-desc">Handcrafted 2-Player Cabinet with 3D-Printed Skin, Sanwa Controls & Integrated N64/GameCube Controller Ports</span>
+                  <span class="dropdown-item-desc">A two-player cabinet combining precision controls, custom fabrication, 3D-printed surfacing and original-console input.</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
               <a href="/major-builds/chimera/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Chimera</span>
-                  <span class="dropdown-item-desc">Custom Handheld OS & Communicator Inspired by the Nokia 3210 and Game Boy Pocket</span>
+                  <span class="dropdown-item-desc">A custom ESP32-C5 handheld computer with a monochrome UI, audio, storage, Wi-Fi, hardware security and OTA updates.</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
               <a href="/major-builds/mop-bot/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Mop Bot</span>
-                  <span class="dropdown-item-desc">Radio-Controlled Veranda Glass Cleaner Inspired by the Roborock S7</span>
+                  <span class="dropdown-item-desc">An ESP32-based radio-controlled cleaning rover built to traverse a sloped glass veranda.</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
               <a href="/major-builds/magic-stairs/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Magic Stairs</span>
-                  <span class="dropdown-item-desc">Distributed 12-Node Stair Lighting with Laser Time-of-Flight Footstep Tracking</span>
+                  <span class="dropdown-item-desc">A distributed staircase lighting system with one microcontroller and laser distance sensor per step.</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
@@ -137,14 +137,18 @@
 
   <div class="container">
     <header class="build-header-full">
+      <div class="build-context-row">
+        <span>Self-directed project</span>
+        <span class="build-context-separator" aria-hidden="true">&middot;</span>
+        <span>June 2026 – September 2026</span>
+      </div>
       <h1 class="build-heading">Arcade Cabinet</h1>
-      <p class="build-sub">Handcrafted 2-Player Cabinet with 3D-Printed Skin, Sanwa Controls & Integrated N64/GameCube Controller Ports</p>
+      <p class="build-sub">A two-player cabinet combining precision controls, custom fabrication, 3D-printed surfacing and original-console input.</p>
       <div class="tag-row">
+        <span class="tech-tag">Parametric Layout</span>
         <span class="tech-tag">Woodworking</span>
         <span class="tech-tag">3D Printing</span>
-        <span class="tech-tag">Isopon P38 body filler</span>
-        <span class="tech-tag">High build primer spraying</span>
-        <span class="tech-tag">Raspberry Pi</span>
+        <span class="tech-tag">Linux Input</span>
         <span class="tech-tag">RetroPie</span>
       </div>
     </header>
@@ -193,6 +197,40 @@
     </div>
 
     
+
+
+    <section class="engineering-summary" aria-labelledby="engineering-summary-title">
+      <div class="engineering-summary-header">
+        <div>
+          <p class="engineering-summary-kicker">Working-system evidence</p>
+          <h2 id="engineering-summary-title">Engineering at a glance</h2>
+        </div>
+        <p class="engineering-status">Working cabinet · GameCube ports and final detailing remaining</p>
+      </div>
+      <div class="engineering-highlight-grid">
+
+        <article class="engineering-highlight-card">
+          <p class="engineering-highlight-label">Precision layout</p>
+          <h3>A parametric 796 × 248 mm control panel</h3>
+          <p>A configuration-driven Python tool places both Japanese-style control clusters in absolute millimetre coordinates, then generates drill overlays and tiled 1:1 test prints with a physical calibration bar.</p>
+        </article>
+        <article class="engineering-highlight-card">
+          <p class="engineering-highlight-label">Fabrication</p>
+          <h3>Timber structure, MDF body and a printed outer skin</h3>
+          <p>The cabinet combines a 2×2 timber frame with MDF panels and many 200×200 mm PLA sections. Automotive body filler, repeated sanding and high-build primer turn the printed jigsaw into a continuous surface.</p>
+        </article>
+        <article class="engineering-highlight-card">
+          <p class="engineering-highlight-label">Controls integration</p>
+          <h3>Four controllers made predictable on Linux</h3>
+          <p>Two DragonRise arcade encoders and a dual-port original N64 adapter are mapped deliberately across Linux joystick devices, RetroArch and Mupen64Plus, with a live diagnostic tool for tracing inputs layer by layer.</p>
+        </article>
+        <article class="engineering-highlight-card">
+          <p class="engineering-highlight-label">Production tooling</p>
+          <h3>Artwork and drilling share one source of geometry</h3>
+          <p>The same panel definition produces clean print-shop artwork, proof images and drilling templates, reducing the chance that a visually correct graphic and the physical controls drift out of alignment.</p>
+        </article>
+      </div>
+    </section>
 
     
     <section class="next-steps-box">
@@ -709,6 +747,6 @@
       });
     }
   </script>
-  <script src="/js/navigation.js?v=1788710207"></script>
+  <script src="/js/navigation.js?v=1788727850"></script>
 </body>
 </html>
