@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Mop Bot | Cathal Coffey</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788794220">
+  <link rel="stylesheet" href="/css/style.css?v=1788795019">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -65,7 +65,7 @@
               <a href="/major-builds/mop-bot/" class="nav-dropdown-item is-active">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Mop Bot</span>
-                  <span class="dropdown-item-desc">An ESP32-based radio-controlled cleaning rover built to traverse a sloped glass veranda.</span>
+                  <span class="dropdown-item-desc">Because I was sick of looking at the dirty glass veranda every time I stepped into my back garden and I wasn't going to clean it manually</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
@@ -135,12 +135,11 @@
   <div class="container">
     <header class="build-header-full">
       <h1 class="build-heading">Mop Bot</h1>
-      <p class="build-sub">An ESP32-based radio-controlled cleaning rover built to traverse a sloped glass veranda.</p>
+      <p class="build-sub">Because I was sick of looking at the dirty glass veranda every time I stepped into my back garden and I wasn't going to clean it manually</p>
       <div class="tag-row">
-        <span class="tech-tag">ESP-IDF</span>
+        <span class="tech-tag">ESP32</span>
         <span class="tech-tag">RC PWM</span>
         <span class="tech-tag">Differential Drive</span>
-        <span class="tech-tag">Motor Control</span>
         <span class="tech-tag">3D Printing</span>
       </div>
     </header>
@@ -172,9 +171,15 @@
       </h2>
       <div class="narrative-collapsible" id="narrativeCollapsible">
         <div class="narrative-content" id="narrativeContent">
-          <p>Mop Bot was born from the intersection of four very specific things: loving my home robot vacuum (a Roborock S7), wanting to build a physical ground-up robot for years, having an outdoor glass veranda canopy that was chronically dirty, and having a beautiful radio transmitter sitting in my attic for 15 years. That radio controller was a relic from an ambitious quadcopter I tried to build back in college—a drone that unfortunately crashed far more often than it ever flew. I always hated seeing that lovely transmitter sit idle in a box, and I was itching for a project worthy of putting it back to work.</p>
-<p>The result was Mop Bot V1: an ESP32-powered outdoor cleaning rover. You drive it across the veranda canopy using the joysticks on the radio controller, and flip a dedicated toggle switch to spin the motorized scrubbing mop head. While the electronics and microsecond RC PWM pulse decoding came together smoothly, wet glass is an unforgiving terrain. V1 is functional and an absolute blast to pilot, but it is very much an early prototype rather than a finished cleaning appliance.</p>
-<p>Having proven the core idea, I already have clear goals for V2. The biggest challenge is traction on slick, sloped wet glass, which I plan to solve with softer high-friction tire compounds and a redesigned chassis with better weight distribution over the drive wheels. I also want to integrate a miniature liquid pump and onboard water reservoir so it can wet the glass on demand rather than relying on a rainy day to clean. Finally, I plan to design and 3D print a sleek protective shell to cleanly enclose the motor drivers, battery, and electronics. V1 proved the concept; V2 will turn it into a proper cleaning machine.</p>
+          <p>Mop Bot was born from the intersection of four very specific things: a deep appreciation for my Roborock vacuum, a lifelong itch to build a robot, a filthy glass veranda canopy, and a gorgeous radio transmitter that had been sitting in my attic for 15 years.</p>
+
+  <p>That radio controller was a relic from an ambitious quadcopter I tried to build back in college, a drone that unfortunately crashed far more often than it ever flew.</p>
+
+  <p>The result was Mop Bot: an ESP32-powered outdoor cleaning robot. You drive it across the veranda canopy using the joysticks on the radio controller, and flip a dedicated toggle switch to spin the motorized scrubbing mop head.</p>
+
+  <p>While the electronics and 3D-printed frame came together smoothly, wet glass is an unforgiving terrain. Version 1 is functional and an absolute blast to drive, but it is very much an early prototype rather than a finished cleaning appliance.</p>
+
+  <p>Having proven the core idea, I already have clear goals for v2. The biggest challenge is traction on slick, sloped glass, which I plan to solve with a redesigned chassis that puts more weight over the drive wheels. Next is adding an onboard water reservoir and miniature pump so it can wet the glass on demand rather than waiting for a rainy day. Finally, it needs edge-detection sensors underneath so it can't drive off the veranda to its demise, no matter what the pilot does with the control sticks.</p>
         </div>
         <div class="narrative-fade" id="narrativeFade"></div>
       </div>
@@ -203,10 +208,9 @@
         </div>
       </div>
       <ul class="next-steps-list">
-        <li class="next-step-item"><strong>V2 Chassis & traction redesign:</strong> Rebalance weight distribution and test softer, high-friction tires to conquer sloped, wet veranda glass.</li>
-        <li class="next-step-item"><strong>Onboard water reservoir & mini pump:</strong> Integrate a small water reservoir and liquid pump so it can wet the mop pad on demand without waiting for a rainy day.</li>
-        <li class="next-step-item"><strong>Custom protective chassis cover:</strong> Design and 3D print a sleek, aerodynamic shell to protect the battery, motor drivers, and electronics from spray.</li>
-        <li class="next-step-item"><strong>Edge-detection sensors:</strong> Add downward optical sensors or physical bumpers to prevent the robot from driving over glass edges.</li>
+        <li class="next-step-item"><strong>Chassis redesign:</strong> Rebalance weight distribution to conquer sloped, wet veranda glass.</li>
+        <li class="next-step-item">Onboard water reservoir & mini pump, no more waiting for a rainy day.</li>
+        <li class="next-step-item">Edge-detection sensors to prevent the robot from driving over the edge.</li>
       </ul>
     </section>
 
@@ -573,6 +577,6 @@
       });
     }
   </script>
-  <script src="/js/navigation.js?v=1788794220"></script>
+  <script src="/js/navigation.js?v=1788795019"></script>
 </body>
 </html>
