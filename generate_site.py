@@ -598,7 +598,7 @@ def sync_builds():
           </div>
         </div>'''
 
-    build_id = str(int(datetime.now().timestamp()))
+    build_id = os.environ.get('BUILD_ID') or str(int(datetime.now().timestamp()))
 
     # 1. Render Major Build Cards for Homepage
     major_cards_html = []
