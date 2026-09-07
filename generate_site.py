@@ -227,8 +227,9 @@ def render_gallery_card(item, title, index):
           <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
         </span>'''
 
+    fn_id = escape(item.get('filename', ''), quote=True)
     return f'''
-      <button type="button" class="{card_class}" style="--ar: {item.get('aspect_ratio', 1.333)};" onclick="openLightbox({index})" aria-label="{escape(label, quote=True)}">
+      <button type="button" id="{fn_id}" data-filename="{fn_id}" class="{card_class}" style="--ar: {item.get('aspect_ratio', 1.333)};" onclick="openLightbox({index})" aria-label="{escape(label, quote=True)}">
         <img src="{thumb_attr}" alt="{escape(alt, quote=True)}" loading="lazy">
         <span class="photo-date-pill">{date_attr}</span>{media_indicator}
       </button>'''
