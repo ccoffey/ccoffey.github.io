@@ -27,14 +27,18 @@
   <meta name="twitter:image" content="https://cathalcoffey.com/quick-builds/office-chair-repair/thumbs/PXL_20260716_114159827.MP.jpg">
 
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788813842">
+  <link rel="stylesheet" href="/css/style.css?v=1788813987">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-RJN8XNMCEG');
+    gtag('config', 'G-RJN8XNMCEG', {
+      'project_title': 'Herman Miller Aeron Repair',
+      'project_slug': 'office-chair-repair',
+      'build_type': 'quick'
+    });
   </script>
 </head>
 <body>
@@ -301,6 +305,7 @@
         const item = gallery[index];
         gtag('event', 'view_gallery_item', {
           project_title: "Herman Miller Aeron Repair",
+          project_slug: "office-chair-repair",
           media_filename: item.filename,
           media_type: item.type,
           media_index: index,
@@ -432,6 +437,7 @@
         const item = gallery[currentIndex];
         gtag('event', 'view_gallery_item', {
           project_title: "Herman Miller Aeron Repair",
+          project_slug: "office-chair-repair",
           media_filename: item.filename,
           media_type: item.type,
           media_index: currentIndex,
@@ -452,6 +458,7 @@
         const item = gallery[currentIndex];
         gtag('event', 'view_gallery_item', {
           project_title: "Herman Miller Aeron Repair",
+          project_slug: "office-chair-repair",
           media_filename: item.filename,
           media_type: item.type,
           media_index: currentIndex,
@@ -492,6 +499,7 @@
       if (item && item.type === 'video' && typeof gtag === 'function') {
         gtag('event', 'play_gallery_video', {
           project_title: "Herman Miller Aeron Repair",
+          project_slug: "office-chair-repair",
           video_filename: item.filename,
           media_index: currentIndex
         });
@@ -499,6 +507,6 @@
     });
 
   </script>
-  <script src="/js/navigation.js?v=1788813842"></script>
+  <script src="/js/navigation.js?v=1788813987"></script>
 </body>
 </html>

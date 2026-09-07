@@ -27,14 +27,18 @@
   <meta name="twitter:image" content="https://cathalcoffey.com/major-builds/chimera/thumbs/PXL_20260906_083726119_frame_8s.jpg">
 
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788813842">
+  <link rel="stylesheet" href="/css/style.css?v=1788813987">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', 'G-RJN8XNMCEG');
+    gtag('config', 'G-RJN8XNMCEG', {
+      'project_title': 'Chimera',
+      'project_slug': 'chimera',
+      'build_type': 'major'
+    });
   </script>
 </head>
 <body>
@@ -445,6 +449,12 @@
       if (icon) {
         icon.style.transform = isExpanded ? "rotate(180deg)" : "rotate(0deg)";
       }
+      if (isExpanded && typeof gtag === 'function') {
+        gtag('event', 'read_story', {
+          project_title: "Chimera",
+          project_slug: "chimera"
+        });
+      }
       if (!isExpanded) {
         const box = container.closest('.narrative-box');
         if (box && box.getBoundingClientRect().top < 80) {
@@ -526,6 +536,7 @@
         const item = gallery[index];
         gtag('event', 'view_gallery_item', {
           project_title: "Chimera",
+          project_slug: "chimera",
           media_filename: item.filename,
           media_type: item.type,
           media_index: index,
@@ -657,6 +668,7 @@
         const item = gallery[currentIndex];
         gtag('event', 'view_gallery_item', {
           project_title: "Chimera",
+          project_slug: "chimera",
           media_filename: item.filename,
           media_type: item.type,
           media_index: currentIndex,
@@ -677,6 +689,7 @@
         const item = gallery[currentIndex];
         gtag('event', 'view_gallery_item', {
           project_title: "Chimera",
+          project_slug: "chimera",
           media_filename: item.filename,
           media_type: item.type,
           media_index: currentIndex,
@@ -717,6 +730,7 @@
       if (item && item.type === 'video' && typeof gtag === 'function') {
         gtag('event', 'play_gallery_video', {
           project_title: "Chimera",
+          project_slug: "chimera",
           video_filename: item.filename,
           media_index: currentIndex
         });
@@ -730,12 +744,13 @@
         if (typeof gtag === 'function') {
           gtag('event', 'play_hero_video', {
             project_title: "Chimera",
+            project_slug: "chimera",
             video_url: heroVid.currentSrc || ''
           });
         }
       });
     }
   </script>
-  <script src="/js/navigation.js?v=1788813842"></script>
+  <script src="/js/navigation.js?v=1788813987"></script>
 </body>
 </html>
