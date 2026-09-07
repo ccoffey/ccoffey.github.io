@@ -1,0 +1,49 @@
+name: Build site preview
+
+on:
+  push:
+    branches: [master]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-preview:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Python
+        uses: actions/setup-python@v6
+        with:
+          python-version: "3.13"
+          cache: pip
+
+      - name: Install system dependencies
+        run: sudo apt-get update && sudo apt-get install --yes ffmpeg
+
+      - name: Install Python dependencies
+        run: python -m pip install --requirement requirements.txt
+
+      - name: Build isolated site
+        env:
+          BUILD_ID: ${{ github.sha }}
+        run: python scripts/build_site.py --output _site
+
+      - name: Compare with checked-in deployment
+        run: python scripts/compare_sites.py --baseline-ref HEAD --candidate _site
+
+      # Shadow mode only: this is a downloadable build artifact, not a Pages deployment.
+      - name: Upload site preview
+        uses: actions/upload-artifact@v4
+        with:
+          name: site-preview
+          path: _site/
+          compression-level: 0
+          include-hidden-files: true
+          retention-days: 3
+          if-no-files-found: error
