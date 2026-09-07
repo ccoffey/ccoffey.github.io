@@ -163,6 +163,10 @@
         lightboxVideo.poster = item.thumb || "";
         lightboxVideo.src = item.full;
         lightboxVideo.load();
+        const playPromise = lightboxVideo.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {});
+        }
         preloadGalleryImage(currentIndex + 1);
         preloadGalleryImage(currentIndex - 1);
         return;

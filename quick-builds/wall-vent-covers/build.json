@@ -1,10 +1,9 @@
 {
-  "title": "House Wall Vent Covers",
-  "subtitle": "Parametric OpenSCAD replacements for oversized builder-grade grilles.",
-  "description": "I used OpenSCAD for the first time to design low-profile covers sized to the existing wall openings, then iterated the model, printed the parts and installed the finished replacements.",
+  "title": "House Wall Vent Cover Upgrade",
+  "subtitle": "3d printer to the rescue",
+  "description": "I used OpenSCAD for the first time to design covers sized to fit the existing wall openings, then iterated the design until I settled on this beautiful tree.",
   "tags": [
-    "3D Printing",
-    "Parametric CAD",
+    "3d Printing",
     "OpenSCAD"
   ],
   "dates": "October 2025 – September 2026",

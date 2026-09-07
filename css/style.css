@@ -1204,12 +1204,6 @@ header.hero {
   transition: transform 0.3s ease;
 }
 .photo-card:hover img { transform: scale(1.03); }
-.video-card img {
-  filter: brightness(0.72);
-}
-.video-card:hover img {
-  filter: brightness(0.82);
-}
 .photo-date-pill {
   position: absolute;
   bottom: 6px;
@@ -1242,49 +1236,37 @@ header.hero {
 }
 .photo-expand-icon svg { width: 14px; height: 14px; fill: #fff; }
 .photo-card:hover .photo-expand-icon { opacity: 1; }
-.video-type-pill {
+
+.video-duration-badge,
+.video-duration-pill {
   position: absolute;
-  top: 7px;
-  right: 7px;
+  top: 8px;
+  right: 10px;
   z-index: 2;
-  padding: 0.22rem 0.5rem;
-  border-radius: 999px;
-  border: 1px solid rgba(255, 255, 255, 0.25);
-  background: rgba(13, 17, 23, 0.86);
-  color: #fff;
-  font-size: 0.68rem;
-  font-weight: 800;
-  letter-spacing: 0.06em;
-  line-height: 1;
-  text-transform: uppercase;
-  pointer-events: none;
-}
-.video-thumbnail-play {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  width: 54px;
-  height: 54px;
-  border-radius: 50%;
   display: flex;
   align-items: center;
-  justify-content: center;
-  transform: translate(-50%, -50%);
-  background: rgba(9, 105, 218, 0.92);
-  border: 2px solid rgba(255, 255, 255, 0.9);
-  box-shadow: 0 6px 24px rgba(0, 0, 0, 0.5);
-  transition: transform 0.2s ease, background 0.2s ease;
+  gap: 6px;
+  color: #ffffff;
+  font-size: 0.85rem;
+  font-weight: 600;
+  line-height: 1;
   pointer-events: none;
+  filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.9)) drop-shadow(0 0 3px rgba(0, 0, 0, 0.7));
+  transition: transform 0.2s ease;
 }
-.video-thumbnail-play svg {
-  width: 23px;
-  height: 23px;
-  fill: #fff;
-  margin-left: 3px;
+.photo-card:hover .video-duration-badge,
+.photo-card:hover .video-duration-pill {
+  transform: scale(1.04);
 }
-.video-card:hover .video-thumbnail-play {
-  transform: translate(-50%, -50%) scale(1.08);
-  background: var(--accent);
+.video-duration-text {
+  letter-spacing: 0.02em;
+  font-feature-settings: "tnum";
+  font-variant-numeric: tabular-nums;
+}
+.video-badge-icon {
+  width: 22px;
+  height: 22px;
+  display: block;
 }
 
 .lightbox {

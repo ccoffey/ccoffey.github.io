@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Herman Miller Aeron Repair | Cathal Coffey</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788782228">
+  <link rel="stylesheet" href="/css/style.css?v=1788785130">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -100,22 +100,22 @@
               
               <a href="/quick-builds/wall-vent-covers/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
-                  <span class="dropdown-item-title">House Wall Vent Covers</span>
-                  <span class="dropdown-item-desc">Parametric OpenSCAD replacements for oversized builder-grade grilles.</span>
+                  <span class="dropdown-item-title">House Wall Vent Cover Upgrade</span>
+                  <span class="dropdown-item-desc">3d printer to the rescue</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
               <a href="/quick-builds/washing-machine-repair/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Washing Machine Repair</span>
-                  <span class="dropdown-item-desc">Root-caused a drive failure to worn motor brushes and restored the appliance.</span>
+                  <span class="dropdown-item-desc">Washing machine drum refused to spin</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
               <a href="/quick-builds/office-chair-repair/" class="nav-dropdown-item is-active">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Herman Miller Aeron Repair</span>
-                  <span class="dropdown-item-desc">A mechanical rebuild instead of a €450 outsourced repair.</span>
+                  <span class="dropdown-item-desc">A teardown and rebuild instead of a €450 outsourced repair</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
@@ -135,13 +135,11 @@
   <div class="container">
     <header class="build-header-full">
       <h1 class="build-heading">Herman Miller Aeron Repair</h1>
-      <p class="build-sub">A mechanical rebuild instead of a €450 outsourced repair.</p>
+      <p class="build-sub">A teardown and rebuild instead of a €450 outsourced repair</p>
       <div class="tag-row">
-        <span class="tech-tag">Mechanical Repair</span>
         <span class="tech-tag">Parts Replacement</span>
-        <span class="tech-tag">Reassembly</span>
       </div>
-      <div class="build-description"><p>Rather than accept an estimate of at least €450, I stripped down the worn chair, replaced the gas lift, seat and lumbar support, reassembled it and restored it to daily use.</p></div>
+      <div class="build-description"><p>Rather than accept a minimum estimate of €450, I stripped down this worn chair, replaced the gas lift, seat and lumbar support, reassembled it and restored it to daily use. It is good as new now.</p></div>
     </header>
 
     <div class="gallery-header">
@@ -312,6 +310,10 @@
         lightboxVideo.poster = item.thumb || "";
         lightboxVideo.src = item.full;
         lightboxVideo.load();
+        const playPromise = lightboxVideo.play();
+        if (playPromise !== undefined) {
+          playPromise.catch(() => {});
+        }
         preloadGalleryImage(currentIndex + 1);
         preloadGalleryImage(currentIndex - 1);
         return;
@@ -424,6 +426,6 @@
     });
 
   </script>
-  <script src="/js/navigation.js?v=1788782228"></script>
+  <script src="/js/navigation.js?v=1788785130"></script>
 </body>
 </html>

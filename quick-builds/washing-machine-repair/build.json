@@ -1,10 +1,8 @@
 {
   "title": "Washing Machine Repair",
-  "subtitle": "Root-caused a drive failure to worn motor brushes and restored the appliance.",
-  "description": "The drum had stopped turning under load. I opened the drive system, traced the fault to carbon brushes worn almost to their holders, replaced them and returned the machine to service.",
+  "subtitle": "Washing machine drum refused to spin",
+  "description": "I opened the drive system, traced the fault to carbon brushes worn almost to their holders, replaced them and returned the machine to service. Works like new again",
   "tags": [
-    "Fault Diagnosis",
-    "Motor Repair",
     "Appliance Repair"
   ],
   "dates": "December 2025",
