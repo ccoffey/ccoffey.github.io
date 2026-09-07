@@ -345,8 +345,10 @@
 
       // Lock aspect-ratio so thumbnail preview and full image share the exact same bounds
       if (item.aspect_ratio) {
+        lightboxImg.style.setProperty("--ar", item.aspect_ratio);
         lightboxImg.style.aspectRatio = item.aspect_ratio;
       } else {
+        lightboxImg.style.removeProperty("--ar");
         lightboxImg.style.aspectRatio = "";
       }
 
