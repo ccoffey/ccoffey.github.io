@@ -575,6 +575,9 @@ header.hero {
   transform: scale(1.2);
   pointer-events: none;
 }
+.grid-card-media picture {
+  display: contents;
+}
 .grid-card-media img {
   position: relative;
   max-width: 100%;
@@ -1197,6 +1200,9 @@ header.hero {
   border-color: var(--accent);
   box-shadow: 0 6px 20px rgba(0, 0, 0, 0.4);
 }
+.photo-card picture {
+  display: contents;
+}
 .photo-card img {
   width: 100%;
   height: 100%;
@@ -1319,6 +1325,7 @@ header.hero {
 }
 .lightbox-img.is-zoomed {
   cursor: grab;
+  touch-action: none;
   width: min(90vw, calc(80vh * var(--ar, 1.333)));
   height: min(80vh, calc(90vw / var(--ar, 1.333)));
   max-width: none;
