@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-import os, sys, json, re, subprocess
+import os, sys, json, re, subprocess, hashlib
 from html import escape
 from datetime import datetime
 from PIL import Image
@@ -127,6 +127,41 @@ def optimize_video_if_needed(video_path):
                 os.remove(tmp_out)
     except Exception as e:
         print(f"[Video Optimizer] Error optimizing {video_path}: {e}")
+
+def compute_sha256(filepath):
+    hasher = hashlib.sha256()
+    with open(filepath, 'rb') as f:
+        while chunk := f.read(65536):
+            hasher.update(chunk)
+    return hasher.hexdigest()
+
+def deduplicate_project_media(folder_path, raw_files, slug):
+    """
+    Detects exact SHA-256 duplicate media files and removes the redundant file.
+    Always preserves the canonical filename (shorter name, without ' 2' or '(1)').
+    """
+    seen_hashes = {}
+    files_to_remove = set()
+
+    # Sort so that canonical names without ' 2' or 'copy' are processed first
+    sorted_files = sorted(raw_files, key=lambda x: (len(x), x))
+    for f in sorted_files:
+        f_path = os.path.join(folder_path, f)
+        if not os.path.isfile(f_path):
+            continue
+        h = compute_sha256(f_path)
+        if h in seen_hashes:
+            canonical_file = seen_hashes[h]
+            print(f"[{slug}] Auto-detected duplicate: '{f}' matches '{canonical_file}'. Removing duplicate.")
+            try:
+                os.remove(f_path)
+                files_to_remove.add(f)
+            except OSError as e:
+                print(f"[{slug}] Error removing duplicate {f}: {e}")
+        else:
+            seen_hashes[h] = f
+
+    return [f for f in raw_files if f not in files_to_remove]
 
 def get_video_metadata(video_path):
     """
@@ -348,7 +383,10 @@ def process_build_dir(base_dir, slug, url_prefix):
                  and not f.lower().endswith('.optimized.mp4')
                  and f not in ('thumbs', 'index.html', 'build.json', 'project.json')]
 
-    # 1. Sanitize photos (EXIF)
+    # 1. Deduplicate media files by SHA-256 hash
+    raw_files = deduplicate_project_media(folder_path, raw_files, slug)
+
+    # 2. Sanitize photos (EXIF)
     for f in raw_files:
         if f.lower().endswith(('.jpg', '.jpeg')):
             strip_exif_from_file(os.path.join(folder_path, f))
