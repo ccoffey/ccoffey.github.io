@@ -261,8 +261,11 @@ def video_mime_type(filename):
 def ensure_video_poster(video_path, thumbs_dir):
     """Return a gallery-ready poster filename, extracting with color-space tone mapping when needed."""
     video_name = os.path.basename(video_path)
-    poster_fn = f"{os.path.splitext(video_name)[0]}_poster.jpg"
+    base_name = os.path.splitext(video_name)[0]
+    poster_fn = f"{base_name}_poster.jpg"
     poster_dst = os.path.join(thumbs_dir, poster_fn)
+    poster_webp_fn = f"{base_name}_poster.webp"
+    poster_webp_dst = os.path.join(thumbs_dir, poster_webp_fn)
     if not os.path.exists(poster_dst) or os.path.getmtime(video_path) > os.path.getmtime(poster_dst):
         try:
             # Check if video is HDR / HLG (arib-std-b67 / bt2020)
@@ -290,6 +293,16 @@ def ensure_video_poster(video_path, thumbs_dir):
         except Exception as e:
             print(f"Error extracting video poster for {video_name}: {e}")
             return ''
+
+    if os.path.exists(poster_dst):
+        if not os.path.exists(poster_webp_dst) or os.path.getmtime(poster_dst) > os.path.getmtime(poster_webp_dst):
+            try:
+                with Image.open(poster_dst) as img:
+                    img.save(poster_webp_dst, 'WEBP', quality=82)
+                print(f"Generated WebP video poster: {poster_webp_fn}")
+            except Exception as e:
+                print(f"Error generating WebP video poster for {video_name}: {e}")
+
     return poster_fn if os.path.exists(poster_dst) else ''
 
 def gallery_summary(media):
@@ -305,6 +318,7 @@ def gallery_summary(media):
 def render_gallery_card(item, title, index):
     title_attr = escape(title, quote=True)
     thumb_attr = escape(item.get('thumb', ''), quote=True)
+    thumb_webp_attr = escape(item.get('thumb_webp', ''), quote=True)
     date_attr = escape(item.get('short_date', ''), quote=True)
     media_type = item.get('type', 'image')
     card_class = 'photo-card video-card' if media_type == 'video' else 'photo-card'
@@ -326,9 +340,17 @@ def render_gallery_card(item, title, index):
         </span>'''
 
     fn_id = escape(item.get('filename', ''), quote=True)
+    if thumb_webp_attr:
+        picture_markup = f'''<picture>
+          <source type="image/webp" srcset="{thumb_webp_attr}">
+          <img src="{thumb_attr}" alt="{escape(alt, quote=True)}" loading="lazy">
+        </picture>'''
+    else:
+        picture_markup = f'<img src="{thumb_attr}" alt="{escape(alt, quote=True)}" loading="lazy">'
+
     return f'''
       <button type="button" id="{fn_id}" data-filename="{fn_id}" class="{card_class}" style="--ar: {item.get('aspect_ratio', 1.333)};" onclick="openLightbox({index})" aria-label="{escape(label, quote=True)}">
-        <img src="{thumb_attr}" alt="{escape(alt, quote=True)}" loading="lazy">
+        {picture_markup}
         <span class="photo-date-pill">{date_attr}</span>{media_indicator}
       </button>'''
 
@@ -458,30 +480,52 @@ def process_build_dir(base_dir, slug, url_prefix):
             optimize_full_photo(full_path, max_dim=2560, quality=85)
 
     # 3. Prune deleted thumbnails
+    raw_stems = {os.path.splitext(f)[0] for f in raw_files}
     for thumb in os.listdir(thumbs_dir):
-        if thumb not in raw_files and not thumb.endswith('_poster.jpg'):
+        thumb_stem = os.path.splitext(thumb)[0]
+        is_poster = thumb.endswith(('_poster.jpg', '_poster.webp'))
+        is_stem_valid = (thumb in raw_files) or is_poster or (thumb_stem in raw_stems)
+        if not is_stem_valid:
             try:
                 os.remove(os.path.join(thumbs_dir, thumb))
                 print(f"[{slug}] Pruned deleted thumbnail: {thumb}")
             except OSError:
                 pass
 
-    # 4. Generate missing thumbnails (WebP if supported, with JPEG fallback)
+    # 4. Generate missing thumbnails (WebP with JPEG fallback)
     for f in raw_files:
         f_lower = f.lower()
         if f_lower.endswith(('.jpg', '.jpeg', '.png', '.webp')):
             src = os.path.join(folder_path, f)
-            dst = os.path.join(thumbs_dir, f)
-            if not os.path.exists(dst):
+            stem = os.path.splitext(f)[0]
+            dst_orig = os.path.join(thumbs_dir, f)
+            dst_webp = os.path.join(thumbs_dir, f"{stem}.webp")
+
+            # Ensure standard/fallback thumbnail exists
+            if not os.path.exists(dst_orig) or os.path.getmtime(src) > os.path.getmtime(dst_orig):
                 try:
                     with Image.open(src) as img:
                         img.thumbnail((600, 600), Image.Resampling.LANCZOS)
                         if img.mode in ('RGBA', 'P') and not f_lower.endswith('.png'):
                             img = img.convert('RGB')
-                        img.save(dst, optimize=True, quality=82)
+                        img.save(dst_orig, optimize=True, quality=82)
                         print(f"[{slug}] Generated thumbnail: {f}")
                 except Exception as e:
                     print(f"[{slug}] Error thumbnailing {f}: {e}")
+
+            # Ensure modern WebP companion thumbnail exists
+            if not os.path.exists(dst_webp) or (os.path.exists(dst_orig) and os.path.getmtime(dst_orig) > os.path.getmtime(dst_webp)):
+                try:
+                    thumb_src = dst_orig if os.path.exists(dst_orig) else src
+                    with Image.open(thumb_src) as img:
+                        if not os.path.exists(dst_orig):
+                            img.thumbnail((600, 600), Image.Resampling.LANCZOS)
+                        if img.mode in ('RGBA', 'P') and not f_lower.endswith('.png'):
+                            img = img.convert('RGB')
+                        img.save(dst_webp, 'WEBP', quality=80)
+                        print(f"[{slug}] Generated WebP thumbnail: {stem}.webp")
+                except Exception as e:
+                    print(f"[{slug}] Error generating WebP thumbnail {stem}.webp: {e}")
 
     # 4. Check for videos to optimize
     for f in raw_files:
@@ -512,11 +556,13 @@ def process_build_dir(base_dir, slug, url_prefix):
             except Exception:
                 pass
 
+            thumb_stem = os.path.splitext(f)[0]
             photos.append({
                 'type': 'image',
                 'filename': f,
                 'full': f"{url_prefix}/{slug}/{f}",
                 'thumb': f"{url_prefix}/{slug}/thumbs/{f}",
+                'thumb_webp': f"{url_prefix}/{slug}/thumbs/{thumb_stem}.webp",
                 'date': date_str,
                 'short_date': short_date,
                 'aspect_ratio': ar
@@ -562,11 +608,13 @@ def process_build_dir(base_dir, slug, url_prefix):
             continue
         date_str, short_date = parse_photo_date(video_fn)
         meta = get_video_metadata(video_path)
+        poster_stem = os.path.splitext(poster_fn)[0]
         gallery_videos.append({
             'type': 'video',
             'filename': video_fn,
             'full': f"{url_prefix}/{slug}/{video_fn}",
             'thumb': f"{url_prefix}/{slug}/thumbs/{poster_fn}",
+            'thumb_webp': f"{url_prefix}/{slug}/thumbs/{poster_stem}.webp",
             'date': date_str,
             'short_date': short_date,
             'aspect_ratio': meta['aspect_ratio'],
@@ -708,14 +756,24 @@ def sync_builds():
     # 1. Render Major Build Cards for Homepage
     major_cards_html = []
     for b in major_builds:
-        thumb_src = f"/major-builds/{b['slug']}/thumbs/{b['cover_img']}" if b['cover_img'] else ''
+        b_title = escape(b['title'])
+        cover_base = os.path.splitext(b['cover_img'])[0] if b.get('cover_img') else ''
+        thumb_src = f"/major-builds/{b['slug']}/thumbs/{b['cover_img']}" if b.get('cover_img') else ''
+        thumb_webp_src = f"/major-builds/{b['slug']}/thumbs/{cover_base}.webp" if cover_base else ''
         tags_html = ''.join(f'<span class="tech-tag">{tag}</span>' for tag in b['tags'])
+        if thumb_webp_src:
+            picture_html = f'''<picture>
+              <source type="image/webp" srcset="{thumb_webp_src}">
+              <img src="{thumb_src}" alt="{b_title}" loading="lazy">
+            </picture>'''
+        else:
+            picture_html = f'<img src="{thumb_src}" alt="{b_title}" loading="lazy">'
         major_cards_html.append(f'''
       <a href="/major-builds/{b['slug']}/" class="major-build-card-link">
         <div class="major-build-card">
           <div class="grid-card-media">
             <div class="card-media-backdrop" style="background-image: url('{thumb_src}');"></div>
-            <img src="{thumb_src}" alt="{b['title']}" loading="lazy">
+            {picture_html}
             <div class="media-badges" style="justify-content: flex-end;">
               <span class="media-badge count-badge">{gallery_summary(b['gallery'])}</span>
             </div>
@@ -736,13 +794,23 @@ def sync_builds():
     # 2. Render Quick Build Cards for Homepage
     quick_cards_html = []
     for qb in quick_builds:
+        qb_title = escape(qb['title'])
         tags_html = ''.join(f'<span class="tech-tag">{tag}</span>' for tag in qb['tags'])
-        thumb_src = f"/quick-builds/{qb['slug']}/thumbs/{qb['cover_img']}" if qb['cover_img'] else ''
+        cover_base = os.path.splitext(qb['cover_img'])[0] if qb.get('cover_img') else ''
+        thumb_src = f"/quick-builds/{qb['slug']}/thumbs/{qb['cover_img']}" if qb.get('cover_img') else ''
+        thumb_webp_src = f"/quick-builds/{qb['slug']}/thumbs/{cover_base}.webp" if cover_base else ''
         if thumb_src:
+            if thumb_webp_src:
+                picture_html = f'''<picture>
+              <source type="image/webp" srcset="{thumb_webp_src}">
+              <img src="{thumb_src}" alt="{qb_title}" loading="lazy">
+            </picture>'''
+            else:
+                picture_html = f'<img src="{thumb_src}" alt="{qb_title}" loading="lazy">'
             media_markup = f'''
           <div class="grid-card-media">
             <div class="card-media-backdrop" style="background-image: url('{thumb_src}');"></div>
-            <img src="{thumb_src}" alt="{qb['title']}" loading="lazy">
+            {picture_html}
             <div class="media-badges" style="justify-content: flex-end;">
               <span class="media-badge count-badge">{gallery_summary(qb['gallery'])}</span>
             </div>
