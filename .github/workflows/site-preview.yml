@@ -37,13 +37,21 @@ jobs:
       - name: Compare with checked-in deployment
         run: python scripts/compare_sites.py --baseline-ref HEAD --candidate _site
 
-      # Shadow mode only: this is a downloadable build artifact, not a Pages deployment.
-      - name: Upload site preview
-        uses: actions/upload-artifact@v4
+      - name: Create content manifest
+        run: python scripts/site_manifest.py create _site site-manifest.json
+
+      # Shadow mode only: upload the audit surface, not 738 MiB of duplicated media.
+      - name: Upload site audit
+        uses: actions/upload-artifact@v7
         with:
-          name: site-preview
-          path: _site/
-          compression-level: 0
+          name: site-audit
+          path: |
+            _site/**/*.html
+            _site/css/**
+            _site/js/**
+            _site/CNAME
+            _site/.nojekyll
+            site-manifest.json
           include-hidden-files: true
           retention-days: 3
           if-no-files-found: error
