@@ -27,7 +27,7 @@
   <meta name="twitter:image" content="https://cathalcoffey.com/major-builds/arcade/thumbs/PXL_20260906_115406018.jpg">
 
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788816446">
+  <link rel="stylesheet" href="/css/style.css?v=1788817364">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -830,8 +830,10 @@
 
       // Lock aspect-ratio so thumbnail preview and full image share the exact same bounds
       if (item.aspect_ratio) {
+        lightboxImg.style.setProperty("--ar", item.aspect_ratio);
         lightboxImg.style.aspectRatio = item.aspect_ratio;
       } else {
+        lightboxImg.style.removeProperty("--ar");
         lightboxImg.style.aspectRatio = "";
       }
 
@@ -967,6 +969,6 @@
       });
     }
   </script>
-  <script src="/js/navigation.js?v=1788816446"></script>
+  <script src="/js/navigation.js?v=1788817364"></script>
 </body>
 </html>

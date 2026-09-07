@@ -1304,8 +1304,8 @@ header.hero {
   justify-content: center;
 }
 .lightbox-img {
-  width: auto;
-  height: auto;
+  width: min(90vw, calc(80vh * var(--ar, 1.333)));
+  height: min(80vh, calc(90vw / var(--ar, 1.333)));
   max-width: 90vw;
   max-height: 80vh;
   object-fit: contain;
@@ -1319,6 +1319,8 @@ header.hero {
 }
 .lightbox-img.is-zoomed {
   cursor: grab;
+  width: min(90vw, calc(80vh * var(--ar, 1.333)));
+  height: min(80vh, calc(90vw / var(--ar, 1.333)));
   max-width: none;
   max-height: none;
   box-shadow: none;
@@ -1390,6 +1392,14 @@ header.hero {
     max-width: 100vw;
     max-height: 72vh;
     border-radius: 0;
+  }
+  .lightbox-img {
+    width: min(100vw, calc(72vh * var(--ar, 1.333)));
+    height: min(72vh, calc(100vw / var(--ar, 1.333)));
+  }
+  .lightbox-img.is-zoomed {
+    width: min(100vw, calc(72vh * var(--ar, 1.333)));
+    height: min(72vh, calc(100vw / var(--ar, 1.333)));
   }
   .lightbox-caption {
     max-width: calc(100vw - 1rem);
