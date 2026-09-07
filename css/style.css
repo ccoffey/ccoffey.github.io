@@ -1304,13 +1304,15 @@ header.hero {
   justify-content: center;
 }
 .lightbox-img {
+  width: auto;
+  height: auto;
   max-width: 90vw;
   max-height: 80vh;
   object-fit: contain;
   border-radius: 6px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
   opacity: 1;
-  transition: opacity 0.1s ease;
+  transition: opacity 0.15s ease;
 }
 .lightbox-video {
   max-width: 90vw;

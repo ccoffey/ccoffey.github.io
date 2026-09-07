@@ -27,7 +27,7 @@
   <meta name="twitter:image" content="https://cathalcoffey.com/major-builds/mop-bot/thumbs/PXL_20260619_164056995.jpg">
 
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788814259">
+  <link rel="stylesheet" href="/css/style.css?v=1788815561">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -533,6 +533,13 @@
       lightboxImg.hidden = false;
       lightboxImg.alt = `Mop Bot build photo ${currentIndex + 1}`;
 
+      // Lock aspect-ratio so thumbnail preview and full image share the exact same bounds
+      if (item.aspect_ratio) {
+        lightboxImg.style.aspectRatio = item.aspect_ratio;
+      } else {
+        lightboxImg.style.aspectRatio = "";
+      }
+
       // Swap to the small gallery image immediately. This keeps the image and
       // caption in sync even when someone advances faster than the full-size
       // photos can download.
@@ -663,6 +670,6 @@
       });
     }
   </script>
-  <script src="/js/navigation.js?v=1788814259"></script>
+  <script src="/js/navigation.js?v=1788815561"></script>
 </body>
 </html>

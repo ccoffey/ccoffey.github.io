@@ -243,6 +243,13 @@
       lightboxImg.hidden = false;
       lightboxImg.alt = `{{ TITLE }} photo ${currentIndex + 1}`;
 
+      // Lock aspect-ratio so thumbnail preview and full image share the exact same bounds
+      if (item.aspect_ratio) {
+        lightboxImg.style.aspectRatio = item.aspect_ratio;
+      } else {
+        lightboxImg.style.aspectRatio = "";
+      }
+
       // Swap to the small gallery image immediately. This keeps the image and
       // caption in sync even when someone advances faster than the full-size
       // photos can download.
