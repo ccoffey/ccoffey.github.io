@@ -292,12 +292,7 @@ def render_next_steps(next_steps):
         return ''
     items_html = []
     for step in next_steps:
-        if ':' in step and step.find(':') < 45:
-            title, desc = step.split(':', 1)
-            formatted = f'<strong>{title.strip()}:</strong>{desc}'
-        else:
-            formatted = step
-        items_html.append(f'        <li class="next-step-item">{formatted}</li>')
+        items_html.append(f'        <li class="next-step-item">{escape(step)}</li>')
     
     return f'''
     <section class="next-steps-box">
