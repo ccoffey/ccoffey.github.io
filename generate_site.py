@@ -764,9 +764,13 @@ def sync_builds():
                       for idx, item in enumerate(b['gallery'])]
         gallery_json = json.dumps(b['gallery'])
 
+        og_image = f"https://cathalcoffey.com/major-builds/{b['slug']}/thumbs/{b['cover_img']}" if b.get('cover_img') else "https://cathalcoffey.com/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
+
         rendered_build = (major_build_tmpl
             .replace('{{ TITLE }}', b['title'])
             .replace('{{ SUBTITLE }}', b['subtitle'])
+            .replace('{{ SLUG }}', b['slug'])
+            .replace('{{ OG_IMAGE_URL }}', og_image)
             .replace('{{ DATES }}', b['dates'])
             .replace('{{ TAGS }}', tags_html)
             .replace('{{ BUILD_ID }}', build_id)
@@ -804,10 +808,13 @@ def sync_builds():
 
         gallery_json = json.dumps(qb['gallery'])
         desc_html = f'<div class="build-description"><p>{qb["description"]}</p></div>' if qb.get('description') else ''
+        og_image = f"https://cathalcoffey.com/quick-builds/{qb['slug']}/thumbs/{qb['cover_img']}" if qb.get('cover_img') else "https://cathalcoffey.com/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
 
         rendered_qb = (quick_build_tmpl
             .replace('{{ TITLE }}', qb['title'])
             .replace('{{ SUBTITLE }}', qb['subtitle'])
+            .replace('{{ SLUG }}', qb['slug'])
+            .replace('{{ OG_IMAGE_URL }}', og_image)
             .replace('{{ DATES }}', qb['dates'])
             .replace('{{ DESCRIPTION }}', desc_html)
             .replace('{{ TAGS }}', tags_html)
@@ -822,6 +829,49 @@ def sync_builds():
         with open(qb_out, 'w', encoding='utf-8') as f:
             f.write(rendered_qb)
         print(f"Rendered quick-builds/{qb['slug']}/index.html ({len(qb['gallery'])} media items)")
+
+    # 5. Generate sitemap.xml and robots.txt
+    generate_sitemap(major_builds, quick_builds)
+    generate_robots()
+
+def generate_sitemap(major_builds, quick_builds):
+    today = datetime.now().strftime('%Y-%m-%d')
+    urls = [
+        ('https://cathalcoffey.com/', '1.0', 'weekly'),
+    ]
+    for b in major_builds:
+        urls.append((f"https://cathalcoffey.com/major-builds/{b['slug']}/", '0.8', 'monthly'))
+    for qb in quick_builds:
+        urls.append((f"https://cathalcoffey.com/quick-builds/{qb['slug']}/", '0.6', 'monthly'))
+
+    lines = [
+        '<?xml version="1.0" encoding="UTF-8"?>',
+        '<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">'
+    ]
+    for loc, priority, changefreq in urls:
+        lines.append('  <url>')
+        lines.append(f'    <loc>{loc}</loc>')
+        lines.append(f'    <lastmod>{today}</lastmod>')
+        lines.append(f'    <changefreq>{changefreq}</changefreq>')
+        lines.append(f'    <priority>{priority}</priority>')
+        lines.append('  </url>')
+    lines.append('</urlset>')
+
+    sitemap_path = os.path.join(BASE_DIR, 'sitemap.xml')
+    with open(sitemap_path, 'w', encoding='utf-8') as f:
+        f.write('\n'.join(lines) + '\n')
+    print("Generated sitemap.xml")
+
+def generate_robots():
+    content = '''User-agent: *
+Allow: /
+
+Sitemap: https://cathalcoffey.com/sitemap.xml
+'''
+    robots_path = os.path.join(BASE_DIR, 'robots.txt')
+    with open(robots_path, 'w', encoding='utf-8') as f:
+        f.write(content)
+    print("Generated robots.txt")
 
 sync_projects = sync_builds
 

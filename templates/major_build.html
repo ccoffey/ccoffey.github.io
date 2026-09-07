@@ -4,6 +4,28 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ TITLE }} | Cathal Coffey</title>
+  <meta name="description" content="{{ SUBTITLE }}">
+  <link rel="canonical" href="https://cathalcoffey.com/major-builds/{{ SLUG }}/">
+
+  <!-- Security Headers -->
+  <meta http-equiv="X-Content-Type-Options" content="nosniff">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://www.googletagmanager.com; style-src 'self' 'unsafe-inline'; img-src 'self' data: https:; media-src 'self'; connect-src 'self' https://*.google-analytics.com https://*.analytics.google.com https://*.googletagmanager.com;">
+
+  <!-- OpenGraph / Facebook -->
+  <meta property="og:type" content="article">
+  <meta property="og:site_name" content="Cathal Coffey">
+  <meta property="og:title" content="{{ TITLE }} | Cathal Coffey">
+  <meta property="og:description" content="{{ SUBTITLE }}">
+  <meta property="og:url" content="https://cathalcoffey.com/major-builds/{{ SLUG }}/">
+  <meta property="og:image" content="{{ OG_IMAGE_URL }}">
+
+  <!-- Twitter Card -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="{{ TITLE }} | Cathal Coffey">
+  <meta name="twitter:description" content="{{ SUBTITLE }}">
+  <meta name="twitter:image" content="{{ OG_IMAGE_URL }}">
+
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/style.css?v={{ BUILD_ID }}">
   <!-- Google tag (gtag.js) -->
