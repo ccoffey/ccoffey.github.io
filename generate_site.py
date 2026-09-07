@@ -20,6 +20,8 @@ def load_template(name):
 def parse_photo_date(filename):
     if 'control_panel_graphic' in filename:
         return 'September 5, 2026 — Control Panel Vinyl Graphic (gorillagraphics.ie)', 'Control Panel Artwork'
+    if 'claw_machine_demo' in filename:
+        return 'September 6, 2026', 'Sep 6, 2026'
     
     m_step = re.search(r'step-(\d+)', filename)
     if m_step:
@@ -42,6 +44,8 @@ def parse_photo_date(filename):
 def get_photo_sort_key(filename):
     if 'control_panel_graphic' in filename:
         return (2026, 9, 5, 18, 9, 0)
+    if 'claw_machine_demo' in filename:
+        return (2026, 9, 6, 23, 59, 59)
     m_step = re.search(r'step-(\d+)', filename)
     if m_step:
         return (2026, 6, 4, 10, int(m_step.group(1)), 0)
@@ -89,20 +93,30 @@ def strip_exif_from_file(filepath):
         print(f"Error stripping EXIF from {filepath}: {e}")
     return False
 
+def is_video_optimized(video_path):
+    try:
+        cmd = ['ffprobe', '-v', 'error', '-show_entries', 'format_tags=comment', '-of', 'default=noprint_wrappers=1:nokey=1', video_path]
+        res = subprocess.run(cmd, capture_output=True, text=True)
+        return 'optimized_by_site_generator' in res.stdout
+    except Exception:
+        return False
+
 def optimize_video_if_needed(video_path):
     """Re-encode video with libx264 + aac + faststart and strip metadata if > 25MB."""
     if not os.path.exists(video_path):
         return
     try:
         size_mb = os.path.getsize(video_path) / (1024 * 1024)
-        if size_mb > 25:
+        if size_mb > 25 and not is_video_optimized(video_path):
             print(f"[Video Optimizer] Optimizing {os.path.basename(video_path)} ({size_mb:.1f} MB)...")
             tmp_out = video_path + ".optimized.mp4"
             cmd = [
                 "ffmpeg", "-y", "-i", video_path,
-                "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "25", "-preset", "medium",
+                "-vf", "scale='min(1280,iw)':-2",
+                "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "26", "-preset", "medium",
                 "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart",
-                "-map_metadata", "-1", tmp_out
+                "-metadata", "comment=optimized_by_site_generator",
+                tmp_out
             ]
             res = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             if res.returncode == 0 and os.path.exists(tmp_out):
@@ -116,35 +130,40 @@ def optimize_video_if_needed(video_path):
 
 def get_video_metadata(video_path):
     """
-    Returns (width, height, aspect_ratio, is_portrait) using ffprobe.
+    Returns (width, height, aspect_ratio, is_portrait, duration) using ffprobe.
     """
     try:
         cmd = [
             'ffprobe', '-v', 'error',
-            '-select_streams', 'v:0',
-            '-show_entries', 'stream=width,height',
-            '-of', 'csv=s=x:p=0',
+            '-show_entries', 'format=duration:stream=width,height',
+            '-of', 'default=noprint_wrappers=1:nokey=1',
             video_path
         ]
         res = subprocess.run(cmd, capture_output=True, text=True, check=True)
-        out = res.stdout.strip()
-        if 'x' in out:
-            parts = out.split('\n')[0].split('x')
-            w, h = int(parts[0]), int(parts[1])
-            ar = round(w / h, 3) if h > 0 else 1.778
-            return {
-                'width': w,
-                'height': h,
-                'aspect_ratio': ar,
-                'is_portrait': (h > w)
-            }
+        lines = [line.strip() for line in res.stdout.strip().splitlines() if line.strip()]
+        w = int(lines[0]) if len(lines) > 0 else 1920
+        h = int(lines[1]) if len(lines) > 1 else 1080
+        dur_raw = float(lines[2]) if len(lines) > 2 else 0.0
+        ar = round(w / h, 3) if h > 0 else 1.778
+        total_sec = int(round(dur_raw))
+        mins = total_sec // 60
+        secs = total_sec % 60
+        dur_str = f"{mins}:{secs:02d}"
+        return {
+            'width': w,
+            'height': h,
+            'aspect_ratio': ar,
+            'is_portrait': (h > w),
+            'duration': dur_str
+        }
     except Exception as e:
         print(f"ffprobe warning for {video_path}: {e}")
     return {
         'width': 1920,
         'height': 1080,
         'aspect_ratio': 1.778,
-        'is_portrait': False
+        'is_portrait': False,
+        'duration': ''
     }
 
 def video_mime_type(filename):
@@ -195,10 +214,12 @@ def render_gallery_card(item, title, index):
     alt = f"{title} build video thumbnail" if media_type == 'video' else f"{title} build photo"
 
     if media_type == 'video':
-        media_indicator = '''
-        <span class="video-type-pill">Video</span>
-        <span class="video-thumbnail-play" aria-hidden="true">
-          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        duration_text = escape(item.get('duration', ''), quote=True)
+        duration_span = f'<span class="video-duration-text">{duration_text}</span>' if duration_text else ''
+        media_indicator = f'''
+        <span class="video-duration-badge">
+          {duration_span}
+          <svg viewBox="0 0 24 24" class="video-badge-icon" aria-hidden="true"><circle cx="12" cy="12" r="9.5" stroke="currentColor" stroke-width="2" fill="none"/><polygon points="10,7.5 16.5,12 10,16.5" fill="currentColor"/></svg>
         </span>'''
     else:
         media_indicator = '''
@@ -431,11 +452,9 @@ def process_build_dir(base_dir, slug, url_prefix):
         vid_src = os.path.join(folder_path, hero_video)
         hero_video_poster = ensure_video_poster(vid_src, thumbs_dir)
 
-    # Add non-hero videos to the same chronological gallery as the photos.
+    # Add all videos (including hero video) to the chronological gallery.
     gallery_videos = []
     for video_fn in videos:
-        if video_fn == hero_video:
-            continue
         video_path = os.path.join(folder_path, video_fn)
         poster_fn = ensure_video_poster(video_path, thumbs_dir)
         if not poster_fn:
@@ -451,6 +470,7 @@ def process_build_dir(base_dir, slug, url_prefix):
             'date': date_str,
             'short_date': short_date,
             'aspect_ratio': meta['aspect_ratio'],
+            'duration': meta.get('duration', ''),
             'mime_type': video_mime_type(video_fn)
         })
 
