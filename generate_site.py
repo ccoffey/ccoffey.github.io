@@ -617,7 +617,7 @@ def sync_builds():
             <div class="card-media-backdrop" style="background-image: url('{thumb_src}');"></div>
             <img src="{thumb_src}" alt="{b['title']}" loading="lazy">
             <div class="media-badges" style="justify-content: flex-end;">
-              <span class="media-badge count-badge">{len(b['photos'])} Photos</span>
+              <span class="media-badge count-badge">{gallery_summary(b['gallery'])}</span>
             </div>
           </div>
           <div class="grid-card-body">
@@ -644,7 +644,7 @@ def sync_builds():
             <div class="card-media-backdrop" style="background-image: url('{thumb_src}');"></div>
             <img src="{thumb_src}" alt="{qb['title']}" loading="lazy">
             <div class="media-badges" style="justify-content: flex-end;">
-              <span class="media-badge count-badge">{len(qb['photos'])} Photos</span>
+              <span class="media-badge count-badge">{gallery_summary(qb['gallery'])}</span>
             </div>
           </div>'''
         else:
