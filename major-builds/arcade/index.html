@@ -27,7 +27,7 @@
   <meta name="twitter:image" content="https://cathalcoffey.com/major-builds/arcade/thumbs/PXL_20260906_115406018.jpg">
 
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788819581">
+  <link rel="stylesheet" href="/css/style.css?v=1788819955">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -981,18 +981,23 @@
       lightboxImg.onload = null;
       lightboxImg.onerror = null;
       lightboxImg.classList.remove("is-loading");
-      lightboxVideo.pause();
-      lightboxVideo.removeAttribute("src");
-      lightboxVideo.removeAttribute("poster");
-      lightboxVideo.load();
 
       if (item.type === "video") {
         lightboxImg.hidden = true;
         lightboxImg.src = "";
         lightboxVideo.hidden = false;
+        if (item.aspect_ratio) {
+          lightboxVideo.style.setProperty("--ar", item.aspect_ratio);
+          lightboxVideo.style.aspectRatio = item.aspect_ratio;
+        } else {
+          lightboxVideo.style.removeProperty("--ar");
+          lightboxVideo.style.aspectRatio = "";
+        }
         lightboxVideo.poster = item.thumb || "";
-        lightboxVideo.src = item.full;
-        lightboxVideo.load();
+        if (lightboxVideo.src !== item.full && !lightboxVideo.src.endsWith(item.full)) {
+          lightboxVideo.src = item.full;
+          lightboxVideo.load();
+        }
         const playPromise = lightboxVideo.play();
         if (playPromise !== undefined) {
           playPromise.catch(() => {});
@@ -1003,6 +1008,11 @@
       }
 
       lightboxVideo.hidden = true;
+      lightboxVideo.pause();
+      lightboxVideo.removeAttribute("src");
+      lightboxVideo.removeAttribute("poster");
+      lightboxVideo.load();
+
       lightboxImg.hidden = false;
       lightboxImg.alt = `Arcade Cabinet build photo ${currentIndex + 1}`;
 
@@ -1149,6 +1159,6 @@
       });
     }
   </script>
-  <script src="/js/navigation.js?v=1788819581"></script>
+  <script src="/js/navigation.js?v=1788819955"></script>
 </body>
 </html>

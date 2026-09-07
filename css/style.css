@@ -1309,14 +1309,18 @@ header.hero {
   align-items: center;
   justify-content: center;
 }
-.lightbox-img {
+.lightbox-img,
+.lightbox-video {
   width: min(90vw, calc(80vh * var(--ar, 1.333)));
   height: min(80vh, calc(90vw / var(--ar, 1.333)));
+  aspect-ratio: var(--ar, 1.333);
   max-width: 90vw;
   max-height: 80vh;
   object-fit: contain;
   border-radius: 6px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
+}
+.lightbox-img {
   opacity: 1;
   transition: opacity 0.15s ease, transform 0.2s ease-out;
   cursor: zoom-in;
@@ -1337,11 +1341,7 @@ header.hero {
   transition: none;
 }
 .lightbox-video {
-  max-width: 90vw;
-  max-height: 80vh;
-  border-radius: 6px;
   background: #000;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
 }
 .lightbox-img[hidden],
 .lightbox-video[hidden] {
@@ -1396,13 +1396,12 @@ header.hero {
   }
   .lightbox-img,
   .lightbox-video {
+    width: min(100vw, calc(72vh * var(--ar, 1.333)));
+    height: min(72vh, calc(100vw / var(--ar, 1.333)));
+    aspect-ratio: var(--ar, 1.333);
     max-width: 100vw;
     max-height: 72vh;
     border-radius: 0;
-  }
-  .lightbox-img {
-    width: min(100vw, calc(72vh * var(--ar, 1.333)));
-    height: min(72vh, calc(100vw / var(--ar, 1.333)));
   }
   .lightbox-img.is-zoomed {
     width: min(100vw, calc(72vh * var(--ar, 1.333)));
