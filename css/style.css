@@ -609,6 +609,7 @@ header.hero {
   border-radius: 20px;
   backdrop-filter: blur(8px);
   -webkit-backdrop-filter: blur(8px);
+  white-space: nowrap;
 }
 .media-badge.date-badge {
   background: rgba(13, 17, 23, 0.85);

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chimera | Cathal Coffey</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788790618">
+  <link rel="stylesheet" href="/css/style.css?v=1788793090">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -58,7 +58,7 @@
               <a href="/major-builds/chimera/" class="nav-dropdown-item is-active">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Chimera</span>
-                  <span class="dropdown-item-desc">A custom ESP32-C5 handheld computer with a monochrome UI, audio, storage, Wi-Fi, hardware security and OTA updates.</span>
+                  <span class="dropdown-item-desc">A custom ESP32 handheld computer, a solid foundation for a secure messaging channel</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
@@ -135,13 +135,11 @@
   <div class="container">
     <header class="build-header-full">
       <h1 class="build-heading">Chimera</h1>
-      <p class="build-sub">A custom ESP32-C5 handheld computer with a monochrome UI, audio, storage, Wi-Fi, hardware security and OTA updates.</p>
+      <p class="build-sub">A custom ESP32 handheld computer, a solid foundation for a secure messaging channel</p>
       <div class="tag-row">
-        <span class="tech-tag">ESP32-C5</span>
+        <span class="tech-tag">ESP32</span>
         <span class="tech-tag">ESP-IDF</span>
         <span class="tech-tag">Embedded C++</span>
-        <span class="tech-tag">LVGL</span>
-        <span class="tech-tag">Hardware Security</span>
       </div>
     </header>
 
@@ -172,10 +170,19 @@
       </h2>
       <div class="narrative-collapsible" id="narrativeCollapsible">
         <div class="narrative-content" id="narrativeContent">
-          <p>The road to Chimera actually started with a private messaging server. Long before designing hardware, I built a security-obsessed Android messaging app and home server for my brother and me, using Diffie-Hellman (DH) key exchange for truly private communication. We used it daily for about a year until he switched to a locked-down company phone that blocked sideloading unpublished APKs outside the Google Play Store. Losing our channel sparked an idea: <em>what if we had our own private messaging app running on our own custom hardware—a simple, distraction-free phone like the Nokia 3210s we carried in secondary school?</em></p>
-<p>That was the spark, but building a standalone hardware communicator took much longer than anticipated because I basically had to build an entire embedded operating system from scratch first. I created a dynamic status bar with battery and Wi-Fi icons, and a full Wi-Fi manager that scans for SSIDs, lets you enter passwords, persists credentials in flash storage, and automatically reconnects whenever known networks are in range. Then came device settings for volume and screen brightness, along with a PIN-to-unlock security screen.</p>
-<p>Along the way, I got gloriously sidetracked by retro gaming. I wrote native implementations of Nokia Snake, Tetris, and Pong. Naturally, games needed 8-bit sound effects and background music, which opened another rabbit hole into audio synthesis, followed by flash persistence for high scores. To ensure the device had a tamper-resistant foundation for private communication, I dove deep into ESP32 hardware security: configuring Secure Boot, Flash Encryption, and seamless Over-The-Air (OTA) firmware updates distributed directly via GitHub Releases.</p>
-<p>When I finally circled back to messaging, typing on a handheld with only a rotary encoder and push-button presented a major UX challenge. I designed a custom virtual keyboard that is genuinely tactile and a joy to rotate through. To make communication even richer, I integrated an I²S MEMS microphone and digital audio pipeline so we could exchange voice snippets, just like voice notes on WhatsApp. Today, Chimera has evolved into a rock-solid embedded operating system housed in an enclosure that channels the nostalgic ergonomics of a Game Boy Pocket—providing a battle-tested hardware and software foundation upon which I am actively building the final secure messaging app.</p>
+          <p>Before building Chimera, I had already built a private messaging server and Android app (which I called TwinChat) so that my brother and I could have secure conversations without relying on Meta's WhatsApp, which we were using prior to this.</p>
+
+  <p>The cryptographic setup was fairly straightforward: each of us had a public/private key pair, with the private key never leaving the Android device. We used a Diffie–Hellman key exchange with our public keys to establish a shared conversation key, routing encrypted payloads through a Dropwizard RESTful web service hosted on an Ubuntu server in my home office. I recreated all the WhatsApp features we loved: emoji reactions, GIFs, quote and respond, and even photo sharing (which were also transmitted as securely encrypted blobs).</p>
+
+  <p>My brother and I used TwinChat daily for about a year until he broke his personal phone and switched to a locked down work phone that blocked sideloading unpublished APKs outside the Google Play Store. Booo. Losing our private channel sparked an idea: what if we built our own dedicated hardware communicator that could run TwinChat? Our own app running on our own hardware. It could start as a simple, pocketable device inspired by the Nokia 3210s that we had in secondary school, many many years ago.</p>
+
+  <p>That was the spark, but building a standalone communicator took much longer than anticipated because I ended up having to write an entire embedded operating system from scratch first. I created a dynamic status bar with battery and WiFi indicators, along with a full WiFi manager that scans for SSIDs, accepts credentials, persists them to flash storage, and automatically reconnects when known networks are in range. Then came device settings for audio volume and screen brightness, followed by a PIN to unlock security layer.</p>
+
+  <p>Next, I needed to dial in the primary input: a single rotary encoder with a push button. To refine the interaction model, I built a native clone of Nokia's Snake. Naturally, an arcade game demanded 8 bit audio for sound effects and background music, followed by flash persistence for high scores.</p>
+
+  <p>To ensure the hardware was tamper resistant, I went deep into ESP32 silicon security: provisioning Secure Boot and Flash Encryption. I also knew we needed seamless over the air (OTA) updates—flashing both devices over USB during rapid development would quickly become a pain. I built an update pipeline hooked into GitHub Releases: Chimera polls the repo every 15 minutes in the background, quietly downloads any newly published binary, and installs it. Moving to the latest firmware just requires a standard reboot.</p>
+
+  <p>Chimera is still a work in progress. Now that the hardware and OS foundation are rock solid, I'm finally back to building the messaging client itself. Stay tuned.</p>
         </div>
         <div class="narrative-fade" id="narrativeFade"></div>
       </div>
@@ -204,7 +211,6 @@
         </div>
       </div>
       <ul class="next-steps-list">
-        <li class="next-step-item">Build a second Chimera so that I can test 2 way messaging</li>
         <li class="next-step-item">Build the secure messaging app</li>
         <li class="next-step-item">Downsize the rotary encoder (it's too tall)</li>
         <li class="next-step-item">Better cable management</li>
@@ -607,6 +613,6 @@
       });
     }
   </script>
-  <script src="/js/navigation.js?v=1788790618"></script>
+  <script src="/js/navigation.js?v=1788793090"></script>
 </body>
 </html>
