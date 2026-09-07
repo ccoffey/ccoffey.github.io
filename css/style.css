@@ -1312,7 +1312,20 @@ header.hero {
   border-radius: 6px;
   box-shadow: 0 10px 40px rgba(0, 0, 0, 0.8);
   opacity: 1;
-  transition: opacity 0.15s ease;
+  transition: opacity 0.15s ease, transform 0.2s ease-out;
+  cursor: zoom-in;
+  user-select: none;
+  -webkit-user-select: none;
+}
+.lightbox-img.is-zoomed {
+  cursor: grab;
+  max-width: none;
+  max-height: none;
+  box-shadow: none;
+}
+.lightbox-img.is-zoomed.is-panning {
+  cursor: grabbing;
+  transition: none;
 }
 .lightbox-video {
   max-width: 90vw;
@@ -1359,11 +1372,15 @@ header.hero {
 }
 .lightbox-btn:hover { background: rgba(255, 255, 255, 0.25); transform: scale(1.08); }
 .lightbox-close { top: 20px; right: 25px; font-size: 1.8rem; line-height: 1; }
+.lightbox-fullscreen { top: 20px; right: 80px; }
+.lightbox-zoom { top: 20px; right: 135px; }
 .lightbox-prev { left: 20px; top: 50%; transform: translateY(-50%); font-size: 1.8rem; line-height: 1; }
 .lightbox-prev:hover { transform: translateY(-50%) scale(1.08); }
 .lightbox-next { right: 20px; top: 50%; transform: translateY(-50%); font-size: 1.8rem; line-height: 1; }
 .lightbox-next:hover { transform: translateY(-50%) scale(1.08); }
 @media (max-width: 640px) {
+  .lightbox-fullscreen { top: 10px; right: 60px; width: 38px; height: 38px; }
+  .lightbox-zoom { top: 10px; right: 105px; width: 38px; height: 38px; }
   .lightbox-stage {
     max-width: 100vw;
     max-height: 86vh;
