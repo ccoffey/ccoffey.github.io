@@ -1,39 +1,14 @@
 {
   "title": "Magic Stairs",
-  "subtitle": "A distributed staircase lighting system with one microcontroller and laser distance sensor per step.",
+  "subtitle": "A completely over-engineered 12-node staircase illumination system built because my kids were scared of the dark",
   "tags": [
     "Distributed Embedded",
     "ESP32",
-    "ATtiny414",
-    "I\u00b2C Protocols",
-    "Time-of-Flight"
+    "ATtiny414"
   ],
   "dates": "April 2026 \u2013 June 2026",
   "order": 5,
-  "status": "Installed and working \u00b7 Firmware and calibration still evolving",
-  "engineering_highlights": [
-    {
-      "label": "Automatic identity",
-      "title": "One node firmware image learns its physical step at boot",
-      "description": "Each ATtiny decodes checksummed configuration frames from its own WS2815 data position. Five-frame consensus establishes the step index, which then becomes its unique address on the shared I\u00b2C bus."
-    },
-    {
-      "label": "Bus architecture",
-      "title": "Every step bridges a shared bus to a private sensor bus",
-      "description": "The ATtiny is a hardware I\u00b2C slave to the ESP32 while simultaneously bit-banging a private I\u00b2C master for its VL53L0X. Every identical sensor can therefore retain the factory address 0x29."
-    },
-    {
-      "label": "Fault model",
-      "title": "Discovery keeps a failed step from hiding its neighbours",
-      "description": "The controller sweeps the full legal address range, records gaps inside the discovered chain, polls healthy nodes at 10 Hz and keeps missing positions dark while reporting responding, booting, stale and missing health states."
-    },
-    {
-      "label": "Operability",
-      "title": "Calibration and optical telemetry live on the controller",
-      "description": "An ESP32-hosted admin portal adjusts thresholds, colour, brightness and sensor timing budgets while exposing raw and filtered distance, signal rate, ambient rate, effective SPAD count and per-step health."
-    }
-  ],
-  "story": "<p>Magic Stairs was inspired by my kids and their fear of the dark. I wanted to transform their journey up the stairs to bed at night from a spooky climb into a magical rainbow walk. I could have easily run an off-the-shelf LED strip up the wall, plugged in a motion sensor, and called it a day\u2014but where is the fun in that? Instead, I took it as an opportunity to push my embedded firmware skills and challenge myself. The system is deliberately and delightfully over-engineered by design so that I could learn as much as possible in the process.</p>\n<p>My staircase has 12 steps. Rather than running a monolithic controller, every single step is an independent computing node equipped with its own ATtiny414 microcontroller, a 12V WS2815 addressable LED, and a VL53L0X laser Time-of-Flight (ToF) distance sensor. An I\u00b2C bus runs the entire length of the staircase connecting all 12 nodes. To solve the addressing problem without hardcoding IDs, each ATtiny sniffs the serial WS2815 LED data protocol at boot time to dynamically determine its own index (which step number it is) in the chain. At the top of the stairs, an ESP32 acts as the I\u00b2C bus master, running a tight polling loop querying each step in real time: <em>\"Is there a foot on your step right now? How about now? How about now?\"</em> and choreographing the lighting instantly.</p>\n<p>So what does a network of 12 microcontrollers, 12 LEDs, and 12 laser distance sensors buy you over a standard LED strip? Quite a lot. My kids invented \"Ninja Mode,\" where they try to scale the dark staircase without triggering a single sensor; the moment they wobble or brush a step, the ESP32 spots them and instantly floods the entire staircase with light. It also enabled me to program a reactive \"Spotlight Mode\" that illuminates the step you are on, the step behind, and the step ahead\u2014following you up or down and naturally reversing if you turn back. It seamlessly tracks multiple people on the stairs simultaneously. I have programmed five distinct interactive modes so far, but no matter how sophisticated the animations get, the kids still love the rainbow walk the best.</p>",
+  "story": "<p>Magic Stairs was inspired by my kids and their fear of the dark. I wanted to transform their journey up the stairs to bed at night from a spooky climb into a magical rainbow walk.</p>\n\n  <p>I could have easily run an off-the-shelf LED strip up the wall, plugged in a motion sensor, and called it a day, but where was the fun in that? Instead, I took it as an opportunity to push my embedded firmware skills and challenge myself. The system is deliberately over engineered so that I could learn as much as possible in the process.</p>\n\n  <p>My staircase has 12 steps. Rather than running a monolithic controller, every single step is an independent computing node equipped with its own ATtiny414 microcontroller, a 12V WS2815 addressable LED, and a VL53L0X laser Time-of-Flight (ToF) distance sensor.</p>\n\n  <p>An I2C bus runs the entire length of the staircase connecting all 12 nodes. To solve the addressing problem without hardcoding IDs, each ATtiny sniffs the serial WS2815 LED data protocol at boot time to dynamically determine its own index (which step number it is) in the chain. At the top of the stairs, an ESP32 acts as the master controller. During startup, it transmits a sequence of data down the WS2815 line. Because each LED driver consumes the first 24 bits and passes the remainder down the line, each step's ATtiny sniffs that stream to automatically deduce its exact position without any hardcoded IDs.</p>\n\n  <p>Once every step has its index, the controller sits in a tight polling loop querying each step in real time, basically asking: <em>&ldquo;Is there a foot on your step right now? How about now? How about now?&rdquo;</em> and choreographing the lighting instantly.</p>\n\n  <p>So what does a network of 12 microcontrollers, 12 LEDs, and 12 laser distance sensors buy you over a standard LED strip? Quite a lot, actually. My kids invented &ldquo;Ninja Mode,&rdquo; where they try to scale the dark staircase without triggering a single sensor; the moment they wobble or brush a step, the ESP32 spots them and instantly floods the entire staircase with light.</p>\n\n  <p>It also enabled me to program a reactive &ldquo;Spotlight Mode&rdquo; that illuminates the step you are on, the step behind, and the step ahead&mdash;following you up or down and naturally reversing if you turn back. It seamlessly tracks multiple people on the stairs simultaneously.</p>\n\n  <p>I have programmed five distinct interactive modes so far, but no matter how sophisticated the animations get, the kids still love the rainbow walk the best.</p>",
   "cover_image": "PXL_20260622_200639616.jpg",
   "hero_video": "PXL_20260513_082421428.mp4",
   "next_steps": [
