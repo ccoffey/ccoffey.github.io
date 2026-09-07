@@ -27,7 +27,7 @@
   <meta name="twitter:image" content="https://cathalcoffey.com/major-builds/chimera/thumbs/PXL_20260906_083726119_frame_8s.jpg">
 
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788818604">
+  <link rel="stylesheet" href="/css/style.css?v=1788818835">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -559,8 +559,10 @@
       }
     }
 
-    // Zoom mouse drag panning
+    // Single click to zoom in/out (distinguishing between click and drag-to-pan)
+    let dragDistance = 0;
     lightboxImg.addEventListener("mousedown", (e) => {
+      dragDistance = 0;
       if (!isZoomed) return;
       e.preventDefault();
       isPanning = true;
@@ -572,8 +574,11 @@
     window.addEventListener("mousemove", (e) => {
       if (!isPanning || !isZoomed) return;
       e.preventDefault();
-      panTranslateX = (e.clientX - panStartX);
-      panTranslateY = (e.clientY - panStartY);
+      const newX = (e.clientX - panStartX);
+      const newY = (e.clientY - panStartY);
+      dragDistance += Math.abs(newX - panTranslateX) + Math.abs(newY - panTranslateY);
+      panTranslateX = newX;
+      panTranslateY = newY;
       lightboxImg.style.transform = `scale(2.4) translate(${panTranslateX / 2.4}px, ${panTranslateY / 2.4}px)`;
     });
 
@@ -584,8 +589,9 @@
       }
     });
 
-    // Double click to zoom in/out
-    lightboxImg.addEventListener("dblclick", (e) => {
+    lightboxImg.addEventListener("click", (e) => {
+      // If user dragged more than 6px to pan around, don't toggle zoom on release
+      if (dragDistance > 6) return;
       toggleLightboxZoom(e);
     });
 
@@ -862,6 +868,6 @@
       });
     }
   </script>
-  <script src="/js/navigation.js?v=1788818604"></script>
+  <script src="/js/navigation.js?v=1788818835"></script>
 </body>
 </html>
