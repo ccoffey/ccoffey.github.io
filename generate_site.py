@@ -10,6 +10,7 @@ QUICK_BUILDS_DIR = os.path.join(BASE_DIR, 'quick-builds')
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 
 GA_MEASUREMENT_ID = os.environ.get('GA_MEASUREMENT_ID', 'G-RJN8XNMCEG')
+VIDEO_EXTENSIONS = ('.mp4', '.mov', '.webm')
 
 def load_template(name):
     path = os.path.join(TEMPLATES_DIR, name)
@@ -146,6 +147,71 @@ def get_video_metadata(video_path):
         'is_portrait': False
     }
 
+def video_mime_type(filename):
+    ext = os.path.splitext(filename)[1].lower()
+    return {
+        '.mov': 'video/quicktime',
+        '.webm': 'video/webm'
+    }.get(ext, 'video/mp4')
+
+def ensure_video_poster(video_path, thumbs_dir):
+    """Return a gallery-ready poster filename, extracting it when needed."""
+    video_name = os.path.basename(video_path)
+    poster_fn = f"{os.path.splitext(video_name)[0]}_poster.jpg"
+    poster_dst = os.path.join(thumbs_dir, poster_fn)
+    if not os.path.exists(poster_dst) or os.path.getmtime(video_path) > os.path.getmtime(poster_dst):
+        try:
+            cmd = [
+                'ffmpeg', '-y', '-ss', '00:00:00.20', '-i', video_path,
+                '-frames:v', '1', '-update', '1', '-q:v', '2', poster_dst
+            ]
+            result = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
+            if result.returncode != 0:
+                return ''
+            strip_exif_from_file(poster_dst)
+            print(f"Extracted video poster: {poster_fn}")
+        except Exception as e:
+            print(f"Error extracting video poster for {video_name}: {e}")
+            return ''
+    return poster_fn if os.path.exists(poster_dst) else ''
+
+def gallery_summary(media):
+    photo_count = sum(1 for item in media if item['type'] == 'image')
+    video_count = sum(1 for item in media if item['type'] == 'video')
+    parts = []
+    if photo_count:
+        parts.append(f"{photo_count} {'Photo' if photo_count == 1 else 'Photos'}")
+    if video_count:
+        parts.append(f"{video_count} {'Video' if video_count == 1 else 'Videos'}")
+    return ' &bull; '.join(parts) if parts else 'No Media Yet'
+
+def render_gallery_card(item, title, index):
+    title_attr = escape(title, quote=True)
+    thumb_attr = escape(item.get('thumb', ''), quote=True)
+    date_attr = escape(item.get('short_date', ''), quote=True)
+    media_type = item.get('type', 'image')
+    card_class = 'photo-card video-card' if media_type == 'video' else 'photo-card'
+    label = f"Play {title} build video" if media_type == 'video' else f"Open {title} build photo"
+    alt = f"{title} build video thumbnail" if media_type == 'video' else f"{title} build photo"
+
+    if media_type == 'video':
+        media_indicator = '''
+        <span class="video-type-pill">Video</span>
+        <span class="video-thumbnail-play" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </span>'''
+    else:
+        media_indicator = '''
+        <span class="photo-expand-icon" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </span>'''
+
+    return f'''
+      <button type="button" class="{card_class}" style="--ar: {item.get('aspect_ratio', 1.333)};" onclick="openLightbox({index})" aria-label="{escape(label, quote=True)}">
+        <img src="{thumb_attr}" alt="{escape(alt, quote=True)}" loading="lazy">
+        <span class="photo-date-pill">{date_attr}</span>{media_indicator}
+      </button>'''
+
 def render_story_box(story_html):
     if not story_html:
         return ''
@@ -260,8 +326,10 @@ def process_build_dir(base_dir, slug, url_prefix):
     thumbs_dir = os.path.join(folder_path, 'thumbs')
     os.makedirs(thumbs_dir, exist_ok=True)
 
-    raw_files = [f for f in os.listdir(folder_path) 
-                 if not f.startswith('.') and f not in ('thumbs', 'index.html', 'build.json', 'project.json')]
+    raw_files = [f for f in os.listdir(folder_path)
+                 if not f.startswith('.')
+                 and not f.lower().endswith('.optimized.mp4')
+                 and f not in ('thumbs', 'index.html', 'build.json', 'project.json')]
 
     # 1. Sanitize photos (EXIF)
     for f in raw_files:
@@ -296,7 +364,7 @@ def process_build_dir(base_dir, slug, url_prefix):
 
     # 4. Check for videos to optimize
     for f in raw_files:
-        if f.lower().endswith(('.mp4', '.mov', '.webm')):
+        if f.lower().endswith(VIDEO_EXTENSIONS):
             optimize_video_if_needed(os.path.join(folder_path, f))
 
     # 5. Collect media files
@@ -324,6 +392,7 @@ def process_build_dir(base_dir, slug, url_prefix):
                 pass
 
             photos.append({
+                'type': 'image',
                 'filename': f,
                 'full': f"{url_prefix}/{slug}/{f}",
                 'thumb': f"{url_prefix}/{slug}/thumbs/{f}",
@@ -356,22 +425,37 @@ def process_build_dir(base_dir, slug, url_prefix):
     else:
         hero_video = ''
 
-    # Extract first frame as video poster thumbnail
+    # Extract first frame as hero video poster thumbnail.
     hero_video_poster = ''
     if hero_video:
-        poster_fn = f"{os.path.splitext(hero_video)[0]}_poster.jpg"
-        poster_dst = os.path.join(thumbs_dir, poster_fn)
         vid_src = os.path.join(folder_path, hero_video)
-        if not os.path.exists(poster_dst) or (os.path.exists(vid_src) and os.path.getmtime(vid_src) > os.path.getmtime(poster_dst)):
-            try:
-                cmd = ['ffmpeg', '-y', '-ss', '00:00:00.05', '-i', vid_src, '-frames:v', '1', '-update', '1', '-q:v', '2', poster_dst]
-                subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-                strip_exif_from_file(poster_dst)
-                print(f"[{slug}] Extracted hero video poster: {poster_fn}")
-            except Exception as e:
-                print(f"[{slug}] Error extracting hero video poster for {hero_video}: {e}")
-        if os.path.exists(poster_dst):
-            hero_video_poster = poster_fn
+        hero_video_poster = ensure_video_poster(vid_src, thumbs_dir)
+
+    # Add non-hero videos to the same chronological gallery as the photos.
+    gallery_videos = []
+    for video_fn in videos:
+        if video_fn == hero_video:
+            continue
+        video_path = os.path.join(folder_path, video_fn)
+        poster_fn = ensure_video_poster(video_path, thumbs_dir)
+        if not poster_fn:
+            print(f"[{slug}] Warning: No poster generated for gallery video {video_fn}; skipping it.")
+            continue
+        date_str, short_date = parse_photo_date(video_fn)
+        meta = get_video_metadata(video_path)
+        gallery_videos.append({
+            'type': 'video',
+            'filename': video_fn,
+            'full': f"{url_prefix}/{slug}/{video_fn}",
+            'thumb': f"{url_prefix}/{slug}/thumbs/{poster_fn}",
+            'date': date_str,
+            'short_date': short_date,
+            'aspect_ratio': meta['aspect_ratio'],
+            'mime_type': video_mime_type(video_fn)
+        })
+
+    gallery = photos + gallery_videos
+    gallery.sort(key=lambda item: get_photo_sort_key(item['filename']))
 
     return {
         'slug': slug,
@@ -390,6 +474,7 @@ def process_build_dir(base_dir, slug, url_prefix):
         'next_steps': config.get('next_steps', []),
         'photos': photos,
         'videos': videos,
+        'gallery': gallery,
         'url_prefix': url_prefix
     }
 
@@ -659,20 +744,10 @@ def sync_builds():
             story_section_html = story_box_html
             next_steps_section_html = next_steps_html
 
-        # Google Photos style justified photo grid
-        photos_html = []
-        for idx, photo in enumerate(b['photos']):
-            ar = photo.get('aspect_ratio', 1.333)
-            photos_html.append(f'''
-      <div class="photo-card" style="--ar: {ar};" onclick="openLightbox({idx})">
-        <img src="{photo['thumb']}" alt="{b['title']} build photo" loading="lazy">
-        <span class="photo-date-pill">{photo['short_date']}</span>
-        <div class="photo-expand-icon">
-          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
-        </div>
-      </div>''')
-
-        gallery_json = json.dumps(b['photos'])
+        # Google Photos style justified chronological media grid.
+        media_html = [render_gallery_card(item, b['title'], idx)
+                      for idx, item in enumerate(b['gallery'])]
+        gallery_json = json.dumps(b['gallery'])
 
         rendered_build = (major_build_tmpl
             .replace('{{ TITLE }}', b['title'])
@@ -686,32 +761,24 @@ def sync_builds():
             .replace('{{ STORY_SECTION }}', story_section_html)
             .replace('{{ ENGINEERING_SECTION }}', engineering_section_html)
             .replace('{{ NEXT_STEPS_SECTION }}', next_steps_section_html)
-            .replace('{{ PHOTO_COUNT }}', str(len(b['photos'])))
-            .replace('{{ PHOTO_GRID }}', '\n'.join(photos_html))
+            .replace('{{ GALLERY_SUMMARY }}', gallery_summary(b['gallery']))
+            .replace('{{ PHOTO_GRID }}', '\n'.join(media_html))
             .replace('{{ GALLERY_JSON }}', gallery_json))
 
         build_out = os.path.join(MAJOR_BUILDS_DIR, b['slug'], 'index.html')
         with open(build_out, 'w', encoding='utf-8') as f:
             f.write(rendered_build)
-        print(f"Rendered major-builds/{b['slug']}/index.html ({len(b['photos'])} photos)")
+        print(f"Rendered major-builds/{b['slug']}/index.html ({len(b['gallery'])} media items)")
 
     # 4. Render Quick Build Pages (quick-builds/{slug}/index.html)
     for qb in quick_builds:
         tags_html = '\n        '.join(f'<span class="tech-tag">{tag}</span>' for tag in qb['tags'])
 
-        if qb['photos']:
-            photos_html = []
-            for idx, photo in enumerate(qb['photos']):
-                ar = photo.get('aspect_ratio', 1.333)
-                photos_html.append(f'''
-      <div class="photo-card" style="--ar: {ar};" onclick="openLightbox({idx})">
-        <img src="{photo['thumb']}" alt="{qb['title']} photo" loading="lazy">
-        <span class="photo-date-pill">{photo['short_date']}</span>
-        <div class="photo-expand-icon">
-          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
-        </div>
-      </div>''')
-            gallery_markup = '\n'.join(photos_html)
+        if qb['gallery']:
+            gallery_markup = '\n'.join(
+                render_gallery_card(item, qb['title'], idx)
+                for idx, item in enumerate(qb['gallery'])
+            )
         else:
             gallery_markup = '''
       <div class="empty-photos-box" style="grid-column: 1 / -1; width: 100%;">
@@ -720,7 +787,7 @@ def sync_builds():
         <div class="empty-photos-desc">Photos of the design, 3D printing process, and installed wall covers are being prepared.</div>
       </div>'''
 
-        gallery_json = json.dumps(qb['photos'])
+        gallery_json = json.dumps(qb['gallery'])
         desc_html = f'<div class="build-description"><p>{qb["description"]}</p></div>' if qb.get('description') else ''
 
         rendered_qb = (quick_build_tmpl
@@ -732,14 +799,14 @@ def sync_builds():
             .replace('{{ BUILD_ID }}', build_id)
             .replace('{{ GA_MEASUREMENT_ID }}', GA_MEASUREMENT_ID)
             .replace('{{ NAV_LINKS }}', render_nav('quick', qb['slug']))
-            .replace('{{ PHOTO_COUNT }}', str(len(qb['photos'])))
+            .replace('{{ GALLERY_SUMMARY }}', gallery_summary(qb['gallery']))
             .replace('{{ PHOTO_GRID }}', gallery_markup)
             .replace('{{ GALLERY_JSON }}', gallery_json))
 
         qb_out = os.path.join(QUICK_BUILDS_DIR, qb['slug'], 'index.html')
         with open(qb_out, 'w', encoding='utf-8') as f:
             f.write(rendered_qb)
-        print(f"Rendered quick-builds/{qb['slug']}/index.html ({len(qb['photos'])} photos)")
+        print(f"Rendered quick-builds/{qb['slug']}/index.html ({len(qb['gallery'])} media items)")
 
 sync_projects = sync_builds
 

@@ -45,9 +45,9 @@
     <div class="gallery-header">
       <div class="gallery-title">
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
-        <span>Photos</span>
+        <span>Build Gallery</span>
       </div>
-      <span class="gallery-subtitle">{{ PHOTO_COUNT }} Photos</span>
+      <span class="gallery-subtitle">{{ GALLERY_SUMMARY }}</span>
     </div>
 
     <div class="photo-grid">
@@ -62,6 +62,7 @@
     <button class="lightbox-btn lightbox-next" onclick="nextLightbox(event)" aria-label="Next">&rsaquo;</button>
     <div class="lightbox-stage">
       <img id="lightbox-img" class="lightbox-img" src="" alt="Enlarged build photo">
+      <video id="lightbox-video" class="lightbox-video" controls preload="metadata" playsinline hidden></video>
       <div class="lightbox-caption">
         <span id="lightbox-title"></span>
         <span>&bull;</span>
@@ -78,6 +79,7 @@
 
     const lightbox = document.getElementById("lightbox");
     const lightboxImg = document.getElementById("lightbox-img");
+    const lightboxVideo = document.getElementById("lightbox-video");
     const lightboxTitle = document.getElementById("lightbox-title");
     const lightboxDate = document.getElementById("lightbox-date");
     const lightboxCounter = document.getElementById("lightbox-counter");
@@ -92,11 +94,12 @@
 
       if (typeof gtag === 'function') {
         const item = gallery[index];
-        gtag('event', 'view_photo', {
+        gtag('event', 'view_gallery_item', {
           project_title: "{{ TITLE }}",
-          photo_filename: item.filename,
-          photo_index: index,
-          photo_date: item.date
+          media_filename: item.filename,
+          media_type: item.type,
+          media_index: index,
+          media_date: item.date
         });
       }
     }
@@ -108,6 +111,12 @@
       document.body.style.overflow = "";
       lightboxImg.classList.remove("is-loading");
       lightboxImg.src = "";
+      lightboxImg.hidden = false;
+      lightboxVideo.pause();
+      lightboxVideo.removeAttribute("src");
+      lightboxVideo.removeAttribute("poster");
+      lightboxVideo.load();
+      lightboxVideo.hidden = true;
     }
 
     function handleBackdropClick(e) {
@@ -122,7 +131,7 @@
       const previewSrc = item.thumb || item.full;
       const previewImage = new Image();
       previewImage.src = previewSrc;
-      if (item.full !== previewSrc) {
+      if (item.type !== "video" && item.full !== previewSrc) {
         const fullImage = new Image();
         fullImage.src = item.full;
       }
@@ -136,7 +145,31 @@
 
       lightboxTitle.textContent = "{{ TITLE }}";
       lightboxDate.textContent = item.date;
-      lightboxCounter.textContent = `Photo ${currentIndex + 1} of ${gallery.length}`;
+      const mediaLabel = item.type === "video" ? "Video" : "Photo";
+      lightboxCounter.textContent = `${mediaLabel} ${currentIndex + 1} of ${gallery.length}`;
+
+      lightboxImg.onload = null;
+      lightboxImg.onerror = null;
+      lightboxImg.classList.remove("is-loading");
+      lightboxVideo.pause();
+      lightboxVideo.removeAttribute("src");
+      lightboxVideo.removeAttribute("poster");
+      lightboxVideo.load();
+
+      if (item.type === "video") {
+        lightboxImg.hidden = true;
+        lightboxImg.src = "";
+        lightboxVideo.hidden = false;
+        lightboxVideo.poster = item.thumb || "";
+        lightboxVideo.src = item.full;
+        lightboxVideo.load();
+        preloadGalleryImage(currentIndex + 1);
+        preloadGalleryImage(currentIndex - 1);
+        return;
+      }
+
+      lightboxVideo.hidden = true;
+      lightboxImg.hidden = false;
       lightboxImg.alt = `{{ TITLE }} photo ${currentIndex + 1}`;
 
       // Swap to the small gallery image immediately. This keeps the image and
@@ -183,11 +216,12 @@
 
       if (typeof gtag === 'function') {
         const item = gallery[currentIndex];
-        gtag('event', 'view_photo', {
+        gtag('event', 'view_gallery_item', {
           project_title: "{{ TITLE }}",
-          photo_filename: item.filename,
-          photo_index: currentIndex,
-          photo_date: item.date,
+          media_filename: item.filename,
+          media_type: item.type,
+          media_index: currentIndex,
+          media_date: item.date,
           nav_method: 'next'
         });
       }
@@ -201,11 +235,12 @@
 
       if (typeof gtag === 'function') {
         const item = gallery[currentIndex];
-        gtag('event', 'view_photo', {
+        gtag('event', 'view_gallery_item', {
           project_title: "{{ TITLE }}",
-          photo_filename: item.filename,
-          photo_index: currentIndex,
-          photo_date: item.date,
+          media_filename: item.filename,
+          media_type: item.type,
+          media_index: currentIndex,
+          media_date: item.date,
           nav_method: 'prev'
         });
       }
@@ -227,6 +262,17 @@
       if (touchEndX < touchStartX - 50) nextLightbox();
       if (touchEndX > touchStartX + 50) prevLightbox();
     }, {passive: true});
+
+    lightboxVideo.addEventListener('play', () => {
+      const item = gallery[currentIndex];
+      if (item && item.type === 'video' && typeof gtag === 'function') {
+        gtag('event', 'play_gallery_video', {
+          project_title: "{{ TITLE }}",
+          video_filename: item.filename,
+          media_index: currentIndex
+        });
+      }
+    });
 
   </script>
   <script src="/js/navigation.js?v={{ BUILD_ID }}"></script>
