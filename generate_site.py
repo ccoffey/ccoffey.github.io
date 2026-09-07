@@ -113,7 +113,8 @@ def optimize_video_if_needed(video_path):
             cmd = [
                 "ffmpeg", "-y", "-i", video_path,
                 "-vf", "scale='min(1280,iw)':-2",
-                "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "26", "-preset", "medium",
+                "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "26", "-preset", "faster",
+                "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
                 "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart",
                 "-metadata", "comment=optimized_by_site_generator",
                 tmp_out
