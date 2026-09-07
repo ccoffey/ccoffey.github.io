@@ -27,7 +27,7 @@
   <meta name="twitter:image" content="https://cathalcoffey.com/quick-builds/wall-vent-covers/thumbs/PXL_20251108_160713233.jpg">
 
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788811524">
+  <link rel="stylesheet" href="/css/style.css?v=1788813842">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -175,7 +175,7 @@
 
     <div class="photo-grid">
       
-      <button type="button" class="photo-card" style="--ar: 1.333;" onclick="openLightbox(0)" aria-label="Open House Wall Vent Cover Upgrade build photo">
+      <button type="button" id="PXL_20251026_095712979.jpg" data-filename="PXL_20251026_095712979.jpg" class="photo-card" style="--ar: 1.333;" onclick="openLightbox(0)" aria-label="Open House Wall Vent Cover Upgrade build photo">
         <img src="/quick-builds/wall-vent-covers/thumbs/PXL_20251026_095712979.jpg" alt="House Wall Vent Cover Upgrade build photo" loading="lazy">
         <span class="photo-date-pill">Oct 26, 2025</span>
         <span class="photo-expand-icon" aria-hidden="true">
@@ -183,7 +183,7 @@
         </span>
       </button>
 
-      <button type="button" class="photo-card" style="--ar: 1.333;" onclick="openLightbox(1)" aria-label="Open House Wall Vent Cover Upgrade build photo">
+      <button type="button" id="PXL_20251106_202650755.jpg" data-filename="PXL_20251106_202650755.jpg" class="photo-card" style="--ar: 1.333;" onclick="openLightbox(1)" aria-label="Open House Wall Vent Cover Upgrade build photo">
         <img src="/quick-builds/wall-vent-covers/thumbs/PXL_20251106_202650755.jpg" alt="House Wall Vent Cover Upgrade build photo" loading="lazy">
         <span class="photo-date-pill">Nov 6, 2025</span>
         <span class="photo-expand-icon" aria-hidden="true">
@@ -191,7 +191,7 @@
         </span>
       </button>
 
-      <button type="button" class="photo-card" style="--ar: 0.562;" onclick="openLightbox(2)" aria-label="Open House Wall Vent Cover Upgrade build photo">
+      <button type="button" id="PXL_20251107_142756504.jpg" data-filename="PXL_20251107_142756504.jpg" class="photo-card" style="--ar: 0.562;" onclick="openLightbox(2)" aria-label="Open House Wall Vent Cover Upgrade build photo">
         <img src="/quick-builds/wall-vent-covers/thumbs/PXL_20251107_142756504.jpg" alt="House Wall Vent Cover Upgrade build photo" loading="lazy">
         <span class="photo-date-pill">Nov 7, 2025</span>
         <span class="photo-expand-icon" aria-hidden="true">
@@ -199,7 +199,7 @@
         </span>
       </button>
 
-      <button type="button" class="photo-card" style="--ar: 0.562;" onclick="openLightbox(3)" aria-label="Open House Wall Vent Cover Upgrade build photo">
+      <button type="button" id="PXL_20251107_143651665.jpg" data-filename="PXL_20251107_143651665.jpg" class="photo-card" style="--ar: 0.562;" onclick="openLightbox(3)" aria-label="Open House Wall Vent Cover Upgrade build photo">
         <img src="/quick-builds/wall-vent-covers/thumbs/PXL_20251107_143651665.jpg" alt="House Wall Vent Cover Upgrade build photo" loading="lazy">
         <span class="photo-date-pill">Nov 7, 2025</span>
         <span class="photo-expand-icon" aria-hidden="true">
@@ -207,7 +207,7 @@
         </span>
       </button>
 
-      <button type="button" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(4)" aria-label="Open House Wall Vent Cover Upgrade build photo">
+      <button type="button" id="PXL_20251108_160713233.jpg" data-filename="PXL_20251108_160713233.jpg" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(4)" aria-label="Open House Wall Vent Cover Upgrade build photo">
         <img src="/quick-builds/wall-vent-covers/thumbs/PXL_20251108_160713233.jpg" alt="House Wall Vent Cover Upgrade build photo" loading="lazy">
         <span class="photo-date-pill">Nov 8, 2025</span>
         <span class="photo-expand-icon" aria-hidden="true">
@@ -215,7 +215,7 @@
         </span>
       </button>
 
-      <button type="button" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(5)" aria-label="Open House Wall Vent Cover Upgrade build photo">
+      <button type="button" id="PXL_20251109_124010947.MP.jpg" data-filename="PXL_20251109_124010947.MP.jpg" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(5)" aria-label="Open House Wall Vent Cover Upgrade build photo">
         <img src="/quick-builds/wall-vent-covers/thumbs/PXL_20251109_124010947.MP.jpg" alt="House Wall Vent Cover Upgrade build photo" loading="lazy">
         <span class="photo-date-pill">Nov 9, 2025</span>
         <span class="photo-expand-icon" aria-hidden="true">
@@ -223,7 +223,7 @@
         </span>
       </button>
 
-      <button type="button" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(6)" aria-label="Open House Wall Vent Cover Upgrade build photo">
+      <button type="button" id="PXL_20260906_080803110.MP.jpg" data-filename="PXL_20260906_080803110.MP.jpg" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(6)" aria-label="Open House Wall Vent Cover Upgrade build photo">
         <img src="/quick-builds/wall-vent-covers/thumbs/PXL_20260906_080803110.MP.jpg" alt="House Wall Vent Cover Upgrade build photo" loading="lazy">
         <span class="photo-date-pill">Sep 6, 2026</span>
         <span class="photo-expand-icon" aria-hidden="true">
@@ -251,6 +251,13 @@
   </div>
 
   <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const initialIdx = findGalleryIndexFromHash(window.location.hash);
+      if (initialIdx !== -1) {
+        openLightbox(initialIdx, false);
+      }
+    });
+
     const gallery = [{"type": "image", "filename": "PXL_20251026_095712979.jpg", "full": "/quick-builds/wall-vent-covers/PXL_20251026_095712979.jpg", "thumb": "/quick-builds/wall-vent-covers/thumbs/PXL_20251026_095712979.jpg", "date": "October 26, 2025", "short_date": "Oct 26, 2025", "aspect_ratio": 1.333}, {"type": "image", "filename": "PXL_20251106_202650755.jpg", "full": "/quick-builds/wall-vent-covers/PXL_20251106_202650755.jpg", "thumb": "/quick-builds/wall-vent-covers/thumbs/PXL_20251106_202650755.jpg", "date": "November 6, 2025", "short_date": "Nov 6, 2025", "aspect_ratio": 1.333}, {"type": "image", "filename": "PXL_20251107_142756504.jpg", "full": "/quick-builds/wall-vent-covers/PXL_20251107_142756504.jpg", "thumb": "/quick-builds/wall-vent-covers/thumbs/PXL_20251107_142756504.jpg", "date": "November 7, 2025", "short_date": "Nov 7, 2025", "aspect_ratio": 0.562}, {"type": "image", "filename": "PXL_20251107_143651665.jpg", "full": "/quick-builds/wall-vent-covers/PXL_20251107_143651665.jpg", "thumb": "/quick-builds/wall-vent-covers/thumbs/PXL_20251107_143651665.jpg", "date": "November 7, 2025", "short_date": "Nov 7, 2025", "aspect_ratio": 0.562}, {"type": "image", "filename": "PXL_20251108_160713233.jpg", "full": "/quick-builds/wall-vent-covers/PXL_20251108_160713233.jpg", "thumb": "/quick-builds/wall-vent-covers/thumbs/PXL_20251108_160713233.jpg", "date": "November 8, 2025", "short_date": "Nov 8, 2025", "aspect_ratio": 0.75}, {"type": "image", "filename": "PXL_20251109_124010947.MP.jpg", "full": "/quick-builds/wall-vent-covers/PXL_20251109_124010947.MP.jpg", "thumb": "/quick-builds/wall-vent-covers/thumbs/PXL_20251109_124010947.MP.jpg", "date": "November 9, 2025", "short_date": "Nov 9, 2025", "aspect_ratio": 0.75}, {"type": "image", "filename": "PXL_20260906_080803110.MP.jpg", "full": "/quick-builds/wall-vent-covers/PXL_20260906_080803110.MP.jpg", "thumb": "/quick-builds/wall-vent-covers/thumbs/PXL_20260906_080803110.MP.jpg", "date": "September 6, 2026", "short_date": "Sep 6, 2026", "aspect_ratio": 0.75}];
     let currentIndex = 0;
     let lightboxImageRequestId = 0;
@@ -262,13 +269,42 @@
     const lightboxDate = document.getElementById("lightbox-date");
     const lightboxCounter = document.getElementById("lightbox-counter");
 
-    function openLightbox(index) {
+    function findGalleryIndexFromHash(hash) {
+      if (!hash || hash.length <= 1) return -1;
+      const raw = decodeURIComponent(hash.slice(1)).trim().toLowerCase();
+      let idx = gallery.findIndex(item => item.filename && item.filename.toLowerCase() === raw);
+      if (idx !== -1) return idx;
+      idx = gallery.findIndex(item => {
+        if (!item.filename) return false;
+        const base = item.filename.replace(/\.[^/.]+$/, '').toLowerCase();
+        return base === raw;
+      });
+      return idx;
+    }
+
+    function syncHashToItem(item, push = false) {
+      if (!item || !item.filename) return;
+      const targetHash = '#' + encodeURIComponent(item.filename);
+      if (window.location.hash !== targetHash) {
+        if (push) {
+          history.pushState({ lightbox: true, filename: item.filename }, "", targetHash);
+        } else {
+          history.replaceState({ lightbox: true, filename: item.filename }, "", targetHash);
+        }
+      }
+    }
+
+    function openLightbox(index, updateHistory = true) {
       if (index < 0 || index >= gallery.length) return;
       currentIndex = index;
       updateLightboxContent();
       lightbox.classList.add("active");
       lightbox.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
+
+      if (updateHistory) {
+        syncHashToItem(gallery[index], true);
+      }
 
       if (typeof gtag === 'function') {
         const item = gallery[index];
@@ -282,7 +318,7 @@
       }
     }
 
-    function closeLightbox() {
+    function closeLightbox(updateHistory = true) {
       lightboxImageRequestId++;
       lightbox.classList.remove("active");
       lightbox.setAttribute("aria-hidden", "true");
@@ -295,6 +331,10 @@
       lightboxVideo.removeAttribute("poster");
       lightboxVideo.load();
       lightboxVideo.hidden = true;
+
+      if (updateHistory && window.location.hash) {
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
     }
 
     function handleBackdropClick(e) {
@@ -395,6 +435,7 @@
       if (gallery.length === 0) return;
       currentIndex = (currentIndex + 1) % gallery.length;
       updateLightboxContent();
+      syncHashToItem(gallery[currentIndex], false);
 
       if (typeof gtag === 'function') {
         const item = gallery[currentIndex];
@@ -414,6 +455,7 @@
       if (gallery.length === 0) return;
       currentIndex = (currentIndex - 1 + gallery.length) % gallery.length;
       updateLightboxContent();
+      syncHashToItem(gallery[currentIndex], false);
 
       if (typeof gtag === 'function') {
         const item = gallery[currentIndex];
@@ -427,6 +469,15 @@
         });
       }
     }
+
+    window.addEventListener("popstate", () => {
+      const idx = findGalleryIndexFromHash(window.location.hash);
+      if (idx !== -1) {
+        openLightbox(idx, false);
+      } else if (lightbox.classList.contains("active")) {
+        closeLightbox(false);
+      }
+    });
 
     document.addEventListener("keydown", (e) => {
       if (!lightbox.classList.contains("active")) return;
@@ -457,6 +508,6 @@
     });
 
   </script>
-  <script src="/js/navigation.js?v=1788811524"></script>
+  <script src="/js/navigation.js?v=1788813842"></script>
 </body>
 </html>

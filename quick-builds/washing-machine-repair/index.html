@@ -27,7 +27,7 @@
   <meta name="twitter:image" content="https://cathalcoffey.com/quick-builds/washing-machine-repair/thumbs/PXL_20251203_113625174.jpg">
 
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788811524">
+  <link rel="stylesheet" href="/css/style.css?v=1788813842">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -174,7 +174,7 @@
 
     <div class="photo-grid">
       
-      <button type="button" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(0)" aria-label="Open Washing Machine Repair build photo">
+      <button type="button" id="PXL_20251203_113625174.jpg" data-filename="PXL_20251203_113625174.jpg" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(0)" aria-label="Open Washing Machine Repair build photo">
         <img src="/quick-builds/washing-machine-repair/thumbs/PXL_20251203_113625174.jpg" alt="Washing Machine Repair build photo" loading="lazy">
         <span class="photo-date-pill">Dec 3, 2025</span>
         <span class="photo-expand-icon" aria-hidden="true">
@@ -182,7 +182,7 @@
         </span>
       </button>
 
-      <button type="button" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(1)" aria-label="Open Washing Machine Repair build photo">
+      <button type="button" id="PXL_20251203_113918118.jpg" data-filename="PXL_20251203_113918118.jpg" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(1)" aria-label="Open Washing Machine Repair build photo">
         <img src="/quick-builds/washing-machine-repair/thumbs/PXL_20251203_113918118.jpg" alt="Washing Machine Repair build photo" loading="lazy">
         <span class="photo-date-pill">Dec 3, 2025</span>
         <span class="photo-expand-icon" aria-hidden="true">
@@ -190,7 +190,7 @@
         </span>
       </button>
 
-      <button type="button" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(2)" aria-label="Open Washing Machine Repair build photo">
+      <button type="button" id="PXL_20251203_115406606.jpg" data-filename="PXL_20251203_115406606.jpg" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(2)" aria-label="Open Washing Machine Repair build photo">
         <img src="/quick-builds/washing-machine-repair/thumbs/PXL_20251203_115406606.jpg" alt="Washing Machine Repair build photo" loading="lazy">
         <span class="photo-date-pill">Dec 3, 2025</span>
         <span class="photo-expand-icon" aria-hidden="true">
@@ -198,7 +198,7 @@
         </span>
       </button>
 
-      <button type="button" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(3)" aria-label="Open Washing Machine Repair build photo">
+      <button type="button" id="PXL_20251205_114333414.MP.jpg" data-filename="PXL_20251205_114333414.MP.jpg" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(3)" aria-label="Open Washing Machine Repair build photo">
         <img src="/quick-builds/washing-machine-repair/thumbs/PXL_20251205_114333414.MP.jpg" alt="Washing Machine Repair build photo" loading="lazy">
         <span class="photo-date-pill">Dec 5, 2025</span>
         <span class="photo-expand-icon" aria-hidden="true">
@@ -206,7 +206,7 @@
         </span>
       </button>
 
-      <button type="button" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(4)" aria-label="Open Washing Machine Repair build photo">
+      <button type="button" id="PXL_20251205_121850142.jpg" data-filename="PXL_20251205_121850142.jpg" class="photo-card" style="--ar: 0.75;" onclick="openLightbox(4)" aria-label="Open Washing Machine Repair build photo">
         <img src="/quick-builds/washing-machine-repair/thumbs/PXL_20251205_121850142.jpg" alt="Washing Machine Repair build photo" loading="lazy">
         <span class="photo-date-pill">Dec 5, 2025</span>
         <span class="photo-expand-icon" aria-hidden="true">
@@ -234,6 +234,13 @@
   </div>
 
   <script>
+    window.addEventListener("DOMContentLoaded", () => {
+      const initialIdx = findGalleryIndexFromHash(window.location.hash);
+      if (initialIdx !== -1) {
+        openLightbox(initialIdx, false);
+      }
+    });
+
     const gallery = [{"type": "image", "filename": "PXL_20251203_113625174.jpg", "full": "/quick-builds/washing-machine-repair/PXL_20251203_113625174.jpg", "thumb": "/quick-builds/washing-machine-repair/thumbs/PXL_20251203_113625174.jpg", "date": "December 3, 2025", "short_date": "Dec 3, 2025", "aspect_ratio": 0.75}, {"type": "image", "filename": "PXL_20251203_113918118.jpg", "full": "/quick-builds/washing-machine-repair/PXL_20251203_113918118.jpg", "thumb": "/quick-builds/washing-machine-repair/thumbs/PXL_20251203_113918118.jpg", "date": "December 3, 2025", "short_date": "Dec 3, 2025", "aspect_ratio": 0.75}, {"type": "image", "filename": "PXL_20251203_115406606.jpg", "full": "/quick-builds/washing-machine-repair/PXL_20251203_115406606.jpg", "thumb": "/quick-builds/washing-machine-repair/thumbs/PXL_20251203_115406606.jpg", "date": "December 3, 2025", "short_date": "Dec 3, 2025", "aspect_ratio": 0.75}, {"type": "image", "filename": "PXL_20251205_114333414.MP.jpg", "full": "/quick-builds/washing-machine-repair/PXL_20251205_114333414.MP.jpg", "thumb": "/quick-builds/washing-machine-repair/thumbs/PXL_20251205_114333414.MP.jpg", "date": "December 5, 2025", "short_date": "Dec 5, 2025", "aspect_ratio": 0.75}, {"type": "image", "filename": "PXL_20251205_121850142.jpg", "full": "/quick-builds/washing-machine-repair/PXL_20251205_121850142.jpg", "thumb": "/quick-builds/washing-machine-repair/thumbs/PXL_20251205_121850142.jpg", "date": "December 5, 2025", "short_date": "Dec 5, 2025", "aspect_ratio": 0.75}];
     let currentIndex = 0;
     let lightboxImageRequestId = 0;
@@ -245,13 +252,42 @@
     const lightboxDate = document.getElementById("lightbox-date");
     const lightboxCounter = document.getElementById("lightbox-counter");
 
-    function openLightbox(index) {
+    function findGalleryIndexFromHash(hash) {
+      if (!hash || hash.length <= 1) return -1;
+      const raw = decodeURIComponent(hash.slice(1)).trim().toLowerCase();
+      let idx = gallery.findIndex(item => item.filename && item.filename.toLowerCase() === raw);
+      if (idx !== -1) return idx;
+      idx = gallery.findIndex(item => {
+        if (!item.filename) return false;
+        const base = item.filename.replace(/\.[^/.]+$/, '').toLowerCase();
+        return base === raw;
+      });
+      return idx;
+    }
+
+    function syncHashToItem(item, push = false) {
+      if (!item || !item.filename) return;
+      const targetHash = '#' + encodeURIComponent(item.filename);
+      if (window.location.hash !== targetHash) {
+        if (push) {
+          history.pushState({ lightbox: true, filename: item.filename }, "", targetHash);
+        } else {
+          history.replaceState({ lightbox: true, filename: item.filename }, "", targetHash);
+        }
+      }
+    }
+
+    function openLightbox(index, updateHistory = true) {
       if (index < 0 || index >= gallery.length) return;
       currentIndex = index;
       updateLightboxContent();
       lightbox.classList.add("active");
       lightbox.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
+
+      if (updateHistory) {
+        syncHashToItem(gallery[index], true);
+      }
 
       if (typeof gtag === 'function') {
         const item = gallery[index];
@@ -265,7 +301,7 @@
       }
     }
 
-    function closeLightbox() {
+    function closeLightbox(updateHistory = true) {
       lightboxImageRequestId++;
       lightbox.classList.remove("active");
       lightbox.setAttribute("aria-hidden", "true");
@@ -278,6 +314,10 @@
       lightboxVideo.removeAttribute("poster");
       lightboxVideo.load();
       lightboxVideo.hidden = true;
+
+      if (updateHistory && window.location.hash) {
+        history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
     }
 
     function handleBackdropClick(e) {
@@ -378,6 +418,7 @@
       if (gallery.length === 0) return;
       currentIndex = (currentIndex + 1) % gallery.length;
       updateLightboxContent();
+      syncHashToItem(gallery[currentIndex], false);
 
       if (typeof gtag === 'function') {
         const item = gallery[currentIndex];
@@ -397,6 +438,7 @@
       if (gallery.length === 0) return;
       currentIndex = (currentIndex - 1 + gallery.length) % gallery.length;
       updateLightboxContent();
+      syncHashToItem(gallery[currentIndex], false);
 
       if (typeof gtag === 'function') {
         const item = gallery[currentIndex];
@@ -410,6 +452,15 @@
         });
       }
     }
+
+    window.addEventListener("popstate", () => {
+      const idx = findGalleryIndexFromHash(window.location.hash);
+      if (idx !== -1) {
+        openLightbox(idx, false);
+      } else if (lightbox.classList.contains("active")) {
+        closeLightbox(false);
+      }
+    });
 
     document.addEventListener("keydown", (e) => {
       if (!lightbox.classList.contains("active")) return;
@@ -440,6 +491,6 @@
     });
 
   </script>
-  <script src="/js/navigation.js?v=1788811524"></script>
+  <script src="/js/navigation.js?v=1788813842"></script>
 </body>
 </html>
