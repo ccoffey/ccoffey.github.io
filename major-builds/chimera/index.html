@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chimera | Cathal Coffey</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788806676">
+  <link rel="stylesheet" href="/css/style.css?v=1788810053">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -180,7 +180,7 @@
 
   <p>Next, I needed to dial in the primary input: a single rotary encoder with a push button. To refine the interaction model, I built a native clone of Nokia's Snake. Naturally, an arcade game demanded 8 bit audio for sound effects and background music, followed by flash persistence for high scores.</p>
 
-  <p>To ensure the hardware was tamper resistant, I went deep into ESP32 silicon security: provisioning Secure Boot and Flash Encryption. I also knew we needed seamless over the air (OTA) updates—flashing both devices over USB during rapid development would quickly become a pain. I built an update pipeline hooked into GitHub Releases: Chimera polls the repo every 15 minutes in the background, quietly downloads any newly published binary, and installs it. Moving to the latest firmware just requires a standard reboot.</p>
+  <p>To ensure the hardware was tamper resistant, I went deep into ESP32 silicon security: provisioning Secure Boot and Flash Encryption. I also knew we needed seamless over-the-air (OTA) updates—flashing both devices over USB during rapid development would quickly become a pain. Rather than risk embedding sensitive GitHub credentials in device flash, I designed a secure update pipeline: the source repository is private, and releases are brokered through a Cloudflare Worker proxy. Chimera connects over TLS 1.3 (validated against Mozilla's root CA bundle once clock-synced via NTP) with a pre-shared device secret header. The worker authenticates with GitHub using an edge-encrypted PAT, caches release assets to protect API limits, and streams the binary down into Chimera's inactive OTA slot with SHA-256 validation and hardware rollback protection. Moving to the latest firmware just requires a standard reboot.</p>
 
   <p>Chimera is still a work in progress. Now that the hardware and OS foundation are rock solid, I'm finally back to building the messaging client itself. Stay tuned.</p>
         </div>
@@ -665,6 +665,6 @@
       });
     }
   </script>
-  <script src="/js/navigation.js?v=1788806676"></script>
+  <script src="/js/navigation.js?v=1788810053"></script>
 </body>
 </html>
