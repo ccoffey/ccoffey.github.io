@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Chimera | Cathal Coffey</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788729151">
+  <link rel="stylesheet" href="/css/style.css?v=1788779286">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -18,9 +18,6 @@
 <body>
   <nav class="top-nav">
     <div class="container nav-inner">
-      <a href="/" class="nav-brand">
-        <span class="brand-name">Cathal Coffey</span>
-      </a>
       <button class="nav-menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">
         <span>Menu</span>
         <svg class="nav-menu-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -47,7 +44,7 @@
               <a href="/major-builds/claw-machine/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Claw Machine</span>
-                  <span class="dropdown-item-desc">A full-size, coin-operated arcade machine built from first principles: mechanics, custom electronics, firmware and cabinet.</span>
+                  <span class="dropdown-item-desc">A full-size, coin-operated claw machine built from first principles (no tutorials followed here)</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
@@ -137,11 +134,6 @@
 
   <div class="container">
     <header class="build-header-full">
-      <div class="build-context-row">
-        <span>Self-directed project</span>
-        <span class="build-context-separator" aria-hidden="true">&middot;</span>
-        <span>July 2026 – Present</span>
-      </div>
       <h1 class="build-heading">Chimera</h1>
       <p class="build-sub">A custom ESP32-C5 handheld computer with a monochrome UI, audio, storage, Wi-Fi, hardware security and OTA updates.</p>
       <div class="tag-row">
@@ -198,40 +190,6 @@
     </div>
 
     
-
-
-    <section class="engineering-summary" aria-labelledby="engineering-summary-title">
-      <div class="engineering-summary-header">
-        <div>
-          <p class="engineering-summary-kicker">Working-system evidence</p>
-          <h2 id="engineering-summary-title">Engineering at a glance</h2>
-        </div>
-        <p class="engineering-status">Working handheld OS v1.5.6 · Secure messaging still in development</p>
-      </div>
-      <div class="engineering-highlight-grid">
-
-        <article class="engineering-highlight-card">
-          <p class="engineering-highlight-label">Embedded architecture</p>
-          <h3>A maintainable application platform, not a monolithic sketch</h3>
-          <p>An explicit composition root wires narrow service contracts for display, input, audio, storage, power, Wi-Fi and updates. Apps activate without dynamic heap allocation and can be exercised with independent fakes off-device.</p>
-        </article>
-        <article class="engineering-highlight-card">
-          <p class="engineering-highlight-label">Hardware product</p>
-          <h3>Display, input, sound, recording, storage and battery in one enclosure</h3>
-          <p>The ESP32-C5 drives a 128×64 OLED and rotary interface, shares I²S clocks between a digital microphone and amplifier, streams files from SD, and monitors both LiPo voltage and USB power.</p>
-        </article>
-        <article class="engineering-highlight-card">
-          <p class="engineering-highlight-label">Security and delivery</p>
-          <h3>Encrypted storage with two recoverable update paths</h3>
-          <p>Flash encryption, encrypted NVS, salted PIN hashes and persistent lockout state protect the device. Dual OTA partitions support both a custom zero-button USB flasher and signed releases delivered through a credential-isolating Cloudflare proxy.</p>
-        </article>
-        <article class="engineering-highlight-card">
-          <p class="engineering-highlight-label">Verification</p>
-          <h3>Host tests plus pixel-level UI regression coverage</h3>
-          <p>The repository contains 57 host-side test sources and 101 native-resolution visual snapshots. The production LVGL renderer is checked at the OLED&#x27;s actual 128×64 framebuffer alongside formatting, static analysis and firmware builds in CI.</p>
-        </article>
-      </div>
-    </section>
 
     
     <section class="next-steps-box">
@@ -590,6 +548,6 @@
       });
     }
   </script>
-  <script src="/js/navigation.js?v=1788729151"></script>
+  <script src="/js/navigation.js?v=1788779286"></script>
 </body>
 </html>

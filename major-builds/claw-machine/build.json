@@ -1,44 +1,21 @@
 {
   "title": "Claw Machine",
-  "subtitle": "A full-size, coin-operated arcade machine built from first principles: mechanics, custom electronics, firmware and cabinet.",
+  "subtitle": "A full-size, coin-operated claw machine built from first principles (no tutorials followed here)",
   "tags": [
-    "Embedded C++",
-    "Custom PCB",
-    "Motion Control",
+    "ESP32",
+    "C++",
+    "Custom PCB (KiCad)",
     "3D Printing",
-    "Gear Design"
+    "Worm & Wheel Gear Design"
   ],
   "dates": "November 2025 \u2013 September 2026",
   "order": 1,
-  "status": "Working machine \u00b7 In daily family use \u00b7 Cabinet finish remaining",
-  "engineering_highlights": [
-    {
-      "label": "Mechanical iteration",
-      "title": "From slow lead screw to arcade-speed motion",
-      "description": "The first linear rail was too slow. I replaced it with an X/Y belt gantry, then printed about 20 worm-and-wheel variants to make the Z axis fast while retaining self-locking holding torque."
-    },
-    {
-      "label": "Electronics",
-      "title": "A custom PCB across four voltage domains",
-      "description": "Two KiCad revisions replaced a failure-prone breadboard with a two-layer board integrating 3.3V, 5V, 12V and 24V domains, three stepper drivers, a MOSFET-switched claw, coin input, audio, LEDs and break-beam sensing."
-    },
-    {
-      "label": "Control software",
-      "title": "A 12-state game cycle on one ESP32",
-      "description": "The firmware coordinates credits, manual X/Y motion, drop, grab, retract, homing, release, prize detection and audio-synchronised win/lose feedback without blocking gameplay."
-    },
-    {
-      "label": "Debugging and safety",
-      "title": "Calibration, bounds and observable state",
-      "description": "At boot, the machine homes X/Y together, measures usable travel, centres the gantry before homing Z, and enforces physical limits plus software bounds. A safe mode and change-only serial snapshots make faults diagnosable on the bench."
-    }
-  ],
-  "story": "<p>This build was sparked during a family vacation to Tokyo, where my kids became completely obsessed by the hundreds of claw machines towering through the GiGO building in Akihabara. Standing there watching them play, I distinctly remember saying to myself: <em>\"When I get home, I'm going to build one of these from first principles.\"</em> This was my very first electronics project. Armed with a crappy old soldering iron dug out of my attic, I bought a stepper motor and an ESP32-WROOM board, got the shaft to spin, and the obsession took off.</p>\n<p>I started prototyping a linear rail: my initial lead-screw drive was far too slow for an arcade game, so I pivoted to belt drives, 3D printing custom carriages and rail mounts until the carriage zipped left and right at arcade speed. Adding a perpendicular rail unlocked full 2D X/Y motion, and wiring up an arcade joystick to control the carriage (which eventually inspired my 2-player arcade cabinet!) brought it to life. Solving the Z-axis was the hardest mechanical challenge: I needed holding torque so the claw wouldn't drop under gravity when motors were unpowered. After discovering worm-and-wheel gears, I fell in love with self-locking holding torque, 3D printing 20 iterations of worms and gears\u2014dialing in thread starts, pitch, and gear ratios\u2014until the drop was snappy and reliable.</p>\n<p>The claw itself is a solenoid-driven mechanism sourced from AliExpress: energizing pulls the claws closed; de-energizing releases. Unlike commercial arcade machines that use PWM pulse tricks to deliberately weaken claw strength and cheat players, my machine is 100% fair every single time\u2014the players are my kids, and the goal is pure fun. The project started as a rat's nest of breadboards and jumper wires. Juggling four separate voltage rails (3.3V, 5V, 12V, and 24V), I accidentally cross-shorted rails and built a small graveyard of blown ESP32s. To stop frying chips, I taught myself PCB layout; a week later I was completely hooked on KiCad and PCBWay. It took just two board revisions to produce a rock-solid custom PCB integrating motor drivers, DFPlayer Mini sound effects, WS2812B lighting, an arcade coin acceptor, and an optical laser break-beam sensor to detect winning prize drops.</p>\n<p>Once everything worked on my workbench, I framed the full-scale cabinet out of 2&times;4 timber and MDF, installed custom-cut acrylic viewing panes on three sides, and hinged the side door for easy prize reloading. The cabinet is mechanically complete and in daily use\u2014it's still in its raw timber state, with priming, painting, and artwork waiting for a future weekend.</p>",
+  "story": "<article class=\"project-post\">\n  <p>This build was sparked during a family vacation to Tokyo, where my kids became completely obsessed with the hundreds of claw machines in the GiGO building in Akihabara. Standing there watching them play, I distinctly remember saying to myself: <em>&ldquo;When we get home, I am going to build one of these from first principles.&rdquo;</em></p>\n\n  <p>I started by building a simple linear rail. Initially I used a lead-screw turned by a Nema 17 stepper motor with a simple carriage (just a 3D-printed box built around the screw itself) but it turned out to be too slow and too precise; it just didn't feel like a fast and fun arcade game. I tried a belt drive next (inspired by my Prusa MK3S+&rsquo;s Y-axis) and this just felt right. I hooked up an old arcade joystick that was lying around in my attic for a decade, just waiting to be used someday. To my surprise my kids loved playing with the joystick, just moving the carriage back and forth, even though there was no goal, no prize.</p>\n\n  <p>Next I built a second linear rail and mounted it perpendicular to the first. The first rail moved the second and the second moved a carriage. With this setup I could use the arcade joystick to position the carriage in the X/Y plane. All that was left was the Z-axis.</p>\n\n  <p>The Z-axis turned out to be much harder than I expected. It couldn't be a belt drive, it needed to lower and raise a claw, so I 3D-printed a spool and connected it to yet another Nema 17 stepper motor. This worked well but required the stepper motor to be powered at all times (I didn't want this) or the claw would drop like a ton of bricks. So after much trial and error, I learned about worm and wheel gears which provide zero-power idle torque. I ended up printing 30 of these before getting a pair that worked just right.</p>\n\n  <p>I thought about building a claw myself from scratch: they are just a solenoid and a clever mechanism that turns linear motion into grabbing motion, but I decided to leave that for another day and just buy a claw from AliExpress instead. Once I had this all working on my office desk, my kids started asking for features: it should play music and sound effects when you win or lose, it should have a coin slot, it should have lights. I was excited that they were excited and it pushed me to think about a bunch of things I hadn't considered yet: how was I going to detect when a prize was won? Did I have enough free GPIO pins left on the ESP32? Turns out I didn't, and I had to learn about multiplexing the gantry's many limit switches using resistor ladders.</p>\n\n  <p>At this point in the build I had 4 power rails: 3.3V for logic, 5V for the audio &amp; SD card modules, 12V for the LED strip, and 24V for the stepper motors and the claw's solenoid. The project was still built using 6 breadboards and a mess of wiring and so I ended up creating a graveyard of ESP32s and TMC2208 stepper motor drivers because of shorts (ESP32s do not like it when you put 24 volts into their 3.3 volt logic pins) or simple mistakes.</p>\n\n  <p>So I decided to learn KiCad and build a custom PCB. It took me a few weeks and the first board that arrived from PCBWay was missing ports to plug in output devices like the claw and motors (real facepalm moment) but the second version worked really well and I never burnt out another ESP32 or motor controller from this point on in the project.</p>\n\n  <p>Now that I had it working, I needed to get it out of my office where it took up half the physical space so I built a frame from 2x4s in my living room (I have a very understanding wife) and mounted the claw machine gantry on top of it. I then skinned it in MDF and added acrylic sheets for windows on 3 of the sides. I mounted the joystick, coin collector, and LEDs. I spent far too long trying to figure out the optimal way to mount a single break beam when really what I needed was a Mission: Impossible-style grid of overlapping laser lines. My kids and I then spent a huge amount of time choosing sound effects together which was a lot of fun. We eventually settled on Pac-Man music during startup/calibration, the Mario coin collect sound for the coin collector, and win/die music from Mario too. We spent even longer on the LED lighting effects and decided on a flash of gold when a coin is entered, a progress bar when the claw is dropping/raising, a celebratory rainbow effect when you win a prize, and a &ldquo;wah wah wah&rdquo; flashing red when you lose.</p>\n\n  <p>This has been one of my most successful builds to date. My kids regularly play with it and it always causes huge excitement when someone new visits our house for the first time. It's a real conversation starter.</p>\n</article>",
   "cover_image": "PXL_20260906_064952583.jpg",
   "hero_video": "claw_machine_demo.mp4",
   "next_steps": [
-    "Paint & Graphics: Sand, prime, and apply custom arcade-style cabinet graphics and marquee artwork to finish the raw timber.",
-    "Slack-line claw drop sensor: Redesign the claw drop mechanism so that it detects when the claw goes slack instead of the drop being a fixed amount of time (which doesn't work well when prizes are stacked high or non-uniformly).",
-    "Dual optical break-beam chute: Add a second beam sensor to the exit chute so that we don't miss small prize wins."
+    "Paint & Graphics: At the very least I need to sand and paint this so that it doesn't look so raw. I am also considering designing custom graphics",
+    "Redesign the claw drop mechanism so that it detects when the claw goes slack instead of just dropping a fixed ammount which fails to grab tall teddies",
+    "Add a second beam sensor to the exit chute so that we don't miss small prize wins"
   ]
 }

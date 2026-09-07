@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Magic Stairs | Cathal Coffey</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788729151">
+  <link rel="stylesheet" href="/css/style.css?v=1788779286">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -18,9 +18,6 @@
 <body>
   <nav class="top-nav">
     <div class="container nav-inner">
-      <a href="/" class="nav-brand">
-        <span class="brand-name">Cathal Coffey</span>
-      </a>
       <button class="nav-menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">
         <span>Menu</span>
         <svg class="nav-menu-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -47,7 +44,7 @@
               <a href="/major-builds/claw-machine/" class="nav-dropdown-item">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Claw Machine</span>
-                  <span class="dropdown-item-desc">A full-size, coin-operated arcade machine built from first principles: mechanics, custom electronics, firmware and cabinet.</span>
+                  <span class="dropdown-item-desc">A full-size, coin-operated claw machine built from first principles (no tutorials followed here)</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
@@ -137,11 +134,6 @@
 
   <div class="container">
     <header class="build-header-full">
-      <div class="build-context-row">
-        <span>Self-directed project</span>
-        <span class="build-context-separator" aria-hidden="true">&middot;</span>
-        <span>April 2026 – June 2026</span>
-      </div>
       <h1 class="build-heading">Magic Stairs</h1>
       <p class="build-sub">A distributed staircase lighting system with one microcontroller and laser distance sensor per step.</p>
       <div class="tag-row">
@@ -197,40 +189,6 @@
     </div>
 
     
-
-
-    <section class="engineering-summary" aria-labelledby="engineering-summary-title">
-      <div class="engineering-summary-header">
-        <div>
-          <p class="engineering-summary-kicker">Working-system evidence</p>
-          <h2 id="engineering-summary-title">Engineering at a glance</h2>
-        </div>
-        <p class="engineering-status">Installed and working · Firmware and calibration still evolving</p>
-      </div>
-      <div class="engineering-highlight-grid">
-
-        <article class="engineering-highlight-card">
-          <p class="engineering-highlight-label">Automatic identity</p>
-          <h3>One node firmware image learns its physical step at boot</h3>
-          <p>Each ATtiny decodes checksummed configuration frames from its own WS2815 data position. Five-frame consensus establishes the step index, which then becomes its unique address on the shared I²C bus.</p>
-        </article>
-        <article class="engineering-highlight-card">
-          <p class="engineering-highlight-label">Bus architecture</p>
-          <h3>Every step bridges a shared bus to a private sensor bus</h3>
-          <p>The ATtiny is a hardware I²C slave to the ESP32 while simultaneously bit-banging a private I²C master for its VL53L0X. Every identical sensor can therefore retain the factory address 0x29.</p>
-        </article>
-        <article class="engineering-highlight-card">
-          <p class="engineering-highlight-label">Fault model</p>
-          <h3>Discovery keeps a failed step from hiding its neighbours</h3>
-          <p>The controller sweeps the full legal address range, records gaps inside the discovered chain, polls healthy nodes at 10 Hz and keeps missing positions dark while reporting responding, booting, stale and missing health states.</p>
-        </article>
-        <article class="engineering-highlight-card">
-          <p class="engineering-highlight-label">Operability</p>
-          <h3>Calibration and optical telemetry live on the controller</h3>
-          <p>An ESP32-hosted admin portal adjusts thresholds, colour, brightness and sensor timing budgets while exposing raw and filtered distance, signal rate, ambient rate, effective SPAD count and per-step health.</p>
-        </article>
-      </div>
-    </section>
 
     
     <section class="next-steps-box">
@@ -657,6 +615,6 @@
       });
     }
   </script>
-  <script src="/js/navigation.js?v=1788729151"></script>
+  <script src="/js/navigation.js?v=1788779286"></script>
 </body>
 </html>

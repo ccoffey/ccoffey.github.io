@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Claw Machine | Cathal Coffey</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788729151">
+  <link rel="stylesheet" href="/css/style.css?v=1788779286">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -18,9 +18,6 @@
 <body>
   <nav class="top-nav">
     <div class="container nav-inner">
-      <a href="/" class="nav-brand">
-        <span class="brand-name">Cathal Coffey</span>
-      </a>
       <button class="nav-menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">
         <span>Menu</span>
         <svg class="nav-menu-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
@@ -47,7 +44,7 @@
               <a href="/major-builds/claw-machine/" class="nav-dropdown-item is-active">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Claw Machine</span>
-                  <span class="dropdown-item-desc">A full-size, coin-operated arcade machine built from first principles: mechanics, custom electronics, firmware and cabinet.</span>
+                  <span class="dropdown-item-desc">A full-size, coin-operated claw machine built from first principles (no tutorials followed here)</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
@@ -137,19 +134,14 @@
 
   <div class="container">
     <header class="build-header-full">
-      <div class="build-context-row">
-        <span>Self-directed project</span>
-        <span class="build-context-separator" aria-hidden="true">&middot;</span>
-        <span>November 2025 – September 2026</span>
-      </div>
       <h1 class="build-heading">Claw Machine</h1>
-      <p class="build-sub">A full-size, coin-operated arcade machine built from first principles: mechanics, custom electronics, firmware and cabinet.</p>
+      <p class="build-sub">A full-size, coin-operated claw machine built from first principles (no tutorials followed here)</p>
       <div class="tag-row">
-        <span class="tech-tag">Embedded C++</span>
-        <span class="tech-tag">Custom PCB</span>
-        <span class="tech-tag">Motion Control</span>
+        <span class="tech-tag">ESP32</span>
+        <span class="tech-tag">C++</span>
+        <span class="tech-tag">Custom PCB (KiCad)</span>
         <span class="tech-tag">3D Printing</span>
-        <span class="tech-tag">Gear Design</span>
+        <span class="tech-tag">Worm & Wheel Gear Design</span>
       </div>
     </header>
 
@@ -180,10 +172,25 @@
       </h2>
       <div class="narrative-collapsible" id="narrativeCollapsible">
         <div class="narrative-content" id="narrativeContent">
-          <p>This build was sparked during a family vacation to Tokyo, where my kids became completely obsessed by the hundreds of claw machines towering through the GiGO building in Akihabara. Standing there watching them play, I distinctly remember saying to myself: <em>"When I get home, I'm going to build one of these from first principles."</em> This was my very first electronics project. Armed with a crappy old soldering iron dug out of my attic, I bought a stepper motor and an ESP32-WROOM board, got the shaft to spin, and the obsession took off.</p>
-<p>I started prototyping a linear rail: my initial lead-screw drive was far too slow for an arcade game, so I pivoted to belt drives, 3D printing custom carriages and rail mounts until the carriage zipped left and right at arcade speed. Adding a perpendicular rail unlocked full 2D X/Y motion, and wiring up an arcade joystick to control the carriage (which eventually inspired my 2-player arcade cabinet!) brought it to life. Solving the Z-axis was the hardest mechanical challenge: I needed holding torque so the claw wouldn't drop under gravity when motors were unpowered. After discovering worm-and-wheel gears, I fell in love with self-locking holding torque, 3D printing 20 iterations of worms and gears—dialing in thread starts, pitch, and gear ratios—until the drop was snappy and reliable.</p>
-<p>The claw itself is a solenoid-driven mechanism sourced from AliExpress: energizing pulls the claws closed; de-energizing releases. Unlike commercial arcade machines that use PWM pulse tricks to deliberately weaken claw strength and cheat players, my machine is 100% fair every single time—the players are my kids, and the goal is pure fun. The project started as a rat's nest of breadboards and jumper wires. Juggling four separate voltage rails (3.3V, 5V, 12V, and 24V), I accidentally cross-shorted rails and built a small graveyard of blown ESP32s. To stop frying chips, I taught myself PCB layout; a week later I was completely hooked on KiCad and PCBWay. It took just two board revisions to produce a rock-solid custom PCB integrating motor drivers, DFPlayer Mini sound effects, WS2812B lighting, an arcade coin acceptor, and an optical laser break-beam sensor to detect winning prize drops.</p>
-<p>Once everything worked on my workbench, I framed the full-scale cabinet out of 2&times;4 timber and MDF, installed custom-cut acrylic viewing panes on three sides, and hinged the side door for easy prize reloading. The cabinet is mechanically complete and in daily use—it's still in its raw timber state, with priming, painting, and artwork waiting for a future weekend.</p>
+          <article class="project-post">
+  <p>This build was sparked during a family vacation to Tokyo, where my kids became completely obsessed with the hundreds of claw machines in the GiGO building in Akihabara. Standing there watching them play, I distinctly remember saying to myself: <em>&ldquo;When we get home, I am going to build one of these from first principles.&rdquo;</em></p>
+
+  <p>I started by building a simple linear rail. Initially I used a lead-screw turned by a Nema 17 stepper motor with a simple carriage (just a 3D-printed box built around the screw itself) but it turned out to be too slow and too precise; it just didn't feel like a fast and fun arcade game. I tried a belt drive next (inspired by my Prusa MK3S+&rsquo;s Y-axis) and this just felt right. I hooked up an old arcade joystick that was lying around in my attic for a decade, just waiting to be used someday. To my surprise my kids loved playing with the joystick, just moving the carriage back and forth, even though there was no goal, no prize.</p>
+
+  <p>Next I built a second linear rail and mounted it perpendicular to the first. The first rail moved the second and the second moved a carriage. With this setup I could use the arcade joystick to position the carriage in the X/Y plane. All that was left was the Z-axis.</p>
+
+  <p>The Z-axis turned out to be much harder than I expected. It couldn't be a belt drive, it needed to lower and raise a claw, so I 3D-printed a spool and connected it to yet another Nema 17 stepper motor. This worked well but required the stepper motor to be powered at all times (I didn't want this) or the claw would drop like a ton of bricks. So after much trial and error, I learned about worm and wheel gears which provide zero-power idle torque. I ended up printing 30 of these before getting a pair that worked just right.</p>
+
+  <p>I thought about building a claw myself from scratch: they are just a solenoid and a clever mechanism that turns linear motion into grabbing motion, but I decided to leave that for another day and just buy a claw from AliExpress instead. Once I had this all working on my office desk, my kids started asking for features: it should play music and sound effects when you win or lose, it should have a coin slot, it should have lights. I was excited that they were excited and it pushed me to think about a bunch of things I hadn't considered yet: how was I going to detect when a prize was won? Did I have enough free GPIO pins left on the ESP32? Turns out I didn't, and I had to learn about multiplexing the gantry's many limit switches using resistor ladders.</p>
+
+  <p>At this point in the build I had 4 power rails: 3.3V for logic, 5V for the audio &amp; SD card modules, 12V for the LED strip, and 24V for the stepper motors and the claw's solenoid. The project was still built using 6 breadboards and a mess of wiring and so I ended up creating a graveyard of ESP32s and TMC2208 stepper motor drivers because of shorts (ESP32s do not like it when you put 24 volts into their 3.3 volt logic pins) or simple mistakes.</p>
+
+  <p>So I decided to learn KiCad and build a custom PCB. It took me a few weeks and the first board that arrived from PCBWay was missing ports to plug in output devices like the claw and motors (real facepalm moment) but the second version worked really well and I never burnt out another ESP32 or motor controller from this point on in the project.</p>
+
+  <p>Now that I had it working, I needed to get it out of my office where it took up half the physical space so I built a frame from 2x4s in my living room (I have a very understanding wife) and mounted the claw machine gantry on top of it. I then skinned it in MDF and added acrylic sheets for windows on 3 of the sides. I mounted the joystick, coin collector, and LEDs. I spent far too long trying to figure out the optimal way to mount a single break beam when really what I needed was a Mission: Impossible-style grid of overlapping laser lines. My kids and I then spent a huge amount of time choosing sound effects together which was a lot of fun. We eventually settled on Pac-Man music during startup/calibration, the Mario coin collect sound for the coin collector, and win/die music from Mario too. We spent even longer on the LED lighting effects and decided on a flash of gold when a coin is entered, a progress bar when the claw is dropping/raising, a celebratory rainbow effect when you win a prize, and a &ldquo;wah wah wah&rdquo; flashing red when you lose.</p>
+
+  <p>This has been one of my most successful builds to date. My kids regularly play with it and it always causes huge excitement when someone new visits our house for the first time. It's a real conversation starter.</p>
+</article>
         </div>
         <div class="narrative-fade" id="narrativeFade"></div>
       </div>
@@ -199,40 +206,6 @@
 
     
 
-
-    <section class="engineering-summary" aria-labelledby="engineering-summary-title">
-      <div class="engineering-summary-header">
-        <div>
-          <p class="engineering-summary-kicker">Working-system evidence</p>
-          <h2 id="engineering-summary-title">Engineering at a glance</h2>
-        </div>
-        <p class="engineering-status">Working machine · In daily family use · Cabinet finish remaining</p>
-      </div>
-      <div class="engineering-highlight-grid">
-
-        <article class="engineering-highlight-card">
-          <p class="engineering-highlight-label">Mechanical iteration</p>
-          <h3>From slow lead screw to arcade-speed motion</h3>
-          <p>The first linear rail was too slow. I replaced it with an X/Y belt gantry, then printed about 20 worm-and-wheel variants to make the Z axis fast while retaining self-locking holding torque.</p>
-        </article>
-        <article class="engineering-highlight-card">
-          <p class="engineering-highlight-label">Electronics</p>
-          <h3>A custom PCB across four voltage domains</h3>
-          <p>Two KiCad revisions replaced a failure-prone breadboard with a two-layer board integrating 3.3V, 5V, 12V and 24V domains, three stepper drivers, a MOSFET-switched claw, coin input, audio, LEDs and break-beam sensing.</p>
-        </article>
-        <article class="engineering-highlight-card">
-          <p class="engineering-highlight-label">Control software</p>
-          <h3>A 12-state game cycle on one ESP32</h3>
-          <p>The firmware coordinates credits, manual X/Y motion, drop, grab, retract, homing, release, prize detection and audio-synchronised win/lose feedback without blocking gameplay.</p>
-        </article>
-        <article class="engineering-highlight-card">
-          <p class="engineering-highlight-label">Debugging and safety</p>
-          <h3>Calibration, bounds and observable state</h3>
-          <p>At boot, the machine homes X/Y together, measures usable travel, centres the gantry before homing Z, and enforces physical limits plus software bounds. A safe mode and change-only serial snapshots make faults diagnosable on the bench.</p>
-        </article>
-      </div>
-    </section>
-
     
     <section class="next-steps-box">
       <div class="next-steps-header">
@@ -246,9 +219,9 @@
         </div>
       </div>
       <ul class="next-steps-list">
-        <li class="next-step-item"><strong>Paint & Graphics:</strong> Sand, prime, and apply custom arcade-style cabinet graphics and marquee artwork to finish the raw timber.</li>
-        <li class="next-step-item"><strong>Slack-line claw drop sensor:</strong> Redesign the claw drop mechanism so that it detects when the claw goes slack instead of the drop being a fixed amount of time (which doesn't work well when prizes are stacked high or non-uniformly).</li>
-        <li class="next-step-item"><strong>Dual optical break-beam chute:</strong> Add a second beam sensor to the exit chute so that we don't miss small prize wins.</li>
+        <li class="next-step-item"><strong>Paint & Graphics:</strong> At the very least I need to sand and paint this so that it doesn't look so raw. I am also considering designing custom graphics</li>
+        <li class="next-step-item">Redesign the claw drop mechanism so that it detects when the claw goes slack instead of just dropping a fixed ammount which fails to grab tall teddies</li>
+        <li class="next-step-item">Add a second beam sensor to the exit chute so that we don't miss small prize wins</li>
       </ul>
     </section>
 
@@ -257,12 +230,28 @@
         <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/></svg>
         <span>Build Gallery</span>
       </div>
-      <span class="gallery-subtitle">29 Chronological Photos</span>
+      <span class="gallery-subtitle">31 Chronological Photos</span>
     </div>
 
     <div class="photo-grid">
       
-      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(0)">
+      <div class="photo-card" style="--ar: 1.172;" onclick="openLightbox(0)">
+        <img src="/major-builds/claw-machine/thumbs/PXL_20250624_063803965.jpg" alt="Claw Machine build photo" loading="lazy">
+        <span class="photo-date-pill">Jun 24, 2025</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(1)">
+        <img src="/major-builds/claw-machine/thumbs/PXL_20250701_073947235.jpg" alt="Claw Machine build photo" loading="lazy">
+        <span class="photo-date-pill">Jul 1, 2025</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(2)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20251125_092438766.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Nov 25, 2025</span>
         <div class="photo-expand-icon">
@@ -270,7 +259,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(1)">
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(3)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20251126_201639320.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Nov 26, 2025</span>
         <div class="photo-expand-icon">
@@ -278,7 +267,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(2)">
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(4)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20251202_081154747.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Dec 2, 2025</span>
         <div class="photo-expand-icon">
@@ -286,7 +275,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(3)">
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(5)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20251213_094418557.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Dec 13, 2025</span>
         <div class="photo-expand-icon">
@@ -294,7 +283,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(4)">
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(6)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20251213_152603641.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Dec 13, 2025</span>
         <div class="photo-expand-icon">
@@ -302,7 +291,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(5)">
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(7)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20251213_152617898.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Dec 13, 2025</span>
         <div class="photo-expand-icon">
@@ -310,7 +299,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(6)">
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(8)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20251216_152907911.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Dec 16, 2025</span>
         <div class="photo-expand-icon">
@@ -318,7 +307,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(7)">
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(9)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20251216_152921266.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Dec 16, 2025</span>
         <div class="photo-expand-icon">
@@ -326,7 +315,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(8)">
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(10)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20251216_152936103.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Dec 16, 2025</span>
         <div class="photo-expand-icon">
@@ -334,7 +323,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(9)">
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(11)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20251220_205533443.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Dec 20, 2025</span>
         <div class="photo-expand-icon">
@@ -342,7 +331,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(10)">
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(12)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260113_102250615.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Jan 13, 2026</span>
         <div class="photo-expand-icon">
@@ -350,7 +339,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(11)">
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(13)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260129_194137708.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Jan 29, 2026</span>
         <div class="photo-expand-icon">
@@ -358,7 +347,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(12)">
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(14)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260130_125232048.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Jan 30, 2026</span>
         <div class="photo-expand-icon">
@@ -366,7 +355,15 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 1.005;" onclick="openLightbox(13)">
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(15)">
+        <img src="/major-builds/claw-machine/thumbs/PXL_20260202_152216406.jpg" alt="Claw Machine build photo" loading="lazy">
+        <span class="photo-date-pill">Feb 2, 2026</span>
+        <div class="photo-expand-icon">
+          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
+        </div>
+      </div>
+
+      <div class="photo-card" style="--ar: 1.005;" onclick="openLightbox(16)">
         <img src="/major-builds/claw-machine/thumbs/IMG-20260209-WA0001.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Feb 9, 2026</span>
         <div class="photo-expand-icon">
@@ -374,7 +371,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.987;" onclick="openLightbox(14)">
+      <div class="photo-card" style="--ar: 0.987;" onclick="openLightbox(17)">
         <img src="/major-builds/claw-machine/thumbs/IMG-20260209-WA0002.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Feb 9, 2026</span>
         <div class="photo-expand-icon">
@@ -382,7 +379,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(15)">
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(18)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260214_171607655.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Feb 14, 2026</span>
         <div class="photo-expand-icon">
@@ -390,7 +387,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(16)">
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(19)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260218_124035886.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Feb 18, 2026</span>
         <div class="photo-expand-icon">
@@ -398,7 +395,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(17)">
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(20)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260225_091256636.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Feb 25, 2026</span>
         <div class="photo-expand-icon">
@@ -406,15 +403,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(18)">
-        <img src="/major-builds/claw-machine/thumbs/IMG-20260225-WA0005.jpg" alt="Claw Machine build photo" loading="lazy">
-        <span class="photo-date-pill">Feb 25, 2026</span>
-        <div class="photo-expand-icon">
-          <svg viewBox="0 0 24 24"><path d="M15 3h6v6m-6-6l6 6M9 21H3v-6m6 6L3 15"/></svg>
-        </div>
-      </div>
-
-      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(19)">
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(21)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260226_150354165.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Feb 26, 2026</span>
         <div class="photo-expand-icon">
@@ -422,7 +411,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(20)">
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(22)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260226_165637811.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Feb 26, 2026</span>
         <div class="photo-expand-icon">
@@ -430,7 +419,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(21)">
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(23)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260306_170110315.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Mar 6, 2026</span>
         <div class="photo-expand-icon">
@@ -438,7 +427,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(22)">
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(24)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260317_135251411.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Mar 17, 2026</span>
         <div class="photo-expand-icon">
@@ -446,7 +435,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(23)">
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(25)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260330_174425759.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Mar 30, 2026</span>
         <div class="photo-expand-icon">
@@ -454,7 +443,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(24)">
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(26)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Sep 6, 2026</span>
         <div class="photo-expand-icon">
@@ -462,7 +451,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(25)">
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(27)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260906_065636346.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Sep 6, 2026</span>
         <div class="photo-expand-icon">
@@ -470,7 +459,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(26)">
+      <div class="photo-card" style="--ar: 1.333;" onclick="openLightbox(28)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260906_065645007.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Sep 6, 2026</span>
         <div class="photo-expand-icon">
@@ -478,7 +467,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(27)">
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(29)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260906_065722740.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Sep 6, 2026</span>
         <div class="photo-expand-icon">
@@ -486,7 +475,7 @@
         </div>
       </div>
 
-      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(28)">
+      <div class="photo-card" style="--ar: 0.75;" onclick="openLightbox(30)">
         <img src="/major-builds/claw-machine/thumbs/PXL_20260906_065730874.jpg" alt="Claw Machine build photo" loading="lazy">
         <span class="photo-date-pill">Sep 6, 2026</span>
         <div class="photo-expand-icon">
@@ -547,7 +536,7 @@
       }
     });
 
-    const gallery = [{"filename": "PXL_20251125_092438766.jpg", "full": "/major-builds/claw-machine/PXL_20251125_092438766.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251125_092438766.jpg", "date": "November 25, 2025", "short_date": "Nov 25, 2025", "aspect_ratio": 1.333}, {"filename": "PXL_20251126_201639320.jpg", "full": "/major-builds/claw-machine/PXL_20251126_201639320.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251126_201639320.jpg", "date": "November 26, 2025", "short_date": "Nov 26, 2025", "aspect_ratio": 1.333}, {"filename": "PXL_20251202_081154747.jpg", "full": "/major-builds/claw-machine/PXL_20251202_081154747.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251202_081154747.jpg", "date": "December 2, 2025", "short_date": "Dec 2, 2025", "aspect_ratio": 1.333}, {"filename": "PXL_20251213_094418557.jpg", "full": "/major-builds/claw-machine/PXL_20251213_094418557.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251213_094418557.jpg", "date": "December 13, 2025", "short_date": "Dec 13, 2025", "aspect_ratio": 1.333}, {"filename": "PXL_20251213_152603641.jpg", "full": "/major-builds/claw-machine/PXL_20251213_152603641.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251213_152603641.jpg", "date": "December 13, 2025", "short_date": "Dec 13, 2025", "aspect_ratio": 0.75}, {"filename": "PXL_20251213_152617898.jpg", "full": "/major-builds/claw-machine/PXL_20251213_152617898.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251213_152617898.jpg", "date": "December 13, 2025", "short_date": "Dec 13, 2025", "aspect_ratio": 0.75}, {"filename": "PXL_20251216_152907911.jpg", "full": "/major-builds/claw-machine/PXL_20251216_152907911.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251216_152907911.jpg", "date": "December 16, 2025", "short_date": "Dec 16, 2025", "aspect_ratio": 0.75}, {"filename": "PXL_20251216_152921266.jpg", "full": "/major-builds/claw-machine/PXL_20251216_152921266.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251216_152921266.jpg", "date": "December 16, 2025", "short_date": "Dec 16, 2025", "aspect_ratio": 1.333}, {"filename": "PXL_20251216_152936103.jpg", "full": "/major-builds/claw-machine/PXL_20251216_152936103.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251216_152936103.jpg", "date": "December 16, 2025", "short_date": "Dec 16, 2025", "aspect_ratio": 1.333}, {"filename": "PXL_20251220_205533443.jpg", "full": "/major-builds/claw-machine/PXL_20251220_205533443.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251220_205533443.jpg", "date": "December 20, 2025", "short_date": "Dec 20, 2025", "aspect_ratio": 1.333}, {"filename": "PXL_20260113_102250615.jpg", "full": "/major-builds/claw-machine/PXL_20260113_102250615.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260113_102250615.jpg", "date": "January 13, 2026", "short_date": "Jan 13, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260129_194137708.jpg", "full": "/major-builds/claw-machine/PXL_20260129_194137708.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260129_194137708.jpg", "date": "January 29, 2026", "short_date": "Jan 29, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260130_125232048.jpg", "full": "/major-builds/claw-machine/PXL_20260130_125232048.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260130_125232048.jpg", "date": "January 30, 2026", "short_date": "Jan 30, 2026", "aspect_ratio": 0.75}, {"filename": "IMG-20260209-WA0001.jpg", "full": "/major-builds/claw-machine/IMG-20260209-WA0001.jpg", "thumb": "/major-builds/claw-machine/thumbs/IMG-20260209-WA0001.jpg", "date": "February 9, 2026", "short_date": "Feb 9, 2026", "aspect_ratio": 1.005}, {"filename": "IMG-20260209-WA0002.jpg", "full": "/major-builds/claw-machine/IMG-20260209-WA0002.jpg", "thumb": "/major-builds/claw-machine/thumbs/IMG-20260209-WA0002.jpg", "date": "February 9, 2026", "short_date": "Feb 9, 2026", "aspect_ratio": 0.987}, {"filename": "PXL_20260214_171607655.jpg", "full": "/major-builds/claw-machine/PXL_20260214_171607655.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260214_171607655.jpg", "date": "February 14, 2026", "short_date": "Feb 14, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260218_124035886.jpg", "full": "/major-builds/claw-machine/PXL_20260218_124035886.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260218_124035886.jpg", "date": "February 18, 2026", "short_date": "Feb 18, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260225_091256636.jpg", "full": "/major-builds/claw-machine/PXL_20260225_091256636.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260225_091256636.jpg", "date": "February 25, 2026", "short_date": "Feb 25, 2026", "aspect_ratio": 0.75}, {"filename": "IMG-20260225-WA0005.jpg", "full": "/major-builds/claw-machine/IMG-20260225-WA0005.jpg", "thumb": "/major-builds/claw-machine/thumbs/IMG-20260225-WA0005.jpg", "date": "February 25, 2026", "short_date": "Feb 25, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260226_150354165.jpg", "full": "/major-builds/claw-machine/PXL_20260226_150354165.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260226_150354165.jpg", "date": "February 26, 2026", "short_date": "Feb 26, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260226_165637811.jpg", "full": "/major-builds/claw-machine/PXL_20260226_165637811.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260226_165637811.jpg", "date": "February 26, 2026", "short_date": "Feb 26, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260306_170110315.jpg", "full": "/major-builds/claw-machine/PXL_20260306_170110315.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260306_170110315.jpg", "date": "March 6, 2026", "short_date": "Mar 6, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260317_135251411.jpg", "full": "/major-builds/claw-machine/PXL_20260317_135251411.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260317_135251411.jpg", "date": "March 17, 2026", "short_date": "Mar 17, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260330_174425759.jpg", "full": "/major-builds/claw-machine/PXL_20260330_174425759.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260330_174425759.jpg", "date": "March 30, 2026", "short_date": "Mar 30, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260906_064952583.jpg", "full": "/major-builds/claw-machine/PXL_20260906_064952583.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg", "date": "September 6, 2026", "short_date": "Sep 6, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260906_065636346.jpg", "full": "/major-builds/claw-machine/PXL_20260906_065636346.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260906_065636346.jpg", "date": "September 6, 2026", "short_date": "Sep 6, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260906_065645007.jpg", "full": "/major-builds/claw-machine/PXL_20260906_065645007.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260906_065645007.jpg", "date": "September 6, 2026", "short_date": "Sep 6, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260906_065722740.jpg", "full": "/major-builds/claw-machine/PXL_20260906_065722740.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260906_065722740.jpg", "date": "September 6, 2026", "short_date": "Sep 6, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260906_065730874.jpg", "full": "/major-builds/claw-machine/PXL_20260906_065730874.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260906_065730874.jpg", "date": "September 6, 2026", "short_date": "Sep 6, 2026", "aspect_ratio": 0.75}];
+    const gallery = [{"filename": "PXL_20250624_063803965.jpg", "full": "/major-builds/claw-machine/PXL_20250624_063803965.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20250624_063803965.jpg", "date": "June 24, 2025", "short_date": "Jun 24, 2025", "aspect_ratio": 1.172}, {"filename": "PXL_20250701_073947235.jpg", "full": "/major-builds/claw-machine/PXL_20250701_073947235.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20250701_073947235.jpg", "date": "July 1, 2025", "short_date": "Jul 1, 2025", "aspect_ratio": 1.333}, {"filename": "PXL_20251125_092438766.jpg", "full": "/major-builds/claw-machine/PXL_20251125_092438766.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251125_092438766.jpg", "date": "November 25, 2025", "short_date": "Nov 25, 2025", "aspect_ratio": 1.333}, {"filename": "PXL_20251126_201639320.jpg", "full": "/major-builds/claw-machine/PXL_20251126_201639320.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251126_201639320.jpg", "date": "November 26, 2025", "short_date": "Nov 26, 2025", "aspect_ratio": 1.333}, {"filename": "PXL_20251202_081154747.jpg", "full": "/major-builds/claw-machine/PXL_20251202_081154747.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251202_081154747.jpg", "date": "December 2, 2025", "short_date": "Dec 2, 2025", "aspect_ratio": 1.333}, {"filename": "PXL_20251213_094418557.jpg", "full": "/major-builds/claw-machine/PXL_20251213_094418557.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251213_094418557.jpg", "date": "December 13, 2025", "short_date": "Dec 13, 2025", "aspect_ratio": 1.333}, {"filename": "PXL_20251213_152603641.jpg", "full": "/major-builds/claw-machine/PXL_20251213_152603641.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251213_152603641.jpg", "date": "December 13, 2025", "short_date": "Dec 13, 2025", "aspect_ratio": 0.75}, {"filename": "PXL_20251213_152617898.jpg", "full": "/major-builds/claw-machine/PXL_20251213_152617898.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251213_152617898.jpg", "date": "December 13, 2025", "short_date": "Dec 13, 2025", "aspect_ratio": 0.75}, {"filename": "PXL_20251216_152907911.jpg", "full": "/major-builds/claw-machine/PXL_20251216_152907911.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251216_152907911.jpg", "date": "December 16, 2025", "short_date": "Dec 16, 2025", "aspect_ratio": 0.75}, {"filename": "PXL_20251216_152921266.jpg", "full": "/major-builds/claw-machine/PXL_20251216_152921266.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251216_152921266.jpg", "date": "December 16, 2025", "short_date": "Dec 16, 2025", "aspect_ratio": 1.333}, {"filename": "PXL_20251216_152936103.jpg", "full": "/major-builds/claw-machine/PXL_20251216_152936103.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251216_152936103.jpg", "date": "December 16, 2025", "short_date": "Dec 16, 2025", "aspect_ratio": 1.333}, {"filename": "PXL_20251220_205533443.jpg", "full": "/major-builds/claw-machine/PXL_20251220_205533443.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20251220_205533443.jpg", "date": "December 20, 2025", "short_date": "Dec 20, 2025", "aspect_ratio": 1.333}, {"filename": "PXL_20260113_102250615.jpg", "full": "/major-builds/claw-machine/PXL_20260113_102250615.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260113_102250615.jpg", "date": "January 13, 2026", "short_date": "Jan 13, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260129_194137708.jpg", "full": "/major-builds/claw-machine/PXL_20260129_194137708.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260129_194137708.jpg", "date": "January 29, 2026", "short_date": "Jan 29, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260130_125232048.jpg", "full": "/major-builds/claw-machine/PXL_20260130_125232048.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260130_125232048.jpg", "date": "January 30, 2026", "short_date": "Jan 30, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260202_152216406.jpg", "full": "/major-builds/claw-machine/PXL_20260202_152216406.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260202_152216406.jpg", "date": "February 2, 2026", "short_date": "Feb 2, 2026", "aspect_ratio": 1.333}, {"filename": "IMG-20260209-WA0001.jpg", "full": "/major-builds/claw-machine/IMG-20260209-WA0001.jpg", "thumb": "/major-builds/claw-machine/thumbs/IMG-20260209-WA0001.jpg", "date": "February 9, 2026", "short_date": "Feb 9, 2026", "aspect_ratio": 1.005}, {"filename": "IMG-20260209-WA0002.jpg", "full": "/major-builds/claw-machine/IMG-20260209-WA0002.jpg", "thumb": "/major-builds/claw-machine/thumbs/IMG-20260209-WA0002.jpg", "date": "February 9, 2026", "short_date": "Feb 9, 2026", "aspect_ratio": 0.987}, {"filename": "PXL_20260214_171607655.jpg", "full": "/major-builds/claw-machine/PXL_20260214_171607655.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260214_171607655.jpg", "date": "February 14, 2026", "short_date": "Feb 14, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260218_124035886.jpg", "full": "/major-builds/claw-machine/PXL_20260218_124035886.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260218_124035886.jpg", "date": "February 18, 2026", "short_date": "Feb 18, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260225_091256636.jpg", "full": "/major-builds/claw-machine/PXL_20260225_091256636.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260225_091256636.jpg", "date": "February 25, 2026", "short_date": "Feb 25, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260226_150354165.jpg", "full": "/major-builds/claw-machine/PXL_20260226_150354165.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260226_150354165.jpg", "date": "February 26, 2026", "short_date": "Feb 26, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260226_165637811.jpg", "full": "/major-builds/claw-machine/PXL_20260226_165637811.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260226_165637811.jpg", "date": "February 26, 2026", "short_date": "Feb 26, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260306_170110315.jpg", "full": "/major-builds/claw-machine/PXL_20260306_170110315.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260306_170110315.jpg", "date": "March 6, 2026", "short_date": "Mar 6, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260317_135251411.jpg", "full": "/major-builds/claw-machine/PXL_20260317_135251411.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260317_135251411.jpg", "date": "March 17, 2026", "short_date": "Mar 17, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260330_174425759.jpg", "full": "/major-builds/claw-machine/PXL_20260330_174425759.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260330_174425759.jpg", "date": "March 30, 2026", "short_date": "Mar 30, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260906_064952583.jpg", "full": "/major-builds/claw-machine/PXL_20260906_064952583.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg", "date": "September 6, 2026", "short_date": "Sep 6, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260906_065636346.jpg", "full": "/major-builds/claw-machine/PXL_20260906_065636346.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260906_065636346.jpg", "date": "September 6, 2026", "short_date": "Sep 6, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260906_065645007.jpg", "full": "/major-builds/claw-machine/PXL_20260906_065645007.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260906_065645007.jpg", "date": "September 6, 2026", "short_date": "Sep 6, 2026", "aspect_ratio": 1.333}, {"filename": "PXL_20260906_065722740.jpg", "full": "/major-builds/claw-machine/PXL_20260906_065722740.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260906_065722740.jpg", "date": "September 6, 2026", "short_date": "Sep 6, 2026", "aspect_ratio": 0.75}, {"filename": "PXL_20260906_065730874.jpg", "full": "/major-builds/claw-machine/PXL_20260906_065730874.jpg", "thumb": "/major-builds/claw-machine/thumbs/PXL_20260906_065730874.jpg", "date": "September 6, 2026", "short_date": "Sep 6, 2026", "aspect_ratio": 0.75}];
     let currentIndex = 0;
     let lightboxImageRequestId = 0;
 
@@ -716,6 +705,6 @@
       });
     }
   </script>
-  <script src="/js/navigation.js?v=1788729151"></script>
+  <script src="/js/navigation.js?v=1788779286"></script>
 </body>
 </html>
