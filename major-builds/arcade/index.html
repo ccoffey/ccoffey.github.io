@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Arcade Cabinet | Cathal Coffey</title>
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
-  <link rel="stylesheet" href="/css/style.css?v=1788785130">
+  <link rel="stylesheet" href="/css/style.css?v=1788790618">
   <!-- Google tag (gtag.js) -->
   <script async src="https://www.googletagmanager.com/gtag/js?id=G-RJN8XNMCEG"></script>
   <script>
@@ -51,7 +51,7 @@
               <a href="/major-builds/arcade/" class="nav-dropdown-item is-active">
                 <div class="dropdown-item-content">
                   <span class="dropdown-item-title">Arcade Cabinet</span>
-                  <span class="dropdown-item-desc">A two-player cabinet combining precision controls, custom fabrication, 3D-printed surfacing and original-console input.</span>
+                  <span class="dropdown-item-desc">A two-player tabletop arcade built to play the games I loved from my childhood with my own kids</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>
@@ -135,12 +135,11 @@
   <div class="container">
     <header class="build-header-full">
       <h1 class="build-heading">Arcade Cabinet</h1>
-      <p class="build-sub">A two-player cabinet combining precision controls, custom fabrication, 3D-printed surfacing and original-console input.</p>
+      <p class="build-sub">A two-player tabletop arcade built to play the games I loved from my childhood with my own kids</p>
       <div class="tag-row">
-        <span class="tech-tag">Parametric Layout</span>
         <span class="tech-tag">Woodworking</span>
         <span class="tech-tag">3D Printing</span>
-        <span class="tech-tag">Linux Input</span>
+        <span class="tech-tag">Raspberry Pi</span>
         <span class="tech-tag">RetroPie</span>
       </div>
     </header>
@@ -172,9 +171,17 @@
       </h2>
       <div class="narrative-collapsible" id="narrativeCollapsible">
         <div class="narrative-content" id="narrativeContent">
-          <p>This was fundamentally a woodworking, 3D printing, and automotive finishing project. I framed the internal skeleton from 2&times;2 Planed White Deal timber and skinned it with MDF. To create the exterior contours, I skinned the cabinet with 3D-printed PLA panels—piecing them together like a giant jigsaw puzzle because my Prusa build plate is only 200&times;200 mm. To eliminate the seams, I filled the joints with Isopon P38 body filler (typically used in car repair—a first for me), followed by endless rounds of sanding, sprayed automotive filler primer (learning spray-can finishing technique on the fly), and finished with leftover paint from my attic that had been used for painting interior doors in my house.</p>
-<p>The electronics were intentionally kept straightforward: a Raspberry Pi 5 running RetroPie with an external hard drive and an Amazon sound system. To make the cabinet truly special, I bought and disassembled USB adapters for original Nintendo 64 and GameCube controllers, integrating the ports directly into the cabinet so I could play the games I loved as a kid together with my own children using my original childhood controllers.</p>
-<p>One of the hardest parts of the project was getting the joystick positions and button ergonomics correct, requiring multiple drilling templates and extensive trial-and-error. The control panel is wrapped in a custom wide-format vinyl graphic printed by Gorilla Graphics (<a href="https://gorillagraphics.ie" target="_blank" rel="noopener" style="color: var(--accent);">gorillagraphics.ie</a>).</p>
+          <p>My twin brother and I built an arcade machine together years ago. As far as I know, it still sits proudly in the lobby of the engineering department of NUI Maynooth, where it entertains visitors and collects money (20c a game) for the engineering club we used to belong to.</p>
+
+  <p>I wanted to build another one, but a much smaller, sleeker one this time. The unit in the engineering department was a massive, full-size and very rectangular cabinet housing a desktop PC that had to be weighed down with sandbags so it wouldn't get knocked over by over-eager students. This time, I just wanted to build from the control deck up and either wall-mount it in my kids' playroom or sit it on top of an existing table.</p>
+
+  <p>I framed the internal skeleton from 2×2 planed white deal timber and skinned it with MDF. To create the exterior contours, I skinned the cabinet again with 3D-printed PLA panels—piecing them together like a giant jigsaw puzzle because my Prusa MK3S+ build plate is approximately 200×200 mm. The joysticks and buttons were actually a leftover set from that first college build; like so many other things, they had been patiently waiting in my attic for a new purpose.</p>
+
+  <p>To eliminate the seams, I filled the joints with Isopon P38 body filler (typically used in car repair, a first for me), followed by endless rounds of sanding, spraying high-build primer (another first for me), and finishing with leftover paint from my attic that we used on the doors under our stairs last year.</p>
+
+  <p>The electronics were intentionally kept straightforward: a Raspberry Pi 5 running RetroPie with an external hard drive and a cheap set of speakers. To make the cabinet truly special, I bought and disassembled USB adapters for original Nintendo 64 and GameCube controllers, integrating the ports directly into the cabinet so I could play the games I loved growing up together with my own children, using my original childhood controllers.</p>
+
+  <p>One of the hardest parts of the project was getting the joystick positions and button ergonomics correct, requiring multiple drilling templates and extensive trial and error. The control panel will eventually be wrapped in a custom vinyl graphic printed by Gorilla Graphics (<a href="https://gorillagraphics.ie" target="_blank" rel="noopener" style="color: var(--accent);">gorillagraphics.ie</a>). I am still tweaking the final design.</p>
         </div>
         <div class="narrative-fade" id="narrativeFade"></div>
       </div>
@@ -203,9 +210,10 @@
         </div>
       </div>
       <ul class="next-steps-list">
-        <li class="next-step-item">Wrap control panel is custom vinyl graphic artwork from gorillagraphics.ie</li>
+        <li class="next-step-item">Wrap control panel in custom vinyl graphic artwork from gorillagraphics.ie</li>
         <li class="next-step-item">Install GameCube controller ports and holders</li>
         <li class="next-step-item">Finish fine detailing around the monitor cutout</li>
+        <li class="next-step-item">Still a few visible seams that I am not happy about</li>
       </ul>
     </section>
 
@@ -764,6 +772,6 @@
       });
     }
   </script>
-  <script src="/js/navigation.js?v=1788785130"></script>
+  <script src="/js/navigation.js?v=1788790618"></script>
 </body>
 </html>
