@@ -34,7 +34,11 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', '{{ GA_MEASUREMENT_ID }}');
+    gtag('config', '{{ GA_MEASUREMENT_ID }}', {
+      'project_title': '{{ TITLE }}',
+      'project_slug': '{{ SLUG }}',
+      'build_type': 'quick'
+    });
   </script>
 </head>
 <body>
@@ -154,6 +158,7 @@
         const item = gallery[index];
         gtag('event', 'view_gallery_item', {
           project_title: "{{ TITLE }}",
+          project_slug: "{{ SLUG }}",
           media_filename: item.filename,
           media_type: item.type,
           media_index: index,
@@ -285,6 +290,7 @@
         const item = gallery[currentIndex];
         gtag('event', 'view_gallery_item', {
           project_title: "{{ TITLE }}",
+          project_slug: "{{ SLUG }}",
           media_filename: item.filename,
           media_type: item.type,
           media_index: currentIndex,
@@ -305,6 +311,7 @@
         const item = gallery[currentIndex];
         gtag('event', 'view_gallery_item', {
           project_title: "{{ TITLE }}",
+          project_slug: "{{ SLUG }}",
           media_filename: item.filename,
           media_type: item.type,
           media_index: currentIndex,
@@ -345,6 +352,7 @@
       if (item && item.type === 'video' && typeof gtag === 'function') {
         gtag('event', 'play_gallery_video', {
           project_title: "{{ TITLE }}",
+          project_slug: "{{ SLUG }}",
           video_filename: item.filename,
           media_index: currentIndex
         });

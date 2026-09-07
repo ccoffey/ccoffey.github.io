@@ -34,7 +34,11 @@
     window.dataLayer = window.dataLayer || [];
     function gtag(){dataLayer.push(arguments);}
     gtag('js', new Date());
-    gtag('config', '{{ GA_MEASUREMENT_ID }}');
+    gtag('config', '{{ GA_MEASUREMENT_ID }}', {
+      'project_title': '{{ TITLE }}',
+      'project_slug': '{{ SLUG }}',
+      'build_type': 'major'
+    });
   </script>
 </head>
 <body>
@@ -109,6 +113,12 @@
       if (text) text.textContent = isExpanded ? "Collapse story" : "Read full story";
       if (icon) {
         icon.style.transform = isExpanded ? "rotate(180deg)" : "rotate(0deg)";
+      }
+      if (isExpanded && typeof gtag === 'function') {
+        gtag('event', 'read_story', {
+          project_title: "{{ TITLE }}",
+          project_slug: "{{ SLUG }}"
+        });
       }
       if (!isExpanded) {
         const box = container.closest('.narrative-box');
@@ -191,6 +201,7 @@
         const item = gallery[index];
         gtag('event', 'view_gallery_item', {
           project_title: "{{ TITLE }}",
+          project_slug: "{{ SLUG }}",
           media_filename: item.filename,
           media_type: item.type,
           media_index: index,
@@ -322,6 +333,7 @@
         const item = gallery[currentIndex];
         gtag('event', 'view_gallery_item', {
           project_title: "{{ TITLE }}",
+          project_slug: "{{ SLUG }}",
           media_filename: item.filename,
           media_type: item.type,
           media_index: currentIndex,
@@ -342,6 +354,7 @@
         const item = gallery[currentIndex];
         gtag('event', 'view_gallery_item', {
           project_title: "{{ TITLE }}",
+          project_slug: "{{ SLUG }}",
           media_filename: item.filename,
           media_type: item.type,
           media_index: currentIndex,
@@ -382,6 +395,7 @@
       if (item && item.type === 'video' && typeof gtag === 'function') {
         gtag('event', 'play_gallery_video', {
           project_title: "{{ TITLE }}",
+          project_slug: "{{ SLUG }}",
           video_filename: item.filename,
           media_index: currentIndex
         });
@@ -395,6 +409,7 @@
         if (typeof gtag === 'function') {
           gtag('event', 'play_hero_video', {
             project_title: "{{ TITLE }}",
+            project_slug: "{{ SLUG }}",
             video_url: heroVid.currentSrc || ''
           });
         }
