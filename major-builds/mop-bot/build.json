@@ -1,6 +1,6 @@
 {
   "title": "Mop Bot",
-  "subtitle": "Because I was sick of looking at the dirty glass veranda every time I stepped into my back garden and I wasn't going to clean it manually",
+  "subtitle": "Because I was sick of looking at a dirty glass veranda every time I stepped into my back garden and I was not going to clean it by hand",
   "tags": [
     "ESP32",
     "RC PWM",
