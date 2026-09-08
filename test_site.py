@@ -10,9 +10,9 @@ Tiers:
 5. Headless Browser UX Stability (CDP layout shift & zoom assertions via --ux flag)
 
 Usage:
-  python3 test_site.py            # Fast static tests (< 0.5s)
-  python3 test_site.py --ux       # Static tests + Headless Chrome UX stability
-  python3 -m unittest test_site.py
+  python3 scripts/build_site.py --output _site  # Build and test the generated site
+  SITE_ROOT=_site python3 test_site.py          # Re-test an existing build
+  SITE_ROOT=_site python3 test_site.py --ux     # Include Headless Chrome UX tests
 """
 
 import os
@@ -24,8 +24,9 @@ import unittest
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 
-REPO_ROOT = os.path.dirname(os.path.abspath(__file__))
-sys.path.insert(0, REPO_ROOT)
+SOURCE_ROOT = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.path.abspath(os.environ.get('SITE_ROOT', SOURCE_ROOT))
+sys.path.insert(0, SOURCE_ROOT)
 
 import generate_site
 
