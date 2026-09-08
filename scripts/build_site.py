@@ -86,8 +86,10 @@ def remove_generated_output(output):
 def remove_build_sources(output):
     for relative in (
         ".github",
+        ".githooks",
         ".gitignore",
         ".vscode",
+        "README.md",
         "dev_server.py",
         "generate_site.py",
         "requirements.txt",

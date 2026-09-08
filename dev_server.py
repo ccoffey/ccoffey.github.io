@@ -8,12 +8,14 @@ QUICK_BUILDS_DIR = os.path.join(BASE_DIR, 'quick-builds')
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 CSS_DIR = os.path.join(BASE_DIR, 'css')
 GENERATOR_SCRIPT = os.path.join(BASE_DIR, 'generate_site.py')
+BUILD_SCRIPT = os.path.join(BASE_DIR, 'scripts', 'build_site.py')
+OUTPUT_DIR = os.path.join(BASE_DIR, '_site')
 
-def run_generator():
+def run_builder():
     try:
-        subprocess.run([sys.executable, GENERATOR_SCRIPT], check=True)
+        subprocess.run([sys.executable, BUILD_SCRIPT, '--output', OUTPUT_DIR], check=True)
     except Exception as e:
-        print(f"[Watcher] Error during sync: {e}")
+        print(f"[Watcher] Error during isolated build: {e}")
 
 def get_dir_state():
     state = {}
@@ -63,13 +65,13 @@ def watcher_loop():
         time.sleep(1.0)
         current_state = get_dir_state()
         if current_state != last_state:
-            print("[Watcher] Detected changes in source files. Regenerating site...")
-            run_generator()
+            print("[Watcher] Detected changes in source files. Rebuilding isolated site...")
+            run_builder()
             last_state = get_dir_state()
 
 class CustomHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
-        super().__init__(*args, directory=BASE_DIR, **kwargs)
+        super().__init__(*args, directory=OUTPUT_DIR, **kwargs)
 
     def end_headers(self):
         self.send_header('Cache-Control', 'no-cache, no-store, must-revalidate')
@@ -80,7 +82,7 @@ class CustomHandler(SimpleHTTPRequestHandler):
 if __name__ == '__main__':
     port = 8000
     print(f"Starting auto-syncing dev server on http://localhost:{port} ...")
-    run_generator()
+    run_builder()
     
     t = threading.Thread(target=watcher_loop, daemon=True)
     t.start()

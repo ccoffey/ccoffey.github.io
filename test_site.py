@@ -19,7 +19,9 @@ import os
 import sys
 import glob
 import json
+from pathlib import Path
 import re
+import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
@@ -29,6 +31,7 @@ REPO_ROOT = os.path.abspath(os.environ.get('SITE_ROOT', SOURCE_ROOT))
 sys.path.insert(0, SOURCE_ROOT)
 
 import generate_site
+from scripts import optimize_staged_media
 
 
 class HTMLAssetScraper(HTMLParser):
@@ -399,6 +402,30 @@ class TestGeneratorInvariants(unittest.TestCase):
         self.assertEqual(len(h1), 64)
 
 
+class TestStagedMediaOptimizer(unittest.TestCase):
+    """Validates the narrow scope and format safety of the pre-commit optimizer."""
+
+    def test_only_direct_project_media_is_selected(self):
+        self.assertTrue(optimize_staged_media.is_project_media(Path('major-builds/claw-machine/new.mp4')))
+        self.assertTrue(optimize_staged_media.is_project_media(Path('quick-builds/repair/new.jpg')))
+        self.assertFalse(optimize_staged_media.is_project_media(Path('major-builds/claw-machine/build.json')))
+        self.assertFalse(optimize_staged_media.is_project_media(Path('major-builds/claw-machine/thumbs/new.jpg')))
+        self.assertFalse(optimize_staged_media.is_project_media(Path('images/new.jpg')))
+
+    def test_oversized_png_keeps_its_format(self):
+        from PIL import Image
+
+        with tempfile.TemporaryDirectory(prefix='portfolio-media-test-') as directory:
+            path = Path(directory) / 'large.png'
+            Image.new('RGB', (3000, 1800), '#345678').save(path, 'PNG')
+
+            optimize_staged_media.optimize_image(path)
+
+            with Image.open(path) as optimized:
+                self.assertEqual(optimized.format, 'PNG')
+                self.assertEqual(optimized.size, (2560, 1536))
+
+
 class TestUXStability(unittest.TestCase):
     """Optionally executes Chrome CDP layout-shift and UX verification."""
 
@@ -421,6 +448,7 @@ def run_tests():
     suite.addTests(loader.loadTestsFromTestCase(TestSEOAndMetadataContracts))
     suite.addTests(loader.loadTestsFromTestCase(TestPerformanceAndBudgets))
     suite.addTests(loader.loadTestsFromTestCase(TestGeneratorInvariants))
+    suite.addTests(loader.loadTestsFromTestCase(TestStagedMediaOptimizer))
 
     if include_ux:
         suite.addTests(loader.loadTestsFromTestCase(TestUXStability))
