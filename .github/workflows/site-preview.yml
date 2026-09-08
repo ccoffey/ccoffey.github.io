@@ -38,7 +38,7 @@ jobs:
         run: python scripts/compare_sites.py --baseline-ref HEAD --candidate _site
 
       - name: Create content manifest
-        run: python scripts/site_manifest.py create _site site-manifest.json
+        run: python scripts/site_manifest.py create _site "${{ runner.temp }}/site-manifest.json"
 
       - name: Rebuild site independently
         env:
@@ -46,7 +46,7 @@ jobs:
         run: python scripts/build_site.py --output "${{ runner.temp }}/site-repeat"
 
       - name: Verify reproducible output
-        run: python scripts/site_manifest.py verify "${{ runner.temp }}/site-repeat" site-manifest.json
+        run: python scripts/site_manifest.py verify "${{ runner.temp }}/site-repeat" "${{ runner.temp }}/site-manifest.json"
 
       # Shadow mode only: upload the audit surface, not 555 MiB of duplicated media.
       - name: Upload site audit
@@ -59,7 +59,7 @@ jobs:
             _site/js/**
             _site/CNAME
             _site/.nojekyll
-            site-manifest.json
+            ${{ runner.temp }}/site-manifest.json
           include-hidden-files: true
           retention-days: 3
           if-no-files-found: error
