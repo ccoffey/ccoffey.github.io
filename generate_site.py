@@ -109,15 +109,26 @@ def optimize_video_if_needed(video_path):
         size_mb = os.path.getsize(video_path) / (1024 * 1024)
         if size_mb > 25 and not is_video_optimized(video_path):
             print(f"[Video Optimizer] Optimizing {os.path.basename(video_path)} ({size_mb:.1f} MB)...")
-            tmp_out = video_path + ".optimized.mp4"
-            cmd = [
+            extension = os.path.splitext(video_path)[1].lower()
+            tmp_out = video_path + ".optimized" + extension
+            common = [
                 "ffmpeg", "-y", "-i", video_path,
                 "-vf", "scale='min(1280,iw)':-2",
-                "-c:v", "libx264", "-pix_fmt", "yuv420p", "-crf", "26", "-preset", "faster",
-                "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
-                "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart",
-                "-metadata", "comment=optimized_by_site_generator",
-                tmp_out
+                "-pix_fmt", "yuv420p",
+            ]
+            if extension == '.webm':
+                encoding = [
+                    "-c:v", "libvpx-vp9", "-crf", "32", "-b:v", "0", "-cpu-used", "4",
+                    "-c:a", "libopus", "-b:a", "128k",
+                ]
+            else:
+                encoding = [
+                    "-c:v", "libx264", "-crf", "26", "-preset", "faster",
+                    "-color_primaries", "bt709", "-color_trc", "bt709", "-colorspace", "bt709",
+                    "-c:a", "aac", "-b:a", "128k", "-movflags", "+faststart",
+                ]
+            cmd = common + encoding + [
+                "-metadata", "comment=optimized_by_site_generator", tmp_out
             ]
             res = subprocess.run(cmd, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
             if res.returncode == 0 and os.path.exists(tmp_out):
@@ -184,19 +195,28 @@ def optimize_full_photo(photo_path, max_dim=2560, quality=85):
                 else:
                     img_res = img.copy()
                 
-                if img_res.mode in ('RGBA', 'P'):
-                    img_res = img_res.convert('RGB')
-
-                tmp_dst = photo_path + ".tmp.jpg"
-                img_res.save(tmp_dst, 'JPEG', quality=quality, optimize=True, progressive=True)
+                extension = os.path.splitext(photo_path)[1].lower()
+                tmp_dst = photo_path + ".tmp" + extension
+                if extension in ('.jpg', '.jpeg'):
+                    if img_res.mode not in ('RGB', 'L'):
+                        img_res = img_res.convert('RGB')
+                    img_res.save(tmp_dst, 'JPEG', quality=quality, optimize=True, progressive=True)
+                elif extension == '.png':
+                    img_res.save(tmp_dst, 'PNG', optimize=True)
+                elif extension == '.webp':
+                    img_res.save(tmp_dst, 'WEBP', quality=quality, method=6)
+                else:
+                    return False
                 new_size = os.path.getsize(tmp_dst)
-                if new_size < size_bytes:
+                if new_size < size_bytes or scale < 1.0:
                     os.replace(tmp_dst, photo_path)
                     print(f"[Photo Optimizer] Optimized {os.path.basename(photo_path)}: {size_bytes/(1024*1024):.1f}MB -> {new_size/(1024*1024):.1f}MB ({new_w}x{new_h})")
+                    return True
                 elif os.path.exists(tmp_dst):
                     os.remove(tmp_dst)
     except Exception as e:
         print(f"[Photo Optimizer] Error optimizing {photo_path}: {e}")
+    return False
 
 def get_video_metadata(video_path):
     """
@@ -465,7 +485,7 @@ def process_build_dir(base_dir, slug, url_prefix):
 
     raw_files = [f for f in os.listdir(folder_path)
                  if not f.startswith('.')
-                 and not f.lower().endswith('.optimized.mp4')
+                 and '.optimized.' not in f.lower()
                  and f not in ('thumbs', 'index.html', 'build.json', 'project.json')]
 
     # 1. Deduplicate media files by SHA-256 hash
@@ -473,11 +493,11 @@ def process_build_dir(base_dir, slug, url_prefix):
 
     # 2. Sanitize photos (EXIF) and optimize oversized full-size photos
     for f in raw_files:
-        if f.lower().endswith(('.jpg', '.jpeg', '.png')):
+        if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp')):
             full_path = os.path.join(folder_path, f)
+            optimize_full_photo(full_path, max_dim=2560, quality=85)
             if f.lower().endswith(('.jpg', '.jpeg')):
                 strip_exif_from_file(full_path)
-            optimize_full_photo(full_path, max_dim=2560, quality=85)
 
     # 3. Prune deleted thumbnails
     raw_stems = {os.path.splitext(f)[0] for f in raw_files}

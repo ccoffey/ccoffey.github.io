@@ -2,9 +2,9 @@
   "version": "2.0.0",
   "tasks": [
     {
-      "label": "Generate Portfolio Site",
+      "label": "Build Portfolio Site",
       "type": "shell",
-      "command": "python3 generate_site.py",
+      "command": "python3 scripts/build_site.py --output _site",
       "options": {
         "cwd": "${workspaceFolder}"
       },
