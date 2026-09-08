@@ -40,7 +40,15 @@ jobs:
       - name: Create content manifest
         run: python scripts/site_manifest.py create _site site-manifest.json
 
-      # Shadow mode only: upload the audit surface, not 738 MiB of duplicated media.
+      - name: Rebuild site independently
+        env:
+          BUILD_ID: ${{ github.sha }}
+        run: python scripts/build_site.py --output "${{ runner.temp }}/site-repeat"
+
+      - name: Verify reproducible output
+        run: python scripts/site_manifest.py verify "${{ runner.temp }}/site-repeat" site-manifest.json
+
+      # Shadow mode only: upload the audit surface, not 555 MiB of duplicated media.
       - name: Upload site audit
         uses: actions/upload-artifact@v7
         with:

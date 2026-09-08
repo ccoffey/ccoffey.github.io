@@ -1008,7 +1008,7 @@ def sync_builds():
     generate_robots()
 
 def generate_sitemap(major_builds, quick_builds):
-    today = datetime.now().strftime('%Y-%m-%d')
+    last_modified = os.environ.get('SITE_LASTMOD') or datetime.now().strftime('%Y-%m-%d')
     urls = [
         ('https://cathalcoffey.com/', '1.0', 'weekly'),
     ]
@@ -1024,7 +1024,7 @@ def generate_sitemap(major_builds, quick_builds):
     for loc, priority, changefreq in urls:
         lines.append('  <url>')
         lines.append(f'    <loc>{loc}</loc>')
-        lines.append(f'    <lastmod>{today}</lastmod>')
+        lines.append(f'    <lastmod>{last_modified}</lastmod>')
         lines.append(f'    <changefreq>{changefreq}</changefreq>')
         lines.append(f'    <priority>{priority}</priority>')
         lines.append('  </url>')

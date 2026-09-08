@@ -11,7 +11,7 @@ import sys
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SOURCE_ONLY_PREFIXES = (".github/", ".vscode/", "scripts/", "templates/")
-SOURCE_ONLY_FILES = {".gitignore", "dev_server.py", "generate_site.py", "requirements.txt"}
+SOURCE_ONLY_FILES = {".gitignore", "dev_server.py", "generate_site.py", "requirements.txt", "test_site.py"}
 
 
 def git(*args, text=True):
