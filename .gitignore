@@ -2,3 +2,10 @@
 __pycache__/
 *.pyc
 _site/
+/index.html
+/robots.txt
+/sitemap.xml
+/major-builds/*/index.html
+/major-builds/*/thumbs/
+/quick-builds/*/index.html
+/quick-builds/*/thumbs/

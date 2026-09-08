@@ -42,9 +42,6 @@ jobs:
           BUILD_ID: ${{ github.sha }}
         run: python scripts/build_site.py --output _site
 
-      - name: Compare with checked-in deployment
-        run: python scripts/compare_sites.py --baseline-ref HEAD --candidate _site
-
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v4
         with:

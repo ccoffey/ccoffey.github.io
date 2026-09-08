@@ -1,8 +1,6 @@
 name: Build site preview
 
 on:
-  push:
-    branches: [master]
   pull_request:
   workflow_dispatch:
 
@@ -33,9 +31,6 @@ jobs:
         env:
           BUILD_ID: ${{ github.sha }}
         run: python scripts/build_site.py --output _site
-
-      - name: Compare with checked-in deployment
-        run: python scripts/compare_sites.py --baseline-ref HEAD --candidate _site
 
       - name: Create content manifest
         run: python scripts/site_manifest.py create _site "${{ runner.temp }}/site-manifest.json"
