@@ -3,15 +3,20 @@
 
 import argparse
 import difflib
+from io import BytesIO
 from pathlib import Path
 import re
 import subprocess
 import sys
 
+from PIL import Image, ImageChops, ImageStat
+
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 SOURCE_ONLY_PREFIXES = (".github/", ".vscode/", "scripts/", "templates/")
 SOURCE_ONLY_FILES = {".gitignore", "dev_server.py", "generate_site.py", "requirements.txt", "test_site.py"}
+GENERATED_IMAGE_SUFFIXES = {".jpg", ".jpeg", ".png", ".webp"}
+GENERATED_IMAGE_MAX_RMS = 8.0
 
 
 def git(*args, text=True):
@@ -55,6 +60,32 @@ def normalized_html(content):
     return re.sub(r"([?&]v=)[^\"'&<\s]+", r"\1BUILD_ID", text)
 
 
+def is_generated_image(path):
+    return "/thumbs/" in path and Path(path).suffix.lower() in GENERATED_IMAGE_SUFFIXES
+
+
+def compare_generated_image(baseline_content, candidate_path):
+    """Allow encoding differences only when the decoded images are visually equivalent."""
+    try:
+        with Image.open(BytesIO(baseline_content)) as baseline_image:
+            baseline_size = baseline_image.size
+            baseline_sample = baseline_image.convert("RGB").resize((64, 64), Image.Resampling.LANCZOS)
+        with Image.open(candidate_path) as candidate_image:
+            candidate_size = candidate_image.size
+            candidate_sample = candidate_image.convert("RGB").resize((64, 64), Image.Resampling.LANCZOS)
+    except Exception as error:
+        return False, f"could not decode image: {error}"
+
+    if baseline_size != candidate_size:
+        return False, f"dimensions changed from {baseline_size} to {candidate_size}"
+
+    difference = ImageChops.difference(baseline_sample, candidate_sample)
+    rms = sum(ImageStat.Stat(difference).rms) / 3
+    if rms > GENERATED_IMAGE_MAX_RMS:
+        return False, f"pixel RMS {rms:.2f} exceeds {GENERATED_IMAGE_MAX_RMS:.2f}"
+    return True, rms
+
+
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--baseline-ref", default="HEAD", help="Git revision representing the deployed site")
@@ -71,6 +102,8 @@ def main():
     unexpected = sorted(set(candidate) - set(baseline))
     changed = []
     html_diffs = []
+    generated_image_differences = []
+    generated_image_failures = []
 
     for path in sorted(set(baseline) & set(candidate)):
         candidate_path = candidate[path]
@@ -94,7 +127,16 @@ def main():
         else:
             candidate_hash = git("hash-object", "--no-filters", str(candidate_path)).strip()
             if candidate_hash != baseline[path]:
-                changed.append(path)
+                if is_generated_image(path):
+                    baseline_content = git("show", f"{args.baseline_ref}:{path}", text=False)
+                    equivalent, detail = compare_generated_image(baseline_content, candidate_path)
+                    if equivalent:
+                        generated_image_differences.append((path, detail))
+                    else:
+                        changed.append(path)
+                        generated_image_failures.append((path, detail))
+                else:
+                    changed.append(path)
 
     if missing or unexpected or changed:
         print("Site comparison failed.")
@@ -107,11 +149,20 @@ def main():
         if changed:
             print(f"\nChanged files ({len(changed)}):")
             print("\n".join(f"  {path}" for path in changed[:50]))
+        if generated_image_failures:
+            print("\nGenerated image comparison failures:")
+            print("\n".join(f"  {path}: {detail}" for path, detail in generated_image_failures[:50]))
         for diff in html_diffs:
             print(f"\n{diff}")
         return 1
 
     total_bytes = sum(path.stat().st_size for path in candidate.values())
+    if generated_image_differences:
+        max_path, max_rms = max(generated_image_differences, key=lambda item: item[1])
+        print(
+            f"Accepted {len(generated_image_differences)} generated images with encoding-only differences; "
+            f"maximum pixel RMS {max_rms:.2f} ({max_path})."
+        )
     print(
         f"Site comparison passed: {len(candidate)} public files, "
         f"{total_bytes / 1024 / 1024:.1f} MiB, no unexpected differences."
