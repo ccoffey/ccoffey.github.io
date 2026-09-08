@@ -10,6 +10,7 @@ import sys
 
 
 SOURCE_ROOT = Path(__file__).resolve().parent.parent
+GENERATED_ROOT_FILES = ("index.html", "robots.txt", "sitemap.xml")
 
 
 def default_build_id():
@@ -26,6 +27,22 @@ def default_build_id():
         ).stdout.strip()
     except (OSError, subprocess.CalledProcessError):
         return "local"
+
+
+def default_site_lastmod():
+    configured = os.environ.get("SITE_LASTMOD")
+    if configured:
+        return configured
+    try:
+        return subprocess.run(
+            ["git", "show", "-s", "--format=%cs", "HEAD"],
+            cwd=SOURCE_ROOT,
+            check=True,
+            capture_output=True,
+            text=True,
+        ).stdout.strip()
+    except (OSError, subprocess.CalledProcessError):
+        return "1970-01-01"
 
 
 def safe_output_path(value):
@@ -49,6 +66,23 @@ def copy_source_tree(output):
     shutil.copytree(SOURCE_ROOT, output, ignore=ignore)
 
 
+def remove_generated_output(output):
+    """Ensure the candidate is recreated from source rather than copied artifacts."""
+    for relative in GENERATED_ROOT_FILES:
+        target = output / relative
+        if target.exists():
+            target.unlink()
+
+    for build_root in (output / "major-builds", output / "quick-builds"):
+        if not build_root.is_dir():
+            continue
+        for target in build_root.glob("*/index.html"):
+            target.unlink()
+        for target in build_root.glob("*/thumbs"):
+            if target.is_dir():
+                shutil.rmtree(target)
+
+
 def remove_build_sources(output):
     for relative in (
         ".github",
@@ -59,6 +93,7 @@ def remove_build_sources(output):
         "requirements.txt",
         "scripts",
         "templates",
+        "test_site.py",
     ):
         target = output / relative
         if target.is_dir():
@@ -94,14 +129,22 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", default="_site", help="Destination directory")
     parser.add_argument("--build-id", default=default_build_id(), help="Cache-busting build identifier")
+    parser.add_argument(
+        "--site-lastmod",
+        default=default_site_lastmod(),
+        help="Deterministic YYYY-MM-DD value written to sitemap.xml",
+    )
     args = parser.parse_args()
 
     output = safe_output_path(args.output)
     copy_source_tree(output)
+    remove_generated_output(output)
 
     env = os.environ.copy()
     env["BUILD_ID"] = args.build_id
+    env["SITE_LASTMOD"] = args.site_lastmod
     subprocess.run([sys.executable, "generate_site.py"], cwd=output, env=env, check=True)
+    subprocess.run([sys.executable, "test_site.py", "-v"], cwd=output, env=env, check=True)
 
     remove_build_sources(output)
     validate_output(output)
