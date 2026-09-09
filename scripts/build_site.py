@@ -55,18 +55,36 @@ def safe_output_path(value):
     return output
 
 
-def copy_source_tree(output):
+MEDIA_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.webp', '.mp4', '.mov', '.webm'}
+
+
+def copy_source_tree(output, incremental=False):
     ignored_names = {".git", "_site", "__pycache__", ".DS_Store"}
 
     def ignore(_directory, names):
         return [name for name in names if name in ignored_names or name.endswith(".pyc")]
 
-    if output.exists():
+    if output.exists() and not incremental:
         shutil.rmtree(output)
-    shutil.copytree(SOURCE_ROOT, output, ignore=ignore)
+    if not incremental:
+        shutil.copytree(SOURCE_ROOT, output, ignore=ignore)
+        return
+
+    # A metadata/template/CSS edit does not need to recopy hundreds of MiB of
+    # media.  The existing isolated output already contains the source media
+    # and its generated thumbnails/posters, so sync just the non-media inputs.
+    for source in SOURCE_ROOT.rglob('*'):
+        relative = source.relative_to(SOURCE_ROOT)
+        if any(part in ignored_names for part in relative.parts) or source.is_dir():
+            continue
+        if source.suffix.lower() in MEDIA_EXTENSIONS or source.name.endswith('.pyc'):
+            continue
+        destination = output / relative
+        destination.parent.mkdir(parents=True, exist_ok=True)
+        shutil.copy2(source, destination)
 
 
-def remove_generated_output(output):
+def remove_generated_output(output, preserve_media_derivatives=False):
     """Ensure the candidate is recreated from source rather than copied artifacts."""
     for relative in GENERATED_ROOT_FILES:
         target = output / relative
@@ -78,9 +96,10 @@ def remove_generated_output(output):
             continue
         for target in build_root.glob("*/index.html"):
             target.unlink()
-        for target in build_root.glob("*/thumbs"):
-            if target.is_dir():
-                shutil.rmtree(target)
+        if not preserve_media_derivatives:
+            for target in build_root.glob("*/thumbs"):
+                if target.is_dir():
+                    shutil.rmtree(target)
 
 
 def remove_build_sources(output):
@@ -130,6 +149,11 @@ def validate_output(output):
 def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument("--output", default="_site", help="Destination directory")
+    parser.add_argument(
+        "--incremental",
+        action="store_true",
+        help="Reuse existing copied media and generated derivatives (for local metadata/template edits).",
+    )
     parser.add_argument("--build-id", default=default_build_id(), help="Cache-busting build identifier")
     parser.add_argument(
         "--site-lastmod",
@@ -139,8 +163,10 @@ def main():
     args = parser.parse_args()
 
     output = safe_output_path(args.output)
-    copy_source_tree(output)
-    remove_generated_output(output)
+    if args.incremental and not output.exists():
+        args.incremental = False
+    copy_source_tree(output, incremental=args.incremental)
+    remove_generated_output(output, preserve_media_derivatives=args.incremental)
 
     env = os.environ.copy()
     env["BUILD_ID"] = args.build_id
