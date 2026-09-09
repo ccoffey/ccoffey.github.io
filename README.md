@@ -39,6 +39,9 @@ Before the commit is created, `.githooks/pre-commit` examines only newly staged
 project media. It strips JPEG EXIF metadata, reduces images above 2560 pixels or
 2.5 MB, and re-encodes videos above 25 MB for the web. Any changed media is
 automatically re-staged. It does not generate HTML, thumbnails, or posters.
+The pull-request build independently validates changed project media against
+those same requirements, so a skipped or interrupted local hook cannot merge
+unoptimized files.
 
 After a push to `master`, GitHub Actions builds an isolated `_site/` directory.
 It generates thumbnails and WebP companions, extracts video posters, generates
