@@ -18,8 +18,22 @@
     if (text) node.textContent = text;
     return node;
   };
-  const id = () => `annotation-${Date.now()}-${Math.random().toString(36).slice(2, 7)}`;
-  const lines = text => String(text || '').match(/.{1,28}(?:\s|$)|\S+/g) || [''];
+  function wrapText(text, maxChars) {
+    const words = String(text || '').trim().split(/\s+/).filter(Boolean);
+    const result = [];
+    let line = '';
+    words.forEach(word => {
+      const next = line ? `${line} ${word}` : word;
+      if (line && next.length > maxChars) {
+        result.push(line);
+        line = word;
+      } else {
+        line = next;
+      }
+    });
+    if (line) result.push(line);
+    return result.length ? result : [''];
+  }
 
   function currentAnnotations() {
     if (!currentItem) return [];
@@ -27,10 +41,12 @@
     return store[currentItem.filename];
   }
 
-  function appendText(group, x, y, text, className = 'annotation-label') {
-    const label = el('text', { x, y, class: className });
-    lines(text).forEach((line, index) => label.append(el('tspan', { x, dy: index ? 42 : 0 }, line)));
+  function appendText(group, x, y, text, { className = 'annotation-label', fontSize = 26, lineHeight = 32, maxChars = 24 } = {}) {
+    const label = el('text', { x, y, class: className, 'font-size': fontSize });
+    const lines = wrapText(text, maxChars);
+    lines.forEach((line, index) => label.append(el('tspan', { x, dy: index ? lineHeight : 0 }, line)));
     group.append(label);
+    return lines.length;
   }
 
   function render() {
@@ -45,17 +61,20 @@
     svg.append(defs);
 
     annotations.forEach((annotation, index) => {
-      const group = el('g', { 'data-id': annotation.id, class: 'annotation-hit' });
-      if (annotation.type === 'highlight') {
-        group.append(el('ellipse', { class: 'annotation-highlight', cx: annotation.x, cy: annotation.y, rx: annotation.rx, ry: annotation.ry }));
-      } else if (annotation.type === 'callout') {
+      const group = el('g', { 'data-index': index, class: 'annotation-hit' });
+      if (annotation.type === 'callout') {
         const box = annotation.box || { x: 100, y: 100, w: 330, h: 150 };
-        group.append(el('line', { class: 'annotation-arrow', x1: annotation.target.x, y1: annotation.target.y, x2: box.x + box.w / 2, y2: box.y + box.h, 'marker-end': 'url(#annotation-arrowhead)' }));
-        group.append(el('rect', { class: 'annotation-callout', x: box.x, y: box.y, width: box.w, height: box.h, rx: 52 }));
-        appendText(group, box.x + 34, box.y + 64, annotation.text);
+        const fontSize = 24;
+        const lineHeight = 31;
+        const maxChars = Math.max(12, Math.floor((box.w - 56) / (fontSize * 0.58)));
+        const lineCount = wrapText(annotation.text, maxChars).length;
+        const height = Math.max(box.h, 58 + lineCount * lineHeight);
+        group.append(el('line', { class: 'annotation-arrow', x1: annotation.target.x, y1: annotation.target.y, x2: box.x + box.w / 2, y2: box.y + height, 'marker-end': 'url(#annotation-arrowhead)' }));
+        group.append(el('rect', { class: 'annotation-callout', x: box.x, y: box.y, width: box.w, height, rx: 42 }));
+        appendText(group, box.x + 28, box.y + 39, annotation.text, { fontSize, lineHeight, maxChars });
       } else if (annotation.type === 'arrow') {
         group.append(el('line', { class: 'annotation-arrow', x1: annotation.from.x, y1: annotation.from.y, x2: annotation.target.x, y2: annotation.target.y, 'marker-end': 'url(#annotation-arrowhead)' }));
-        appendText(group, annotation.from.x, annotation.from.y - 18, annotation.text);
+        appendText(group, annotation.from.x, annotation.from.y - 16, annotation.text, { fontSize: 24, lineHeight: 30, maxChars: 26 });
       } else {
         const point = annotation.target || annotation;
         group.append(el('circle', { class: 'annotation-marker', cx: point.x, cy: point.y, r: 28 }));
@@ -90,17 +109,15 @@
     const annotations = currentAnnotations();
     if (tool === 'marker') {
       const text = prompt('Annotation text:', 'New annotation');
-      if (text) annotations.push({ id: id(), type: 'marker', ...point, text });
-    } else if (tool === 'arrow' || tool === 'callout' || tool === 'highlight') {
+      if (text) annotations.push({ type: 'marker', ...point, text });
+    } else if (tool === 'arrow' || tool === 'callout') {
       if (!pendingPoint) { pendingPoint = point; return; }
       if (tool === 'arrow') {
         const text = prompt('Arrow label:', 'New annotation');
-        if (text) annotations.push({ id: id(), type: 'arrow', from: pendingPoint, target: point, text });
+        if (text) annotations.push({ type: 'arrow', from: pendingPoint, target: point, text });
       } else if (tool === 'callout') {
         const text = prompt('Callout text:', 'New annotation');
-        if (text) annotations.push({ id: id(), type: 'callout', target: pendingPoint, box: { x: point.x, y: point.y, w: 330, h: 160 }, text });
-      } else {
-        annotations.push({ id: id(), type: 'highlight', x: (pendingPoint.x + point.x) / 2, y: (pendingPoint.y + point.y) / 2, rx: Math.max(24, Math.abs(pendingPoint.x - point.x) / 2), ry: Math.max(24, Math.abs(pendingPoint.y - point.y) / 2) });
+        if (text) annotations.push({ type: 'callout', target: pendingPoint, box: { x: point.x, y: point.y, w: 360, h: 160 }, text });
       }
       pendingPoint = null;
     }
@@ -120,7 +137,7 @@
   if (editable) {
     const toolbar = document.createElement('div');
     toolbar.className = 'annotation-editor-toolbar';
-    toolbar.innerHTML = '<strong>Annotate</strong><button data-tool="select">Select</button><button data-tool="marker">Marker</button><button data-tool="arrow">Arrow</button><button data-tool="callout">Callout</button><button data-tool="highlight">Highlight</button><button data-export="true">Export JSON</button>';
+    toolbar.innerHTML = '<strong>Annotate</strong><button data-tool="select">Select</button><button data-tool="marker">Marker</button><button data-tool="arrow">Arrow</button><button data-tool="callout">Callout</button><button data-export="true">Export JSON</button>';
     document.getElementById('lightbox').append(toolbar);
     toolbar.addEventListener('click', event => {
       const button = event.target.closest('button');
@@ -133,9 +150,9 @@
     svg.addEventListener('click', event => {
       if (!visible || !currentItem) return;
       event.stopPropagation();
-      const existing = event.target.closest('[data-id]');
+      const existing = event.target.closest('[data-index]');
       if (tool === 'select' && existing) {
-        const annotation = currentAnnotations().find(item => item.id === existing.dataset.id);
+        const annotation = currentAnnotations()[Number(existing.dataset.index)];
         if (annotation && 'text' in annotation) {
           const text = prompt('Annotation text:', annotation.text);
           if (text !== null) annotation.text = text;
