@@ -32,6 +32,7 @@ sys.path.insert(0, SOURCE_ROOT)
 
 import generate_site
 from scripts import optimize_staged_media
+from scripts import validate_project_media
 
 
 class HTMLAssetScraper(HTMLParser):
@@ -426,6 +427,26 @@ class TestStagedMediaOptimizer(unittest.TestCase):
                 self.assertEqual(optimized.size, (2560, 1536))
 
 
+class TestProjectMediaValidation(unittest.TestCase):
+    """Validates the non-mutating CI guard for pre-commit media requirements."""
+
+    def test_jpeg_app1_metadata_is_detected(self):
+        with tempfile.TemporaryDirectory(prefix='portfolio-media-test-') as directory:
+            path = Path(directory) / 'metadata.jpg'
+            path.write_bytes(
+                b'\xff\xd8'  # SOI
+                b'\xff\xe1\x00\x08Exif\x00\x00'  # APP1 metadata segment
+                b'\xff\xd9'  # EOI
+            )
+            self.assertTrue(validate_project_media.jpeg_has_app1_segment(path))
+
+    def test_jpeg_without_app1_metadata_is_accepted(self):
+        with tempfile.TemporaryDirectory(prefix='portfolio-media-test-') as directory:
+            path = Path(directory) / 'clean.jpg'
+            path.write_bytes(b'\xff\xd8\xff\xd9')
+            self.assertFalse(validate_project_media.jpeg_has_app1_segment(path))
+
+
 class TestUXStability(unittest.TestCase):
     """Optionally executes Chrome CDP layout-shift and UX verification."""
 
@@ -449,6 +470,7 @@ def run_tests():
     suite.addTests(loader.loadTestsFromTestCase(TestPerformanceAndBudgets))
     suite.addTests(loader.loadTestsFromTestCase(TestGeneratorInvariants))
     suite.addTests(loader.loadTestsFromTestCase(TestStagedMediaOptimizer))
+    suite.addTests(loader.loadTestsFromTestCase(TestProjectMediaValidation))
 
     if include_ux:
         suite.addTests(loader.loadTestsFromTestCase(TestUXStability))
