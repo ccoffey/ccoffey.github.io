@@ -69,7 +69,10 @@
     toggle.innerHTML = visible ? '◉' : '◌';
     toggle.setAttribute('aria-label', visible ? 'Hide annotations' : `Show ${annotations.length} annotations`);
     toggle.setAttribute('aria-pressed', String(visible));
-    svg.hidden = !visible;
+    // SVG elements do not reliably reflect the HTML `hidden` property.
+    // Toggle the attribute directly so a visible overlay is not left with
+    // CSS `display: none` after rendering.
+    svg.toggleAttribute('hidden', !visible);
     svg.classList.toggle('is-visible', visible);
     svg.classList.toggle('is-editor', editable && visible);
     svg.setAttribute('aria-hidden', String(!visible));
