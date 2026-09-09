@@ -59,6 +59,27 @@ def get_photo_sort_key(filename):
         return (int(y), int(mo), int(d), 12, 0, int(seq))
     return (1970, 1, 1, 0, 0, 0)
 
+def load_annotations(folder_path, slug):
+    """Load optional per-image annotations for a build.
+
+    Annotations are deliberately kept beside the media rather than in
+    build.json so image metadata remains small and the editor can export a
+    self-contained file. Invalid files never prevent the site from building.
+    """
+    annotations_path = os.path.join(folder_path, 'annotations.json')
+    if not os.path.exists(annotations_path):
+        return {}
+    try:
+        with open(annotations_path, 'r', encoding='utf-8') as f:
+            data = json.load(f)
+        images = data.get('images', {})
+        if not isinstance(images, dict):
+            raise ValueError("'images' must be an object keyed by filename")
+        return {filename: items for filename, items in images.items() if isinstance(items, list)}
+    except (OSError, ValueError, json.JSONDecodeError) as e:
+        print(f"[{slug}] Warning: Error loading annotations.json: {e}")
+        return {}
+
 def strip_exif_from_file(filepath):
     """Losslessly strips APP1 (EXIF / GPS / device metadata / XMP) from JPEG files."""
     try:
@@ -480,13 +501,15 @@ def process_build_dir(base_dir, slug, url_prefix):
         if k not in config or not config[k]:
             config[k] = v
 
+    annotations = load_annotations(folder_path, slug)
+
     thumbs_dir = os.path.join(folder_path, 'thumbs')
     os.makedirs(thumbs_dir, exist_ok=True)
 
     raw_files = [f for f in os.listdir(folder_path)
                  if not f.startswith('.')
                  and '.optimized.' not in f.lower()
-                 and f not in ('thumbs', 'index.html', 'build.json', 'project.json')]
+                 and f not in ('thumbs', 'index.html', 'build.json', 'project.json', 'annotations.json')]
 
     # 1. Deduplicate media files by SHA-256 hash
     raw_files = deduplicate_project_media(folder_path, raw_files, slug)
@@ -585,7 +608,8 @@ def process_build_dir(base_dir, slug, url_prefix):
                 'thumb_webp': f"{url_prefix}/{slug}/thumbs/{thumb_stem}.webp",
                 'date': date_str,
                 'short_date': short_date,
-                'aspect_ratio': ar
+                'aspect_ratio': ar,
+                'annotations': annotations.get(f, [])
             })
 
     # Sort photos chronologically (oldest first: start of build through completion)
@@ -639,7 +663,10 @@ def process_build_dir(base_dir, slug, url_prefix):
             'short_date': short_date,
             'aspect_ratio': meta['aspect_ratio'],
             'duration': meta.get('duration', ''),
-            'mime_type': video_mime_type(video_fn)
+            'mime_type': video_mime_type(video_fn),
+            # Kept in the data contract for consistency; the viewer deliberately
+            # suppresses annotations for video because its camera can move.
+            'annotations': annotations.get(video_fn, [])
         })
 
     gallery = photos + gallery_videos
@@ -663,6 +690,7 @@ def process_build_dir(base_dir, slug, url_prefix):
         'photos': photos,
         'videos': videos,
         'gallery': gallery,
+        'annotations': annotations,
         'url_prefix': url_prefix
     }
 
