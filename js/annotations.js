@@ -155,7 +155,7 @@
   window.updateLightboxAnnotations = item => {
     currentItem = item;
     pendingPoint = null;
-    visible = editable && item?.type !== 'video';
+    visible = item?.type !== 'video' && currentAnnotations().length > 0;
     render();
   };
 })();

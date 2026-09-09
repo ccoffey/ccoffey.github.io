@@ -116,6 +116,7 @@
       }
     });
 
+    window.projectAnnotations = {{ ANNOTATIONS_JSON }};
     const gallery = {{ GALLERY_JSON }};
     let currentIndex = 0;
     let lightboxImageRequestId = 0;
@@ -381,6 +382,9 @@
     function updateLightboxContent() {
       resetZoom();
       const item = gallery[currentIndex];
+      if (typeof window.updateLightboxAnnotations === 'function') {
+        window.updateLightboxAnnotations(item);
+      }
       const requestedIndex = currentIndex;
       const requestId = ++lightboxImageRequestId;
       const previewSrc = item.thumb_webp || item.thumb || item.full;
@@ -566,6 +570,7 @@
     });
 
   </script>
+  <script src="/js/annotations.js?v={{ BUILD_ID }}"></script>
   <script src="/js/navigation.js?v={{ BUILD_ID }}"></script>
 </body>
 </html>
