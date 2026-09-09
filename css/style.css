@@ -1363,6 +1363,8 @@ header.hero {
 .annotation-marker { fill: #ff4d3d; stroke: #fff; stroke-width: 4; cursor: pointer; }
 .annotation-marker-text { fill: #fff; font: 700 28px system-ui, sans-serif; pointer-events: none; text-anchor: middle; dominant-baseline: central; }
 .lightbox-annotations.is-editor { pointer-events: auto; cursor: crosshair; }
+.annotation-handle { fill: #1479ff; stroke: #fff; stroke-width: 5; cursor: grab; }
+.annotation-handle:active { cursor: grabbing; }
 .lightbox-annotations[hidden] { display: none; }
 .lightbox-annotations + .lightbox-video { z-index: 3; }
 .lightbox-annotation-toggle { display: none; }

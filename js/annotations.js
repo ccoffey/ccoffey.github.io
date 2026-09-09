@@ -11,6 +11,8 @@
   let visible = false;
   let tool = 'select';
   let pendingPoint = null;
+  let drag = null;
+  let suppressClickUntil = 0;
 
   const el = (name, attrs = {}, text = '') => {
     const node = document.createElementNS(NS, name);
@@ -49,6 +51,20 @@
     return lines.length;
   }
 
+  function addHandle(group, x, y, handle) {
+    group.append(el('circle', {
+      class: 'annotation-handle', cx: x, cy: y, r: 14,
+      'data-handle': handle
+    }));
+  }
+
+  function clampBox(box, x, y) {
+    return {
+      x: Math.max(0, Math.min(1000 - box.w, x)),
+      y: Math.max(0, Math.min(1000 - box.h, y))
+    };
+  }
+
   function render() {
     svg.replaceChildren();
     svg.setAttribute('viewBox', '0 0 1000 1000');
@@ -72,14 +88,25 @@
         group.append(el('line', { class: 'annotation-arrow', x1: annotation.target.x, y1: annotation.target.y, x2: box.x + box.w / 2, y2: box.y + height, 'marker-end': 'url(#annotation-arrowhead)' }));
         group.append(el('rect', { class: 'annotation-callout', x: box.x, y: box.y, width: box.w, height, rx: 42 }));
         appendText(group, box.x + 28, box.y + 39, annotation.text, { fontSize, lineHeight, maxChars });
+        if (editable) {
+          addHandle(group, annotation.target.x, annotation.target.y, 'callout-target');
+          addHandle(group, box.x + box.w / 2, box.y + height / 2, 'callout-box');
+        }
       } else if (annotation.type === 'arrow') {
+        const label = annotation.label || { x: annotation.from.x, y: annotation.from.y - 40 };
         group.append(el('line', { class: 'annotation-arrow', x1: annotation.from.x, y1: annotation.from.y, x2: annotation.target.x, y2: annotation.target.y, 'marker-end': 'url(#annotation-arrowhead)' }));
-        appendText(group, annotation.from.x, annotation.from.y - 16, annotation.text, { fontSize: 24, lineHeight: 30, maxChars: 26 });
+        appendText(group, label.x, label.y, annotation.text, { fontSize: 24, lineHeight: 30, maxChars: 26 });
+        if (editable) {
+          addHandle(group, annotation.from.x, annotation.from.y, 'arrow-start');
+          addHandle(group, annotation.target.x, annotation.target.y, 'arrow-end');
+          addHandle(group, label.x, label.y, 'arrow-label');
+        }
       } else {
         const point = annotation.target || annotation;
         group.append(el('circle', { class: 'annotation-marker', cx: point.x, cy: point.y, r: 28 }));
         group.append(el('text', { class: 'annotation-marker-text', x: point.x, y: point.y }, index + 1));
         group.append(el('title', {}, annotation.text || 'Annotation'));
+        if (editable) addHandle(group, point.x, point.y, 'marker-position');
       }
       svg.append(group);
     });
@@ -150,6 +177,7 @@
     svg.addEventListener('click', event => {
       if (!visible || !currentItem) return;
       event.stopPropagation();
+      if (Date.now() < suppressClickUntil) return;
       const existing = event.target.closest('[data-index]');
       if (tool === 'select' && existing) {
         const annotation = currentAnnotations()[Number(existing.dataset.index)];
@@ -162,6 +190,45 @@
       }
       if (tool !== 'select') addAt(pointFromEvent(event));
     });
+
+    svg.addEventListener('pointerdown', event => {
+      const handle = event.target.closest('[data-handle]');
+      if (!handle || !currentItem || tool !== 'select') return;
+      const group = handle.closest('[data-index]');
+      const annotation = currentAnnotations()[Number(group.dataset.index)];
+      if (!annotation) return;
+      event.preventDefault();
+      event.stopPropagation();
+      drag = { annotation, kind: handle.dataset.handle, pointerId: event.pointerId };
+      svg.setPointerCapture(event.pointerId);
+    });
+
+    svg.addEventListener('pointermove', event => {
+      if (!drag || event.pointerId !== drag.pointerId) return;
+      const point = pointFromEvent(event);
+      if (drag.kind === 'arrow-start') drag.annotation.from = point;
+      if (drag.kind === 'arrow-end') drag.annotation.target = point;
+      if (drag.kind === 'arrow-label') drag.annotation.label = point;
+      if (drag.kind === 'callout-target') drag.annotation.target = point;
+      if (drag.kind === 'callout-box') {
+        const box = drag.annotation.box;
+        Object.assign(box, clampBox(box, point.x - box.w / 2, point.y - box.h / 2));
+      }
+      if (drag.kind === 'marker-position') {
+        if (drag.annotation.target) drag.annotation.target = point;
+        else Object.assign(drag.annotation, point);
+      }
+      suppressClickUntil = Date.now() + 250;
+      render();
+    });
+
+    const stopDragging = event => {
+      if (!drag || event.pointerId !== drag.pointerId) return;
+      if (svg.hasPointerCapture(event.pointerId)) svg.releasePointerCapture(event.pointerId);
+      drag = null;
+    };
+    svg.addEventListener('pointerup', stopDragging);
+    svg.addEventListener('pointercancel', stopDragging);
   }
 
   toggle.addEventListener('click', event => {
