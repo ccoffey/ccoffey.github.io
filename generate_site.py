@@ -59,22 +59,6 @@ def get_photo_sort_key(filename):
         return (int(y), int(mo), int(d), 12, 0, int(seq))
     return (1970, 1, 1, 0, 0, 0)
 
-def load_annotations(folder_path, slug):
-    """Load optional, repo-backed image annotations for one build."""
-    path = os.path.join(folder_path, 'annotations.json')
-    if not os.path.exists(path):
-        return {}
-    try:
-        with open(path, 'r', encoding='utf-8') as f:
-            data = json.load(f)
-        images = data.get('images', {})
-        if not isinstance(images, dict):
-            raise ValueError("'images' must be an object keyed by filename")
-        return images
-    except Exception as e:
-        print(f"[{slug}] Warning: Error loading {path}: {e}")
-        return {}
-
 def strip_exif_from_file(filepath):
     """Losslessly strips APP1 (EXIF / GPS / device metadata / XMP) from JPEG files."""
     try:
@@ -496,8 +480,6 @@ def process_build_dir(base_dir, slug, url_prefix):
         if k not in config or not config[k]:
             config[k] = v
 
-    annotations = load_annotations(folder_path, slug)
-
     thumbs_dir = os.path.join(folder_path, 'thumbs')
     os.makedirs(thumbs_dir, exist_ok=True)
 
@@ -604,7 +586,6 @@ def process_build_dir(base_dir, slug, url_prefix):
                 'date': date_str,
                 'short_date': short_date,
                 'aspect_ratio': ar
-                ,'annotations': annotations.get(f, [])
             })
 
     # Sort photos chronologically (oldest first: start of build through completion)
@@ -659,7 +640,6 @@ def process_build_dir(base_dir, slug, url_prefix):
             'aspect_ratio': meta['aspect_ratio'],
             'duration': meta.get('duration', ''),
             'mime_type': video_mime_type(video_fn)
-            ,'annotations': annotations.get(video_fn, [])
         })
 
     gallery = photos + gallery_videos
@@ -683,7 +663,6 @@ def process_build_dir(base_dir, slug, url_prefix):
         'photos': photos,
         'videos': videos,
         'gallery': gallery,
-        'annotations': annotations,
         'url_prefix': url_prefix
     }
 
