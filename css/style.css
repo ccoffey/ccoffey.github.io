@@ -1308,6 +1308,16 @@ header.hero {
   align-items: center;
   justify-content: center;
 }
+.lightbox-media-world {
+  position: relative;
+  width: min(90vw, calc((100vh - 160px) * var(--ar, 1.333)));
+  height: min(calc(100vh - 160px), calc(90vw / var(--ar, 1.333)));
+  aspect-ratio: var(--ar, 1.333);
+  max-width: 90vw;
+  max-height: calc(100vh - 160px);
+  transform-origin: center;
+  will-change: transform;
+}
 .lightbox-img,
 .lightbox-video {
   width: min(90vw, calc((100vh - 160px) * var(--ar, 1.333)));
@@ -1326,6 +1336,37 @@ header.hero {
   user-select: none;
   -webkit-user-select: none;
 }
+.lightbox-media-world .lightbox-img,
+.lightbox-media-world .lightbox-video {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  max-width: none;
+  max-height: none;
+}
+.lightbox-media-world.is-zoomed { cursor: grab; touch-action: none; }
+.lightbox-media-world.is-zoomed.is-panning { cursor: grabbing; }
+.lightbox-annotations {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
+  width: 100%;
+  height: 100%;
+  overflow: visible;
+  pointer-events: none;
+}
+.lightbox-annotations.is-visible { pointer-events: auto; }
+.annotation-arrow { fill: none; stroke: #ff4d3d; stroke-width: 7; stroke-linecap: round; }
+.annotation-callout { fill: rgba(13, 17, 23, 0.88); stroke: #ff4d3d; stroke-width: 6; }
+.annotation-highlight { fill: rgba(255, 77, 61, 0.14); stroke: #ff4d3d; stroke-width: 6; }
+.annotation-label { fill: #fff; font-family: inherit; font-size: 34px; font-weight: 750; paint-order: stroke; stroke: rgba(13, 17, 23, 0.82); stroke-width: 8px; stroke-linejoin: round; }
+.annotation-marker { fill: #ff4d3d; stroke: #fff; stroke-width: 4; cursor: pointer; }
+.annotation-marker-text { fill: #fff; font: 700 28px system-ui, sans-serif; pointer-events: none; text-anchor: middle; dominant-baseline: central; }
+.lightbox-annotations.is-editor { pointer-events: auto; cursor: crosshair; }
+.lightbox-annotations[hidden] { display: none; }
+.lightbox-annotations + .lightbox-video { z-index: 3; }
+.lightbox-annotation-toggle { display: none; }
 .lightbox-img.is-zoomed {
   cursor: grab;
   touch-action: none;
@@ -1392,6 +1433,34 @@ header.hero {
 .lightbox-close { top: 20px; right: 25px; font-size: 1.8rem; line-height: 1; }
 .lightbox-fullscreen { top: 20px; right: 80px; }
 .lightbox-zoom { top: 20px; right: 135px; }
+.lightbox-annotation-toggle { top: 20px; right: 190px; }
+.annotation-editor-toolbar {
+  position: absolute;
+  z-index: 1040;
+  top: 22px;
+  left: 24px;
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  max-width: min(62vw, 680px);
+  padding: 0.45rem;
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 10px;
+  background: rgba(13, 17, 23, 0.9);
+  color: #e6edf3;
+  font-size: 0.78rem;
+}
+.annotation-editor-toolbar button {
+  border: 1px solid rgba(255, 255, 255, 0.22);
+  border-radius: 6px;
+  padding: 0.28rem 0.45rem;
+  background: transparent;
+  color: inherit;
+  cursor: pointer;
+}
+.annotation-editor-toolbar button:hover,
+.annotation-editor-toolbar button.active { background: rgba(255, 77, 61, 0.28); border-color: #ff4d3d; }
 .lightbox-prev { left: 20px; top: 50%; transform: translateY(-50%); font-size: 1.8rem; line-height: 1; }
 .lightbox-prev:hover { transform: translateY(-50%) scale(1.08); }
 .lightbox-next { right: 20px; top: 50%; transform: translateY(-50%); font-size: 1.8rem; line-height: 1; }
@@ -1399,6 +1468,8 @@ header.hero {
 @media (max-width: 640px) {
   .lightbox-fullscreen { top: 10px; right: 60px; width: 38px; height: 38px; }
   .lightbox-zoom { top: 10px; right: 105px; width: 38px; height: 38px; }
+  .lightbox-annotation-toggle { top: 10px; right: 150px; width: 38px; height: 38px; }
+  .annotation-editor-toolbar { top: 58px; left: 10px; max-width: calc(100vw - 20px); }
   .lightbox-stage {
     max-width: 100vw;
     max-height: calc(100vh - 120px);
