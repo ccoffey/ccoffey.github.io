@@ -11,9 +11,15 @@ GENERATOR_SCRIPT = os.path.join(BASE_DIR, 'generate_site.py')
 BUILD_SCRIPT = os.path.join(BASE_DIR, 'scripts', 'build_site.py')
 OUTPUT_DIR = os.path.join(BASE_DIR, '_site')
 
-def run_builder():
+MEDIA_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.webp', '.mp4', '.mov', '.webm'}
+
+
+def run_builder(incremental=False):
     try:
-        subprocess.run([sys.executable, BUILD_SCRIPT, '--output', OUTPUT_DIR], check=True)
+        command = [sys.executable, BUILD_SCRIPT, '--output', OUTPUT_DIR]
+        if incremental:
+            command.append('--incremental')
+        subprocess.run(command, check=True)
     except Exception as e:
         print(f"[Watcher] Error during isolated build: {e}")
 
@@ -65,8 +71,20 @@ def watcher_loop():
         time.sleep(1.0)
         current_state = get_dir_state()
         if current_state != last_state:
-            print("[Watcher] Detected changes in source files. Rebuilding isolated site...")
-            run_builder()
+            changed_paths = {
+                path for path in set(last_state) | set(current_state)
+                if last_state.get(path) != current_state.get(path)
+            }
+            # Only unchanged file sets containing non-media edits can reuse the
+            # copied media. New, removed, or changed photos/videos need a clean
+            # build so the preview exactly mirrors the source tree.
+            incremental = (
+                set(last_state) == set(current_state)
+                and all(os.path.splitext(path)[1].lower() not in MEDIA_EXTENSIONS for path in changed_paths)
+            )
+            mode = "incremental" if incremental else "full"
+            print(f"[Watcher] Detected changes in source files. Running {mode} isolated build...")
+            run_builder(incremental=incremental)
             last_state = get_dir_state()
 
 class CustomHandler(SimpleHTTPRequestHandler):

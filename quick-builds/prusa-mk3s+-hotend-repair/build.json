@@ -1,0 +1,8 @@
+{
+  "title": "Prusa i3 MK3S+ Hotend Repair",
+  "subtitle": "My beloved 3D printer refused to print, beeped aggressively, and threw the wonderfully unhelpful error: \"Some problem encountered.\"",
+  "description": "The culprit was a frayed heater cartridge wire that snapped the moment I touched it. Since the assembly had seen better days, I did a full refresh; swapping out the heater cartridge, thermistor, heater block, and heatbreak. It's now running like new again.",
+  "tags": ["3D Printing", "Hardware Repair"],
+  "dates": "September 2026",
+  "order": 4
+}
