@@ -209,7 +209,7 @@
     // Mouse drag panning
     lightboxMediaWorld.addEventListener("mousedown", (e) => {
       dragDistance = 0;
-      if (e.target.closest('.annotation-handle')) return;
+      if (e.target.closest('.annotation-handle, .annotation-text')) return;
       if (currentScale <= 1) return;
       e.preventDefault();
       isPanning = true;

@@ -13,6 +13,7 @@
   let pendingPoint = null;
   let drag = null;
   let suppressClickUntil = 0;
+  let selectedIndex = null;
 
   const el = (name, attrs = {}, text = '') => {
     const node = document.createElementNS(NS, name);
@@ -77,7 +78,8 @@
     svg.append(defs);
 
     annotations.forEach((annotation, index) => {
-      const group = el('g', { 'data-index': index, class: 'annotation-hit' });
+      const selected = editable && index === selectedIndex;
+      const group = el('g', { 'data-index': index, class: `annotation-hit${selected ? ' is-selected' : ''}${annotation.type === 'text' ? ' annotation-text' : ''}` });
       if (annotation.type === 'callout') {
         const box = annotation.box || { x: 100, y: 100, w: 330, h: 150 };
         const fontSize = 24;
@@ -88,25 +90,24 @@
         group.append(el('line', { class: 'annotation-arrow', x1: annotation.target.x, y1: annotation.target.y, x2: box.x + box.w / 2, y2: box.y + height, 'marker-end': 'url(#annotation-arrowhead)' }));
         group.append(el('rect', { class: 'annotation-callout', x: box.x, y: box.y, width: box.w, height, rx: 42 }));
         appendText(group, box.x + 28, box.y + 39, annotation.text, { fontSize, lineHeight, maxChars });
-        if (editable) {
+        if (selected) {
           addHandle(group, annotation.target.x, annotation.target.y, 'callout-target');
           addHandle(group, box.x + box.w / 2, box.y + height / 2, 'callout-box');
         }
       } else if (annotation.type === 'arrow') {
-        const label = annotation.label || { x: annotation.from.x, y: annotation.from.y - 40 };
         group.append(el('line', { class: 'annotation-arrow', x1: annotation.from.x, y1: annotation.from.y, x2: annotation.target.x, y2: annotation.target.y, 'marker-end': 'url(#annotation-arrowhead)' }));
-        appendText(group, label.x, label.y, annotation.text, { fontSize: 24, lineHeight: 30, maxChars: 26 });
-        if (editable) {
+        if (selected) {
           addHandle(group, annotation.from.x, annotation.from.y, 'arrow-start');
           addHandle(group, annotation.target.x, annotation.target.y, 'arrow-end');
-          addHandle(group, label.x, label.y, 'arrow-label');
         }
+      } else if (annotation.type === 'text') {
+        appendText(group, annotation.x, annotation.y, annotation.text, { fontSize: 24, lineHeight: 30, maxChars: 26 });
       } else {
         const point = annotation.target || annotation;
         group.append(el('circle', { class: 'annotation-marker', cx: point.x, cy: point.y, r: 28 }));
         group.append(el('text', { class: 'annotation-marker-text', x: point.x, y: point.y }, index + 1));
         group.append(el('title', {}, annotation.text || 'Annotation'));
-        if (editable) addHandle(group, point.x, point.y, 'marker-position');
+        if (selected) addHandle(group, point.x, point.y, 'marker-position');
       }
       svg.append(group);
     });
@@ -134,20 +135,24 @@
 
   function addAt(point) {
     const annotations = currentAnnotations();
+    const countBefore = annotations.length;
     if (tool === 'marker') {
       const text = prompt('Annotation text:', 'New annotation');
       if (text) annotations.push({ type: 'marker', ...point, text });
+    } else if (tool === 'text') {
+      const text = prompt('Text:', 'New annotation');
+      if (text) annotations.push({ type: 'text', ...point, text });
     } else if (tool === 'arrow' || tool === 'callout') {
       if (!pendingPoint) { pendingPoint = point; return; }
       if (tool === 'arrow') {
-        const text = prompt('Arrow label:', 'New annotation');
-        if (text) annotations.push({ type: 'arrow', from: pendingPoint, target: point, text });
+        annotations.push({ type: 'arrow', from: pendingPoint, target: point });
       } else if (tool === 'callout') {
         const text = prompt('Callout text:', 'New annotation');
         if (text) annotations.push({ type: 'callout', target: pendingPoint, box: { x: point.x, y: point.y, w: 360, h: 160 }, text });
       }
       pendingPoint = null;
     }
+    if (annotations.length > countBefore) selectedIndex = annotations.length - 1;
     render();
   }
 
@@ -164,7 +169,7 @@
   if (editable) {
     const toolbar = document.createElement('div');
     toolbar.className = 'annotation-editor-toolbar';
-    toolbar.innerHTML = '<strong>Annotate</strong><button data-tool="select">Select</button><button data-tool="marker">Marker</button><button data-tool="arrow">Arrow</button><button data-tool="callout">Callout</button><button data-export="true">Export JSON</button>';
+    toolbar.innerHTML = '<strong>Annotate</strong><button data-tool="select">Select</button><button data-tool="text">Text</button><button data-tool="marker">Marker</button><button data-tool="arrow">Arrow</button><button data-tool="callout">Callout</button><button data-export="true">Export JSON</button>';
     document.getElementById('lightbox').append(toolbar);
     toolbar.addEventListener('click', event => {
       const button = event.target.closest('button');
@@ -180,26 +185,30 @@
       if (Date.now() < suppressClickUntil) return;
       const existing = event.target.closest('[data-index]');
       if (tool === 'select' && existing) {
-        const annotation = currentAnnotations()[Number(existing.dataset.index)];
-        if (annotation && 'text' in annotation) {
-          const text = prompt('Annotation text:', annotation.text);
-          if (text !== null) annotation.text = text;
-          render();
-        }
+        selectedIndex = Number(existing.dataset.index);
+        render();
         return;
       }
       if (tool !== 'select') addAt(pointFromEvent(event));
     });
 
     svg.addEventListener('pointerdown', event => {
+      if (!currentItem || tool !== 'select') return;
       const handle = event.target.closest('[data-handle]');
-      if (!handle || !currentItem || tool !== 'select') return;
-      const group = handle.closest('[data-index]');
+      const group = event.target.closest('[data-index]');
+      if (!group) return;
       const annotation = currentAnnotations()[Number(group.dataset.index)];
       if (!annotation) return;
+      if (annotation.type === 'text' && !handle) {
+        selectedIndex = Number(group.dataset.index);
+        drag = { annotation, kind: 'text-position', pointerId: event.pointerId };
+      } else if (handle) {
+        drag = { annotation, kind: handle.dataset.handle, pointerId: event.pointerId };
+      } else {
+        return;
+      }
       event.preventDefault();
       event.stopPropagation();
-      drag = { annotation, kind: handle.dataset.handle, pointerId: event.pointerId };
       svg.setPointerCapture(event.pointerId);
     });
 
@@ -208,7 +217,7 @@
       const point = pointFromEvent(event);
       if (drag.kind === 'arrow-start') drag.annotation.from = point;
       if (drag.kind === 'arrow-end') drag.annotation.target = point;
-      if (drag.kind === 'arrow-label') drag.annotation.label = point;
+      if (drag.kind === 'text-position') Object.assign(drag.annotation, point);
       if (drag.kind === 'callout-target') drag.annotation.target = point;
       if (drag.kind === 'callout-box') {
         const box = drag.annotation.box;
@@ -229,6 +238,19 @@
     };
     svg.addEventListener('pointerup', stopDragging);
     svg.addEventListener('pointercancel', stopDragging);
+
+    svg.addEventListener('dblclick', event => {
+      const group = event.target.closest('[data-index]');
+      if (!group) return;
+      const annotation = currentAnnotations()[Number(group.dataset.index)];
+      if (!annotation || !('text' in annotation)) return;
+      event.preventDefault();
+      event.stopPropagation();
+      const text = prompt('Annotation text:', annotation.text);
+      if (text !== null) annotation.text = text;
+      selectedIndex = Number(group.dataset.index);
+      render();
+    });
   }
 
   toggle.addEventListener('click', event => {
@@ -242,6 +264,7 @@
   window.updateLightboxAnnotations = item => {
     currentItem = item;
     pendingPoint = null;
+    selectedIndex = null;
     visible = item?.type !== 'video' && currentAnnotations().length > 0;
     render();
   };

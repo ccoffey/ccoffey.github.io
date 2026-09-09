@@ -5,7 +5,12 @@
       {
         "type": "arrow",
         "from": { "x": 180, "y": 200 },
-        "target": { "x": 470, "y": 540 },
+        "target": { "x": 470, "y": 540 }
+      },
+      {
+        "type": "text",
+        "x": 180,
+        "y": 160,
         "text": "Early control-system prototype"
       },
       {
