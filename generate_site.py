@@ -956,6 +956,7 @@ def sync_builds():
         media_html = [render_gallery_card(item, b['title'], idx)
                       for idx, item in enumerate(b['gallery'])]
         gallery_json = json.dumps(b['gallery'])
+        annotations_json = json.dumps(b['annotations'])
 
         og_image = f"https://cathalcoffey.com/major-builds/{b['slug']}/thumbs/{b['cover_img']}" if b.get('cover_img') else "https://cathalcoffey.com/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
 
@@ -975,7 +976,8 @@ def sync_builds():
             .replace('{{ NEXT_STEPS_SECTION }}', next_steps_section_html)
             .replace('{{ GALLERY_SUMMARY }}', gallery_summary(b['gallery']))
             .replace('{{ PHOTO_GRID }}', '\n'.join(media_html))
-            .replace('{{ GALLERY_JSON }}', gallery_json))
+            .replace('{{ GALLERY_JSON }}', gallery_json)
+            .replace('{{ ANNOTATIONS_JSON }}', annotations_json))
 
         build_out = os.path.join(MAJOR_BUILDS_DIR, b['slug'], 'index.html')
         with open(build_out, 'w', encoding='utf-8') as f:
@@ -1000,6 +1002,7 @@ def sync_builds():
       </div>'''
 
         gallery_json = json.dumps(qb['gallery'])
+        annotations_json = json.dumps(qb['annotations'])
         desc_html = f'<div class="build-description"><p>{qb["description"]}</p></div>' if qb.get('description') else ''
         og_image = f"https://cathalcoffey.com/quick-builds/{qb['slug']}/thumbs/{qb['cover_img']}" if qb.get('cover_img') else "https://cathalcoffey.com/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
 
@@ -1016,7 +1019,8 @@ def sync_builds():
             .replace('{{ NAV_LINKS }}', render_nav('quick', qb['slug']))
             .replace('{{ GALLERY_SUMMARY }}', gallery_summary(qb['gallery']))
             .replace('{{ PHOTO_GRID }}', gallery_markup)
-            .replace('{{ GALLERY_JSON }}', gallery_json))
+            .replace('{{ GALLERY_JSON }}', gallery_json)
+            .replace('{{ ANNOTATIONS_JSON }}', annotations_json))
 
         qb_out = os.path.join(QUICK_BUILDS_DIR, qb['slug'], 'index.html')
         with open(qb_out, 'w', encoding='utf-8') as f:

@@ -1,0 +1,29 @@
+{
+  "version": 1,
+  "images": {
+    "PXL_20260226_150354165.jpg": [
+      {
+        "id": "breadboard-prototype",
+        "type": "arrow",
+        "from": { "x": 180, "y": 200 },
+        "target": { "x": 470, "y": 540 },
+        "text": "Early control-system prototype"
+      },
+      {
+        "id": "wire-harness",
+        "type": "callout",
+        "target": { "x": 110, "y": 615 },
+        "box": { "x": 545, "y": 120, "w": 350, "h": 150 },
+        "text": "The wiring harness grew quickly before the custom PCB replaced it."
+      },
+      {
+        "id": "separate-boards",
+        "type": "highlight",
+        "x": 620,
+        "y": 580,
+        "rx": 170,
+        "ry": 130
+      }
+    ]
+  }
+}
