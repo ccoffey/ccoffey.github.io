@@ -335,6 +335,29 @@ def gallery_summary(media):
         parts.append(f"{video_count} {'Video' if video_count == 1 else 'Videos'}")
     return ' &bull; '.join(parts) if parts else 'No Media Yet'
 
+def load_media_descriptions(config, slug):
+    """Return filename-to-comments, accepting a string or a list of strings."""
+    descriptions = config.get('media_descriptions', {})
+    if not isinstance(descriptions, dict):
+        print(f"[{slug}] Warning: 'media_descriptions' must be an object keyed by filename.")
+        return {}
+    comments = {}
+    for filename, value in descriptions.items():
+        if not isinstance(filename, str):
+            continue
+        values = [value] if isinstance(value, str) else value
+        if not isinstance(values, list):
+            print(f"[{slug}] Warning: Description for '{filename}' must be a string or list of strings.")
+            continue
+        valid_comments = [comment.strip() for comment in values if isinstance(comment, str) and comment.strip()]
+        if valid_comments:
+            comments[filename] = valid_comments
+    return comments
+
+def json_for_script(value):
+    """Serialize JSON safely for embedding in an inline script element."""
+    return json.dumps(value).replace('<', '\\u003c')
+
 def render_gallery_card(item, title, index):
     title_attr = escape(title, quote=True)
     thumb_attr = escape(item.get('thumb', ''), quote=True)
@@ -343,6 +366,8 @@ def render_gallery_card(item, title, index):
     media_type = item.get('type', 'image')
     card_class = 'photo-card video-card' if media_type == 'video' else 'photo-card'
     label = f"Play {title} build video" if media_type == 'video' else f"Open {title} build photo"
+    if item.get('comments'):
+        label += " with comments"
     alt = f"{title} build video thumbnail" if media_type == 'video' else f"{title} build photo"
 
     if media_type == 'video':
@@ -368,10 +393,17 @@ def render_gallery_card(item, title, index):
     else:
         picture_markup = f'<img src="{thumb_attr}" alt="{escape(alt, quote=True)}" loading="lazy">'
 
+    description_indicator = ''
+    if item.get('comments'):
+        description_indicator = '''
+        <span class="photo-description-indicator" aria-hidden="true">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path><path d="M8 9h8M8 13h5"></path></svg>
+        </span>'''
+
     return f'''
       <button type="button" id="{fn_id}" data-filename="{fn_id}" class="{card_class}" style="--ar: {item.get('aspect_ratio', 1.333)};" onclick="openLightbox({index})" aria-label="{escape(label, quote=True)}">
         {picture_markup}
-        <span class="photo-date-pill">{date_attr}</span>{media_indicator}
+        <span class="photo-date-pill">{date_attr}</span>{description_indicator}{media_indicator}
       </button>'''
 
 def render_story_box(story_html):
@@ -480,6 +512,7 @@ def process_build_dir(base_dir, slug, url_prefix):
         if k not in config or not config[k]:
             config[k] = v
 
+    media_descriptions = load_media_descriptions(config, slug)
     thumbs_dir = os.path.join(folder_path, 'thumbs')
     os.makedirs(thumbs_dir, exist_ok=True)
 
@@ -585,7 +618,8 @@ def process_build_dir(base_dir, slug, url_prefix):
                 'thumb_webp': f"{url_prefix}/{slug}/thumbs/{thumb_stem}.webp",
                 'date': date_str,
                 'short_date': short_date,
-                'aspect_ratio': ar
+                'aspect_ratio': ar,
+                'comments': media_descriptions.get(f, [])
             })
 
     # Sort photos chronologically (oldest first: start of build through completion)
@@ -639,7 +673,8 @@ def process_build_dir(base_dir, slug, url_prefix):
             'short_date': short_date,
             'aspect_ratio': meta['aspect_ratio'],
             'duration': meta.get('duration', ''),
-            'mime_type': video_mime_type(video_fn)
+            'mime_type': video_mime_type(video_fn),
+            'comments': media_descriptions.get(video_fn, [])
         })
 
     gallery = photos + gallery_videos
@@ -955,7 +990,7 @@ def sync_builds():
         # Google Photos style justified chronological media grid.
         media_html = [render_gallery_card(item, b['title'], idx)
                       for idx, item in enumerate(b['gallery'])]
-        gallery_json = json.dumps(b['gallery'])
+        gallery_json = json_for_script(b['gallery'])
 
         og_image = f"https://cathalcoffey.com/major-builds/{b['slug']}/thumbs/{b['cover_img']}" if b.get('cover_img') else "https://cathalcoffey.com/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
 
@@ -999,7 +1034,7 @@ def sync_builds():
         <div class="empty-photos-desc">Photos of the design, 3D printing process, and installed wall covers are being prepared.</div>
       </div>'''
 
-        gallery_json = json.dumps(qb['gallery'])
+        gallery_json = json_for_script(qb['gallery'])
         desc_html = f'<div class="build-description"><p>{qb["description"]}</p></div>' if qb.get('description') else ''
         og_image = f"https://cathalcoffey.com/quick-builds/{qb['slug']}/thumbs/{qb['cover_img']}" if qb.get('cover_img') else "https://cathalcoffey.com/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
 

@@ -43,6 +43,23 @@ The pull-request build independently validates changed project media against
 those same requirements, so a skipped or interrupted local hook cannot merge
 unoptimized files.
 
+### Add a description to a gallery item
+
+In a project's `build.json` (or `project.json`), add a `media_descriptions`
+object keyed by the media filename. Each value can be one comment or a list of
+comments. They appear in the full-screen gallery viewer; the speech-bubble
+marker on a thumbnail shows that extra story context is available.
+
+```json
+"media_descriptions": {
+  "PXL_20260226_150354165.jpg": [
+    "The early control system was spread across several breadboards before the custom PCB brought everything together.",
+    "This was the point where I knew I needed to design a custom PCB."
+  ],
+  "demo.mp4": "The first successful end-to-end test."
+}
+```
+
 After a push to `master`, GitHub Actions builds an isolated `_site/` directory.
 It generates thumbnails and WebP companions, extracts video posters, generates
 the HTML, sitemap, and robots file, runs the tests, and deploys the result to
