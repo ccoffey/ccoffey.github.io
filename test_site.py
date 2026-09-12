@@ -213,6 +213,33 @@ class TestAssetIntegrity(unittest.TestCase):
         self.assertEqual(broken_media, [], f"Found {len(broken_media)} broken gallery media items:\n" + "\n".join(broken_media))
         self.assertGreater(total_items, 100, f"Expected >100 gallery items across builds, got {total_items}")
 
+    def test_gallery_comment_contract(self):
+        """Comments are safe lists and generated galleries preserve their grouped UI."""
+        build_pages = glob.glob(os.path.join(REPO_ROOT, 'major-builds', '*', 'index.html')) + \
+                      glob.glob(os.path.join(REPO_ROOT, 'quick-builds', '*', 'index.html'))
+        commented_items = []
+
+        for page in build_pages:
+            with open(page, 'r', encoding='utf-8') as f:
+                content = f.read()
+            match = re.search(r'const gallery = (\[.*?\]);', content, re.DOTALL)
+            self.assertIsNotNone(match, f"Missing gallery data in {page}")
+            items = json.loads(match.group(1))
+
+            self.assertIn('function renderLightboxComments(comments)', content)
+            self.assertIn('lightbox-comment-group', content)
+            self.assertIn('lightbox-comment-stack', content)
+            self.assertIn('id="lightboxCommentsBtn"', content)
+
+            for item in items:
+                comments = item.get('comments', [])
+                self.assertIsInstance(comments, list, f"Comments must be a list for {item.get('filename')}")
+                self.assertTrue(all(isinstance(comment, str) and comment.strip() for comment in comments))
+                if comments:
+                    commented_items.append((page, item))
+
+        self.assertGreaterEqual(len(commented_items), 1, "Expected at least one commented gallery item.")
+
 
 class TestSEOAndMetadataContracts(unittest.TestCase):
     """Validates SEO metadata, OpenGraph tags, sitemap.xml, and robots.txt."""
@@ -363,6 +390,22 @@ class TestPerformanceAndBudgets(unittest.TestCase):
 
 class TestGeneratorInvariants(unittest.TestCase):
     """Validates date parsing, sort key consistency, and deduplication logic."""
+
+    def test_media_descriptions_normalize_to_comment_lists(self):
+        config = {
+            'media_descriptions': {
+                'one.jpg': ' One comment ',
+                'many.jpg': [' First comment ', '', 12, 'Second comment'],
+                'invalid.jpg': {'text': 'not supported'}
+            }
+        }
+        self.assertEqual(
+            generate_site.load_media_descriptions(config, 'test-build'),
+            {
+                'one.jpg': ['One comment'],
+                'many.jpg': ['First comment', 'Second comment']
+            }
+        )
 
     def test_parse_photo_date(self):
         # Pixel phone filename
