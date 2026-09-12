@@ -143,7 +143,11 @@ class BrowserRegressionTests(unittest.TestCase):
         # Linux to make one shared reference image noisy. Keep the primary
         # baseline for local macOS development and use a CI-specific reference
         # on Linux; each remains a strict visual regression check.
-        baseline_name = f"{name}-linux" if sys.platform.startswith("linux") else name
+        platform_baseline_name = f"{name}-linux"
+        if sys.platform.startswith("linux") and (VISUAL_BASELINE_DIR / f"{platform_baseline_name}.png").is_file():
+            baseline_name = platform_baseline_name
+        else:
+            baseline_name = name
         baseline = VISUAL_BASELINE_DIR / f"{baseline_name}.png"
         VISUAL_ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
         actual = VISUAL_ARTIFACT_DIR / f"{baseline_name}-actual.png"
