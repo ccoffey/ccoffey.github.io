@@ -133,7 +133,6 @@ def validate_output(output):
         output / "index.html",
         output / "css" / "style.css",
         output / "js" / "navigation.js",
-        output / "CNAME",
         output / ".nojekyll",
     ]
     missing = [str(path.relative_to(output)) for path in required if not path.is_file()]

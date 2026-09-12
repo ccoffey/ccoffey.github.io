@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ TITLE }} | Cathal Coffey</title>
   <meta name="description" content="{{ SUBTITLE }}">
-  <link rel="canonical" href="https://cathalcoffey.com/major-builds/{{ SLUG }}/">
+  <link rel="canonical" href="{{ SITE_URL }}/major-builds/{{ SLUG }}/">
 
   <!-- Security Headers -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
@@ -17,7 +17,7 @@
   <meta property="og:site_name" content="Cathal Coffey">
   <meta property="og:title" content="{{ TITLE }} | Cathal Coffey">
   <meta property="og:description" content="{{ SUBTITLE }}">
-  <meta property="og:url" content="https://cathalcoffey.com/major-builds/{{ SLUG }}/">
+  <meta property="og:url" content="{{ SITE_URL }}/major-builds/{{ SLUG }}/">
   <meta property="og:image" content="{{ OG_IMAGE_URL }}">
 
   <!-- Twitter Card -->
@@ -28,18 +28,7 @@
 
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
   <link rel="stylesheet" href="/css/style.css?v={{ BUILD_ID }}">
-  <!-- Google tag (gtag.js) -->
-  <script async src="https://www.googletagmanager.com/gtag/js?id={{ GA_MEASUREMENT_ID }}"></script>
-  <script>
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', '{{ GA_MEASUREMENT_ID }}', {
-      'project_title': '{{ TITLE }}',
-      'project_slug': '{{ SLUG }}',
-      'build_type': 'major'
-    });
-  </script>
+  {{ ANALYTICS_SNIPPET }}
 </head>
 <body>
   <nav class="top-nav">
