@@ -77,6 +77,43 @@ python3 -m http.server 8000 --directory _site
 Then open <http://127.0.0.1:8000/>. `_site/` is disposable and ignored by Git.
 Delete it whenever you finish testing.
 
+### Run the browser regression suite
+
+The standard build runs the fast integrity and generator checks. To exercise
+the rendered site in headless Chromium as CI does, install the test dependency
+and browser once, then run the suite against a built copy:
+
+```bash
+python3 -m pip install --requirement requirements-test.txt
+python3 -m playwright install chromium
+SITE_ROOT=_site python3 scripts/test_browser.py
+```
+
+The browser suite covers representative page rendering, gallery opening and
+navigation, deep-linked comments and their visibility control, browser
+back/forward behavior, the mobile navigation menu, and desktop/mobile page
+snapshots. When an intentional visual change is made, update the checked-in
+baselines with `SITE_ROOT=_site python3 scripts/test_browser.py --update-snapshots`.
+
+### Lint Python
+
+```bash
+python3 -m pip install --requirement requirements-test.txt
+python3 -m ruff check .
+```
+
+### Lint site sources
+
+```bash
+npm ci
+npm run lint:js
+npm run lint:css
+python3 scripts/build_site.py --output _site
+npm run lint:html
+```
+
+GitHub Actions also runs `actionlint` against the workflow files.
+
 For a watched preview that rebuilds when source files change, run:
 
 ```bash

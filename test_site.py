@@ -15,25 +15,24 @@ Usage:
   SITE_ROOT=_site python3 test_site.py --ux     # Include Headless Chrome UX tests
 """
 
-import os
-import sys
 import glob
 import json
-from pathlib import Path
+import os
 import re
+import sys
 import tempfile
 import unittest
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
+from pathlib import Path
 
 SOURCE_ROOT = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.abspath(os.environ.get('SITE_ROOT', SOURCE_ROOT))
 SITE_URL = os.environ.get('SITE_URL', 'https://example.com').rstrip('/')
 sys.path.insert(0, SOURCE_ROOT)
 
-import generate_site
-from scripts import optimize_staged_media
-from scripts import validate_project_media
+import generate_site  # noqa: E402
+from scripts import optimize_staged_media, validate_project_media  # noqa: E402
 
 
 class HTMLAssetScraper(HTMLParser):
@@ -109,7 +108,7 @@ class TestAssetIntegrity(unittest.TestCase):
 
         for page in pages:
             scraper = HTMLAssetScraper()
-            with open(page, 'r', encoding='utf-8') as f:
+            with open(page, encoding='utf-8') as f:
                 scraper.feed(f.read())
 
             page_dir = os.path.dirname(page)
@@ -137,7 +136,7 @@ class TestAssetIntegrity(unittest.TestCase):
 
         for page in pages:
             scraper = HTMLAssetScraper()
-            with open(page, 'r', encoding='utf-8') as f:
+            with open(page, encoding='utf-8') as f:
                 scraper.feed(f.read())
 
             page_dir = os.path.dirname(page)
@@ -170,7 +169,7 @@ class TestAssetIntegrity(unittest.TestCase):
         broken_media = []
 
         for page in build_pages:
-            with open(page, 'r', encoding='utf-8') as f:
+            with open(page, encoding='utf-8') as f:
                 content = f.read()
             match = re.search(r'const gallery = (\[.*?\]);', content, re.DOTALL)
             if not match:
@@ -221,7 +220,7 @@ class TestAssetIntegrity(unittest.TestCase):
         commented_items = []
 
         for page in build_pages:
-            with open(page, 'r', encoding='utf-8') as f:
+            with open(page, encoding='utf-8') as f:
                 content = f.read()
             match = re.search(r'const gallery = (\[.*?\]);', content, re.DOTALL)
             self.assertIsNotNone(match, f"Missing gallery data in {page}")
@@ -250,7 +249,7 @@ class TestSEOAndMetadataContracts(unittest.TestCase):
         for page in pages:
             rel_page = os.path.relpath(page, REPO_ROOT)
             scraper = HTMLAssetScraper()
-            with open(page, 'r', encoding='utf-8') as f:
+            with open(page, encoding='utf-8') as f:
                 scraper.feed(f.read())
 
             # Title
@@ -314,7 +313,7 @@ class TestSEOAndMetadataContracts(unittest.TestCase):
     def test_robots_txt(self):
         robots_path = os.path.join(REPO_ROOT, 'robots.txt')
         self.assertTrue(os.path.isfile(robots_path), "robots.txt not found.")
-        with open(robots_path, 'r', encoding='utf-8') as f:
+        with open(robots_path, encoding='utf-8') as f:
             content = f.read()
         self.assertIn('Allow: /', content, "robots.txt must allow root crawling.")
         self.assertIn(f'Sitemap: {SITE_URL}/sitemap.xml', content, "robots.txt must declare sitemap URL.")
@@ -371,7 +370,7 @@ class TestPerformanceAndBudgets(unittest.TestCase):
     def test_full_photo_weight_budget(self):
         photos = []
         for base in ('major-builds', 'quick-builds'):
-            for root, dirs, files in os.walk(os.path.join(REPO_ROOT, base)):
+            for root, _dirs, files in os.walk(os.path.join(REPO_ROOT, base)):
                 if os.path.basename(root) == 'thumbs':
                     continue
                 for f in files:

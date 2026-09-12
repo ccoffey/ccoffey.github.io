@@ -8,6 +8,7 @@ import asyncio
 import json
 import sys
 import urllib.request
+
 import websockets
 
 CDP_URL = "http://localhost:9225/json"
@@ -30,10 +31,10 @@ async def run_ux_test():
 
     async with websockets.connect(ws_url, max_size=20 * 1024 * 1024) as ws:
         msg_id = 0
-        async def cmd(method, params={}):
+        async def cmd(method, params=None):
             nonlocal msg_id
             msg_id += 1
-            await ws.send(json.dumps({'id': msg_id, 'method': method, 'params': params}))
+            await ws.send(json.dumps({'id': msg_id, 'method': method, 'params': params or {}}))
             while True:
                 raw = await ws.recv()
                 data = json.loads(raw)

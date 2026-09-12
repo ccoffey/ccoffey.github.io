@@ -1162,9 +1162,7 @@ header.hero {
   border-radius: 8px;
   overflow: hidden;
   height: 240px;
-  flex-grow: var(--ar, 1.33);
-  flex-shrink: 1;
-  flex-basis: calc(240px * var(--ar, 1.33));
+  flex: var(--ar, 1.33) 1 calc(240px * var(--ar, 1.33));
   max-width: calc(240px * var(--ar, 1.33) * 1.5);
   background: var(--bg-subtle);
   border: 1px solid var(--border);

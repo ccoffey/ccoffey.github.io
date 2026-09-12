@@ -31,11 +31,32 @@ jobs:
           python-version: "3.13"
           cache: pip
 
+      - name: Set up Node.js
+        uses: actions/setup-node@v6
+        with:
+          node-version: "22"
+          cache: npm
+
+      - name: Lint GitHub Actions workflows
+        uses: rhysd/actionlint@v1
+
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install --yes ffmpeg
 
       - name: Install Python dependencies
-        run: python -m pip install --requirement requirements.txt
+        run: python -m pip install --requirement requirements-test.txt
+
+      - name: Install JavaScript dependencies
+        run: npm ci
+
+      - name: Install Chromium for browser tests
+        run: python -m playwright install --with-deps chromium
+
+      - name: Lint Python
+        run: python -m ruff check .
+
+      - name: Lint JavaScript and CSS
+        run: npm run lint:js && npm run lint:css
 
       - name: Validate project media
         run: python scripts/validate_project_media.py
@@ -46,6 +67,23 @@ jobs:
           SITE_URL: ${{ vars.SITE_URL }}
           GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
         run: python scripts/build_site.py --output _site
+
+      - name: Validate generated HTML
+        run: npm run lint:html
+
+      - name: Run browser regression tests
+        env:
+          SITE_ROOT: _site
+        run: python scripts/test_browser.py
+
+      - name: Upload visual test artifacts
+        if: failure()
+        uses: actions/upload-artifact@v7
+        with:
+          name: visual-test-artifacts
+          path: test-results/visual
+          if-no-files-found: ignore
+          retention-days: 7
 
       - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v5

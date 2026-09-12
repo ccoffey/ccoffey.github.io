@@ -5,15 +5,14 @@ from __future__ import annotations
 
 import argparse
 import os
-from pathlib import Path
 import subprocess
 import sys
-
+from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
-from scripts.optimize_staged_media import (
+from scripts.optimize_staged_media import (  # noqa: E402
     IMAGE_DIMENSION_LIMIT,
     IMAGE_EXTENSIONS,
     IMAGE_SIZE_LIMIT,
