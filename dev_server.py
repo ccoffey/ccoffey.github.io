@@ -1,6 +1,10 @@
 #!/usr/bin/env python3
-import os, sys, time, threading, subprocess
-from http.server import ThreadingHTTPServer, SimpleHTTPRequestHandler
+import os
+import subprocess
+import sys
+import threading
+import time
+from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 MAJOR_BUILDS_DIR = os.path.join(BASE_DIR, 'major-builds')
@@ -32,7 +36,7 @@ def get_dir_state():
             pass
 
     if os.path.exists(TEMPLATES_DIR):
-        for root, dirs, files in os.walk(TEMPLATES_DIR):
+        for root, _dirs, files in os.walk(TEMPLATES_DIR):
             for f in files:
                 p = os.path.join(root, f)
                 try:
@@ -41,7 +45,7 @@ def get_dir_state():
                     pass
 
     if os.path.exists(CSS_DIR):
-        for root, dirs, files in os.walk(CSS_DIR):
+        for root, _dirs, files in os.walk(CSS_DIR):
             for f in files:
                 p = os.path.join(root, f)
                 try:
@@ -51,7 +55,7 @@ def get_dir_state():
 
     for d in (MAJOR_BUILDS_DIR, QUICK_BUILDS_DIR):
         if os.path.exists(d):
-            for root, dirs, files in os.walk(d):
+            for root, _dirs, files in os.walk(d):
                 if 'thumbs' in root:
                     continue
                 for f in files:

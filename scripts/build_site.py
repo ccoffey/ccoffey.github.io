@@ -3,11 +3,10 @@
 
 import argparse
 import os
-from pathlib import Path
 import shutil
 import subprocess
 import sys
-
+from pathlib import Path
 
 SOURCE_ROOT = Path(__file__).resolve().parent.parent
 GENERATED_ROOT_FILES = ("index.html", "robots.txt", "sitemap.xml")

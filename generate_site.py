@@ -1,7 +1,12 @@
 #!/usr/bin/env python3
-import os, sys, json, re, subprocess, hashlib
-from html import escape
+import hashlib
+import json
+import os
+import re
+import subprocess
 from datetime import datetime
+from html import escape
+
 from PIL import Image
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
@@ -15,7 +20,7 @@ VIDEO_EXTENSIONS = ('.mp4', '.mov', '.webm')
 
 def load_template(name):
     path = os.path.join(TEMPLATES_DIR, name)
-    with open(path, 'r', encoding='utf-8') as f:
+    with open(path, encoding='utf-8') as f:
         return f.read()
 
 def analytics_snippet(title='', slug='', build_type=''):
@@ -258,7 +263,7 @@ def get_video_metadata(video_path):
             video_path
         ]
         cs_res = subprocess.run(cs_cmd, capture_output=True, text=True)
-        cs_lines = [l.strip() for l in cs_res.stdout.strip().splitlines() if l.strip()]
+        cs_lines = [line.strip() for line in cs_res.stdout.strip().splitlines() if line.strip()]
         color_transfer = cs_lines[1] if len(cs_lines) > 1 else ''
         color_space = cs_lines[0] if len(cs_lines) > 0 else ''
 
@@ -371,7 +376,6 @@ def json_for_script(value):
     return json.dumps(value).replace('<', '\\u003c')
 
 def render_gallery_card(item, title, index):
-    title_attr = escape(title, quote=True)
     thumb_attr = escape(item.get('thumb', ''), quote=True)
     thumb_webp_attr = escape(item.get('thumb_webp', ''), quote=True)
     date_attr = escape(item.get('short_date', ''), quote=True)
@@ -505,7 +509,7 @@ def process_build_dir(base_dir, slug, url_prefix):
     config = {}
     if os.path.exists(config_path) and os.path.getsize(config_path) > 0:
         try:
-            with open(config_path, 'r', encoding='utf-8') as f:
+            with open(config_path, encoding='utf-8') as f:
                 config = json.load(f)
         except Exception as e:
             print(f"[{slug}] Warning: Error loading {config_path}: {e}")
@@ -827,7 +831,7 @@ def sync_builds():
         cover_base = os.path.splitext(b['cover_img'])[0] if b.get('cover_img') else ''
         thumb_src = f"/major-builds/{b['slug']}/thumbs/{b['cover_img']}" if b.get('cover_img') else ''
         thumb_webp_src = f"/major-builds/{b['slug']}/thumbs/{cover_base}.webp" if cover_base else ''
-        tags_html = ''.join(f'<span class="tech-tag">{tag}</span>' for tag in b['tags'])
+        tags_html = ''.join(f'<span class="tech-tag">{escape(tag)}</span>' for tag in b['tags'])
         if thumb_webp_src:
             picture_html = f'''<picture>
               <source type="image/webp" srcset="{thumb_webp_src}">
@@ -847,10 +851,10 @@ def sync_builds():
           </div>
           <div class="grid-card-body">
             <div class="grid-card-header">
-              <h3 class="grid-card-title">{b['title']}</h3>
+              <h3 class="grid-card-title">{b_title}</h3>
               <span class="grid-card-arrow">&rarr;</span>
             </div>
-            <p class="grid-card-subtitle">{b['subtitle']}</p>
+            <p class="grid-card-subtitle">{escape(b['subtitle'])}</p>
             <div class="grid-card-tags">
               {tags_html}
             </div>
@@ -862,7 +866,7 @@ def sync_builds():
     quick_cards_html = []
     for qb in quick_builds:
         qb_title = escape(qb['title'])
-        tags_html = ''.join(f'<span class="tech-tag">{tag}</span>' for tag in qb['tags'])
+        tags_html = ''.join(f'<span class="tech-tag">{escape(tag)}</span>' for tag in qb['tags'])
         cover_base = os.path.splitext(qb['cover_img'])[0] if qb.get('cover_img') else ''
         thumb_src = f"/quick-builds/{qb['slug']}/thumbs/{qb['cover_img']}" if qb.get('cover_img') else ''
         thumb_webp_src = f"/quick-builds/{qb['slug']}/thumbs/{cover_base}.webp" if cover_base else ''
@@ -897,10 +901,10 @@ def sync_builds():
           {media_markup}
           <div class="grid-card-body">
             <div class="grid-card-header">
-              <h3 class="grid-card-title">{qb['title']}</h3>
+              <h3 class="grid-card-title">{qb_title}</h3>
               <span class="grid-card-arrow">&rarr;</span>
             </div>
-            <p class="grid-card-subtitle">{qb['subtitle']}</p>
+            <p class="grid-card-subtitle">{escape(qb['subtitle'])}</p>
             <div class="grid-card-tags">
               {tags_html}
             </div>
@@ -924,7 +928,7 @@ def sync_builds():
 
     # 3. Render Major Build Pages (major-builds/{slug}/index.html)
     for b in major_builds:
-        tags_html = '\n        '.join(f'<span class="tech-tag">{tag}</span>' for tag in b['tags'])
+        tags_html = '\n        '.join(f'<span class="tech-tag">{escape(tag)}</span>' for tag in b['tags'])
         
         story_box_html = render_story_box(b['story'])
         engineering_section_html = render_engineering_section(
@@ -987,7 +991,7 @@ def sync_builds():
                 next_steps_section_html = next_steps_html
         else:
             # Placeholder Video
-            hero_section_html = f'''
+            hero_section_html = '''
     <div class="hero-video-wrapper placeholder-hero">
       <div class="hero-video-placeholder">
         <div class="video-play-btn">
@@ -1008,8 +1012,8 @@ def sync_builds():
         og_image = f"{SITE_URL}/major-builds/{b['slug']}/thumbs/{b['cover_img']}" if b.get('cover_img') else f"{SITE_URL}/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
 
         rendered_build = (major_build_tmpl
-            .replace('{{ TITLE }}', b['title'])
-            .replace('{{ SUBTITLE }}', b['subtitle'])
+            .replace('{{ TITLE }}', escape(b['title'], quote=True))
+            .replace('{{ SUBTITLE }}', escape(b['subtitle'], quote=True))
             .replace('{{ SLUG }}', b['slug'])
             .replace('{{ OG_IMAGE_URL }}', og_image)
             .replace('{{ DATES }}', b['dates'])
@@ -1033,7 +1037,7 @@ def sync_builds():
 
     # 4. Render Quick Build Pages (quick-builds/{slug}/index.html)
     for qb in quick_builds:
-        tags_html = '\n        '.join(f'<span class="tech-tag">{tag}</span>' for tag in qb['tags'])
+        tags_html = '\n        '.join(f'<span class="tech-tag">{escape(tag)}</span>' for tag in qb['tags'])
 
         if qb['gallery']:
             gallery_markup = '\n'.join(
@@ -1049,12 +1053,12 @@ def sync_builds():
       </div>'''
 
         gallery_json = json_for_script(qb['gallery'])
-        desc_html = f'<div class="build-description"><p>{qb["description"]}</p></div>' if qb.get('description') else ''
+        desc_html = f'<div class="build-description"><p>{escape(qb["description"])}</p></div>' if qb.get('description') else ''
         og_image = f"{SITE_URL}/quick-builds/{qb['slug']}/thumbs/{qb['cover_img']}" if qb.get('cover_img') else f"{SITE_URL}/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
 
         rendered_qb = (quick_build_tmpl
-            .replace('{{ TITLE }}', qb['title'])
-            .replace('{{ SUBTITLE }}', qb['subtitle'])
+            .replace('{{ TITLE }}', escape(qb['title'], quote=True))
+            .replace('{{ SUBTITLE }}', escape(qb['subtitle'], quote=True))
             .replace('{{ SLUG }}', qb['slug'])
             .replace('{{ OG_IMAGE_URL }}', og_image)
             .replace('{{ DATES }}', qb['dates'])
