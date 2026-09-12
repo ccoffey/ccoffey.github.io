@@ -30,7 +30,7 @@ jobs:
           cache: npm
 
       - name: Lint GitHub Actions workflows
-        uses: rhysd/actionlint@v1
+        uses: rhysd/actionlint@v1.7.12
 
       - name: Install system dependencies
         run: sudo apt-get update && sudo apt-get install --yes ffmpeg
