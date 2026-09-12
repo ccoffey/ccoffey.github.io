@@ -139,9 +139,14 @@ class BrowserRegressionTests(unittest.TestCase):
         page.add_style_tag(content="* { animation: none !important; transition: none !important; }")
         page.evaluate("document.fonts.ready")
 
-        baseline = VISUAL_BASELINE_DIR / f"{name}.png"
+        # Chromium's mobile text rasterization differs enough between macOS and
+        # Linux to make one shared reference image noisy. Keep the primary
+        # baseline for local macOS development and use a CI-specific reference
+        # on Linux; each remains a strict visual regression check.
+        baseline_name = f"{name}-linux" if sys.platform.startswith("linux") else name
+        baseline = VISUAL_BASELINE_DIR / f"{baseline_name}.png"
         VISUAL_ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
-        actual = VISUAL_ARTIFACT_DIR / f"{name}-actual.png"
+        actual = VISUAL_ARTIFACT_DIR / f"{baseline_name}-actual.png"
         page.screenshot(path=str(actual), animations="disabled")
 
         if UPDATE_VISUAL_BASELINES:
@@ -160,7 +165,7 @@ class BrowserRegressionTests(unittest.TestCase):
             ratio = changed / (expected.width * expected.height)
 
         if ratio > MAX_DIFFERING_PIXEL_RATIO:
-            diff = VISUAL_ARTIFACT_DIR / f"{name}-diff.png"
+            diff = VISUAL_ARTIFACT_DIR / f"{baseline_name}-diff.png"
             delta.save(diff)
             self.fail(
                 f"Visual regression in {name}: {ratio:.2%} of pixels differ "
