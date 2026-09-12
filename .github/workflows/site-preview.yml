@@ -35,6 +35,8 @@ jobs:
       - name: Build isolated site
         env:
           BUILD_ID: ${{ github.sha }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
         run: python scripts/build_site.py --output _site
 
       - name: Create content manifest
@@ -43,6 +45,8 @@ jobs:
       - name: Rebuild site independently
         env:
           BUILD_ID: ${{ github.sha }}
+          SITE_URL: ${{ vars.SITE_URL }}
+          GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
         run: python scripts/build_site.py --output "${{ runner.temp }}/site-repeat"
 
       - name: Verify reproducible output

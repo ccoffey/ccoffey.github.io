@@ -28,6 +28,7 @@ from html.parser import HTMLParser
 
 SOURCE_ROOT = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.abspath(os.environ.get('SITE_ROOT', SOURCE_ROOT))
+SITE_URL = os.environ.get('SITE_URL', 'https://example.com').rstrip('/')
 sys.path.insert(0, SOURCE_ROOT)
 
 import generate_site
@@ -264,22 +265,22 @@ class TestSEOAndMetadataContracts(unittest.TestCase):
 
             # Canonical link
             canonical = scraper.rel_links.get('canonical', '')
-            self.assertTrue(canonical.startswith('https://cathalcoffey.com/'), f"Invalid canonical in {rel_page}: {canonical}")
+            self.assertTrue(canonical.startswith(f'{SITE_URL}/'), f"Invalid canonical in {rel_page}: {canonical}")
 
             # OpenGraph tags
             self.assertIn('og:title', scraper.meta, f"Missing og:title in {rel_page}")
             self.assertIn('og:description', scraper.meta, f"Missing og:description in {rel_page}")
             self.assertIn('og:url', scraper.meta, f"Missing og:url in {rel_page}")
             og_img = scraper.meta.get('og:image', '')
-            self.assertTrue(og_img.startswith('https://cathalcoffey.com/'), f"Invalid og:image in {rel_page}: {og_img}")
+            self.assertTrue(og_img.startswith(f'{SITE_URL}/'), f"Invalid og:image in {rel_page}: {og_img}")
 
             # OpenGraph image must exist locally
-            local_og_img = os.path.join(REPO_ROOT, og_img.replace('https://cathalcoffey.com/', ''))
+            local_og_img = os.path.join(REPO_ROOT, og_img.replace(f'{SITE_URL}/', ''))
             self.assertTrue(os.path.exists(local_og_img), f"og:image does not exist on disk for {rel_page}: {local_og_img}")
 
             # Twitter card tags
             self.assertEqual(scraper.meta.get('twitter:card'), 'summary_large_image', f"Invalid twitter:card in {rel_page}")
-            self.assertTrue(scraper.meta.get('twitter:image', '').startswith('https://cathalcoffey.com/'), f"Invalid twitter:image in {rel_page}")
+            self.assertTrue(scraper.meta.get('twitter:image', '').startswith(f'{SITE_URL}/'), f"Invalid twitter:image in {rel_page}")
 
     def test_sitemap_xml(self):
         sitemap_path = os.path.join(REPO_ROOT, 'sitemap.xml')
@@ -294,20 +295,20 @@ class TestSEOAndMetadataContracts(unittest.TestCase):
 
         # Verify every URL in sitemap points to an existing file
         for loc in locs:
-            self.assertTrue(loc.startswith('https://cathalcoffey.com/'), f"Sitemap URL must start with domain: {loc}")
-            rel_path = loc.replace('https://cathalcoffey.com/', '')
+            self.assertTrue(loc.startswith(f'{SITE_URL}/'), f"Sitemap URL must start with domain: {loc}")
+            rel_path = loc.replace(f'{SITE_URL}/', '')
             target = os.path.join(REPO_ROOT, rel_path, 'index.html') if rel_path else os.path.join(REPO_ROOT, 'index.html')
             self.assertTrue(os.path.isfile(target), f"Sitemap entry points to non-existent HTML file: {loc} -> {target}")
 
         # Verify every generated build page is listed in the sitemap
         sitemap_set = set(locs)
-        self.assertIn('https://cathalcoffey.com/', sitemap_set)
+        self.assertIn(f'{SITE_URL}/', sitemap_set)
         for page in get_html_pages():
             rel = os.path.relpath(page, REPO_ROOT)
             if rel == 'index.html':
                 continue
             folder = os.path.dirname(rel)
-            expected_url = f"https://cathalcoffey.com/{folder}/"
+            expected_url = f"{SITE_URL}/{folder}/"
             self.assertIn(expected_url, sitemap_set, f"Generated build page missing from sitemap.xml: {expected_url}")
 
     def test_robots_txt(self):
@@ -316,7 +317,7 @@ class TestSEOAndMetadataContracts(unittest.TestCase):
         with open(robots_path, 'r', encoding='utf-8') as f:
             content = f.read()
         self.assertIn('Allow: /', content, "robots.txt must allow root crawling.")
-        self.assertIn('Sitemap: https://cathalcoffey.com/sitemap.xml', content, "robots.txt must declare sitemap URL.")
+        self.assertIn(f'Sitemap: {SITE_URL}/sitemap.xml', content, "robots.txt must declare sitemap URL.")
 
 
 class TestPerformanceAndBudgets(unittest.TestCase):

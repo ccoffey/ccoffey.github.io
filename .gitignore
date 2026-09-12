@@ -2,6 +2,8 @@
 __pycache__/
 *.pyc
 _site/
+/CNAME
+/.well-known/appspecific/
 /index.html
 /robots.txt
 /sitemap.xml

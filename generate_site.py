@@ -9,13 +9,25 @@ MAJOR_BUILDS_DIR = os.path.join(BASE_DIR, 'major-builds')
 QUICK_BUILDS_DIR = os.path.join(BASE_DIR, 'quick-builds')
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 
-GA_MEASUREMENT_ID = os.environ.get('GA_MEASUREMENT_ID', 'G-RJN8XNMCEG')
+SITE_URL = os.environ.get('SITE_URL', 'https://example.com').rstrip('/')
+GA_MEASUREMENT_ID = os.environ.get('GA_MEASUREMENT_ID', '').strip()
 VIDEO_EXTENSIONS = ('.mp4', '.mov', '.webm')
 
 def load_template(name):
     path = os.path.join(TEMPLATES_DIR, name)
     with open(path, 'r', encoding='utf-8') as f:
         return f.read()
+
+def analytics_snippet(title='', slug='', build_type=''):
+    if not GA_MEASUREMENT_ID:
+        return ''
+    config = {k: v for k, v in {
+        'project_title': title, 'project_slug': slug, 'build_type': build_type
+    }.items() if v}
+    config_arg = f", {json.dumps(config)}" if config else ''
+    return f'''<!-- Analytics is enabled only when GA_MEASUREMENT_ID is configured externally. -->
+  <script async src="https://www.googletagmanager.com/gtag/js?id={escape(GA_MEASUREMENT_ID, quote=True)}"></script>
+  <script>window.dataLayer = window.dataLayer || []; function gtag(){{dataLayer.push(arguments);}} gtag('js', new Date()); gtag('config', {json.dumps(GA_MEASUREMENT_ID)}{config_arg});</script>'''
 
 def parse_photo_date(filename):
     if 'control_panel_graphic' in filename:
@@ -899,7 +911,8 @@ def sync_builds():
     rendered_home = (home_tmpl
         .replace('{{ NAV_LINKS }}', render_nav('home'))
         .replace('{{ BUILD_ID }}', build_id)
-        .replace('{{ GA_MEASUREMENT_ID }}', GA_MEASUREMENT_ID)
+        .replace('{{ SITE_URL }}', SITE_URL)
+        .replace('{{ ANALYTICS_SNIPPET }}', analytics_snippet())
         .replace('{{ MAJOR_BUILD_COUNT }}', f"{len(major_builds)} {'Build' if len(major_builds) == 1 else 'Builds'}")
         .replace('{{ MAJOR_BUILD_CARDS }}', '\n'.join(major_cards_html))
         .replace('{{ QUICK_BUILD_COUNT }}', f"{len(quick_builds)} {'Build' if len(quick_builds) == 1 else 'Builds'}")
@@ -992,7 +1005,7 @@ def sync_builds():
                       for idx, item in enumerate(b['gallery'])]
         gallery_json = json_for_script(b['gallery'])
 
-        og_image = f"https://cathalcoffey.com/major-builds/{b['slug']}/thumbs/{b['cover_img']}" if b.get('cover_img') else "https://cathalcoffey.com/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
+        og_image = f"{SITE_URL}/major-builds/{b['slug']}/thumbs/{b['cover_img']}" if b.get('cover_img') else f"{SITE_URL}/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
 
         rendered_build = (major_build_tmpl
             .replace('{{ TITLE }}', b['title'])
@@ -1002,7 +1015,8 @@ def sync_builds():
             .replace('{{ DATES }}', b['dates'])
             .replace('{{ TAGS }}', tags_html)
             .replace('{{ BUILD_ID }}', build_id)
-            .replace('{{ GA_MEASUREMENT_ID }}', GA_MEASUREMENT_ID)
+            .replace('{{ SITE_URL }}', SITE_URL)
+            .replace('{{ ANALYTICS_SNIPPET }}', analytics_snippet(b['title'], b['slug'], 'major'))
             .replace('{{ NAV_LINKS }}', render_nav('major', b['slug']))
             .replace('{{ HERO_SECTION }}', hero_section_html)
             .replace('{{ STORY_SECTION }}', story_section_html)
@@ -1036,7 +1050,7 @@ def sync_builds():
 
         gallery_json = json_for_script(qb['gallery'])
         desc_html = f'<div class="build-description"><p>{qb["description"]}</p></div>' if qb.get('description') else ''
-        og_image = f"https://cathalcoffey.com/quick-builds/{qb['slug']}/thumbs/{qb['cover_img']}" if qb.get('cover_img') else "https://cathalcoffey.com/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
+        og_image = f"{SITE_URL}/quick-builds/{qb['slug']}/thumbs/{qb['cover_img']}" if qb.get('cover_img') else f"{SITE_URL}/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
 
         rendered_qb = (quick_build_tmpl
             .replace('{{ TITLE }}', qb['title'])
@@ -1047,7 +1061,8 @@ def sync_builds():
             .replace('{{ DESCRIPTION }}', desc_html)
             .replace('{{ TAGS }}', tags_html)
             .replace('{{ BUILD_ID }}', build_id)
-            .replace('{{ GA_MEASUREMENT_ID }}', GA_MEASUREMENT_ID)
+            .replace('{{ SITE_URL }}', SITE_URL)
+            .replace('{{ ANALYTICS_SNIPPET }}', analytics_snippet(qb['title'], qb['slug'], 'quick'))
             .replace('{{ NAV_LINKS }}', render_nav('quick', qb['slug']))
             .replace('{{ GALLERY_SUMMARY }}', gallery_summary(qb['gallery']))
             .replace('{{ PHOTO_GRID }}', gallery_markup)
@@ -1065,12 +1080,12 @@ def sync_builds():
 def generate_sitemap(major_builds, quick_builds):
     last_modified = os.environ.get('SITE_LASTMOD') or datetime.now().strftime('%Y-%m-%d')
     urls = [
-        ('https://cathalcoffey.com/', '1.0', 'weekly'),
+        (f'{SITE_URL}/', '1.0', 'weekly'),
     ]
     for b in major_builds:
-        urls.append((f"https://cathalcoffey.com/major-builds/{b['slug']}/", '0.8', 'monthly'))
+        urls.append((f"{SITE_URL}/major-builds/{b['slug']}/", '0.8', 'monthly'))
     for qb in quick_builds:
-        urls.append((f"https://cathalcoffey.com/quick-builds/{qb['slug']}/", '0.6', 'monthly'))
+        urls.append((f"{SITE_URL}/quick-builds/{qb['slug']}/", '0.6', 'monthly'))
 
     lines = [
         '<?xml version="1.0" encoding="UTF-8"?>',
@@ -1091,10 +1106,10 @@ def generate_sitemap(major_builds, quick_builds):
     print("Generated sitemap.xml")
 
 def generate_robots():
-    content = '''User-agent: *
+    content = f'''User-agent: *
 Allow: /
 
-Sitemap: https://cathalcoffey.com/sitemap.xml
+Sitemap: {SITE_URL}/sitemap.xml
 '''
     robots_path = os.path.join(BASE_DIR, 'robots.txt')
     with open(robots_path, 'w', encoding='utf-8') as f:
