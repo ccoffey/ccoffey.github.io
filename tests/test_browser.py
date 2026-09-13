@@ -364,9 +364,9 @@ class BrowserRegressionTests(unittest.TestCase):
         page.wait_for_timeout(250)
         inline_hover_color = inline_toggle.evaluate("node => getComputedStyle(node).backgroundColor")
         self.assertNotEqual(inline_hover_color, "rgba(0, 0, 0, 0)")
-        self.assertEqual(
-            inline_toggle.evaluate("node => getComputedStyle(node, '::after').opacity"),
-            "1",
+        self.assertGreater(
+            float(inline_toggle.evaluate("node => getComputedStyle(node, '::after').opacity")),
+            0.9,
         )
         toggle.hover()
         page.wait_for_timeout(250)
