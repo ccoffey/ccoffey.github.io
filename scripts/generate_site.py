@@ -8,7 +8,6 @@ from datetime import datetime
 from html import escape
 
 from PIL import Image
-import argparse
 
 BASE_DIR = os.getcwd()
 MAJOR_BUILDS_DIR = os.path.join(BASE_DIR, 'major-builds')
