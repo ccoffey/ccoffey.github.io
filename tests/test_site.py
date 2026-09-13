@@ -26,14 +26,18 @@ import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from pathlib import Path
 
-SOURCE_ROOT = os.path.dirname(os.path.abspath(__file__))
-REPO_ROOT = os.path.abspath(os.environ.get('SITE_ROOT', SOURCE_ROOT))
+TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
+REPO_ROOT = os.path.abspath(os.path.join(TESTS_DIR, ".."))
+SITE_ROOT = os.path.abspath(os.environ.get("SITE_ROOT", REPO_ROOT))
 SITE_URL = os.environ.get('SITE_URL', 'https://example.com').rstrip('/')
-sys.path.insert(0, SOURCE_ROOT)
+sys.path.insert(0, REPO_ROOT)
+sys.path.insert(0, os.path.join(REPO_ROOT, "scripts"))
 
 import dev_server  # noqa: E402
 import generate_site  # noqa: E402
-from scripts import optimize_staged_media, validate_project_media  # noqa: E402
+import dev_server  # noqa: E402
+import optimize_staged_media  # noqa: E402
+import validate_project_media  # noqa: E402
 
 
 class HTMLAssetScraper(HTMLParser):
@@ -87,9 +91,9 @@ class HTMLAssetScraper(HTMLParser):
 
 def get_html_pages():
     """Returns a list of all root-level and build-level generated HTML pages."""
-    pages = [os.path.join(REPO_ROOT, 'index.html')]
-    pages.extend(glob.glob(os.path.join(REPO_ROOT, 'major-builds', '*', 'index.html')))
-    pages.extend(glob.glob(os.path.join(REPO_ROOT, 'quick-builds', '*', 'index.html')))
+    pages = [os.path.join(SITE_ROOT, 'index.html')]
+    pages.extend(glob.glob(os.path.join(SITE_ROOT, 'major-builds', '*', 'index.html')))
+    pages.extend(glob.glob(os.path.join(SITE_ROOT, 'quick-builds', '*', 'index.html')))
     return sorted(pages)
 
 
@@ -119,12 +123,12 @@ class TestAssetIntegrity(unittest.TestCase):
                 checked_count += 1
                 clean_src = src.split('?')[0].split('#')[0]
                 if clean_src.startswith('/'):
-                    target = os.path.join(REPO_ROOT, clean_src.lstrip('/'))
+                    target = os.path.join(SITE_ROOT, clean_src.lstrip('/'))
                 else:
                     target = os.path.normpath(os.path.join(page_dir, clean_src))
 
                 if not os.path.exists(target):
-                    rel_page = os.path.relpath(page, REPO_ROOT)
+                    rel_page = os.path.relpath(page, SITE_ROOT)
                     broken_assets.append(f"{rel_page} -> [{atype}] {src} (target: {target})")
 
         self.assertEqual(broken_assets, [], f"Found {len(broken_assets)} broken asset references:\n" + "\n".join(broken_assets))
@@ -149,7 +153,7 @@ class TestAssetIntegrity(unittest.TestCase):
                     continue
                 checked_count += 1
                 if clean_href.startswith('/'):
-                    target = os.path.join(REPO_ROOT, clean_href.lstrip('/'))
+                    target = os.path.join(SITE_ROOT, clean_href.lstrip('/'))
                 else:
                     target = os.path.normpath(os.path.join(page_dir, clean_href))
 
@@ -157,15 +161,15 @@ class TestAssetIntegrity(unittest.TestCase):
                     target = os.path.join(target, 'index.html')
 
                 if not os.path.exists(target):
-                    rel_page = os.path.relpath(page, REPO_ROOT)
+                    rel_page = os.path.relpath(page, SITE_ROOT)
                     broken_links.append(f"{rel_page} -> {href} (target: {target})")
 
         self.assertEqual(broken_links, [], f"Found {len(broken_links)} broken internal links:\n" + "\n".join(broken_links))
         self.assertGreater(checked_count, 50, f"Expected >50 internal links checked, got {checked_count}")
 
     def test_gallery_json_media_references(self):
-        build_pages = glob.glob(os.path.join(REPO_ROOT, 'major-builds', '*', 'index.html')) + \
-                      glob.glob(os.path.join(REPO_ROOT, 'quick-builds', '*', 'index.html'))
+        build_pages = glob.glob(os.path.join(SITE_ROOT, 'major-builds', '*', 'index.html')) + \
+                      glob.glob(os.path.join(SITE_ROOT, 'quick-builds', '*', 'index.html'))
         total_items = 0
         broken_media = []
 
@@ -179,7 +183,7 @@ class TestAssetIntegrity(unittest.TestCase):
             items = json.loads(match.group(1))
             total_items += len(items)
             page_dir = os.path.dirname(page)
-            rel_page = os.path.relpath(page, REPO_ROOT)
+            rel_page = os.path.relpath(page, SITE_ROOT)
 
             for item in items:
                 # 1. Full-size filename
@@ -192,14 +196,14 @@ class TestAssetIntegrity(unittest.TestCase):
                 # 2. Thumbnail
                 thumb = item.get('thumb')
                 if thumb:
-                    t_path = os.path.join(REPO_ROOT, thumb.lstrip('/')) if thumb.startswith('/') else os.path.join(page_dir, thumb)
+                    t_path = os.path.join(SITE_ROOT, thumb.lstrip('/')) if thumb.startswith('/') else os.path.join(page_dir, thumb)
                     if not os.path.exists(t_path):
                         broken_media.append(f"{rel_page} [thumb]: {thumb}")
 
                 # 3. WebP Thumbnail
                 thumb_webp = item.get('thumb_webp')
                 if thumb_webp:
-                    w_path = os.path.join(REPO_ROOT, thumb_webp.lstrip('/')) if thumb_webp.startswith('/') else os.path.join(page_dir, thumb_webp)
+                    w_path = os.path.join(SITE_ROOT, thumb_webp.lstrip('/')) if thumb_webp.startswith('/') else os.path.join(page_dir, thumb_webp)
                     if not os.path.exists(w_path):
                         broken_media.append(f"{rel_page} [thumb_webp]: {thumb_webp}")
 
@@ -207,7 +211,7 @@ class TestAssetIntegrity(unittest.TestCase):
                 if item.get('type') == 'video':
                     poster = item.get('thumb')
                     self.assertTrue(poster, f"{rel_page} video item missing poster/thumb: {fn}")
-                    p_path = os.path.join(REPO_ROOT, poster.lstrip('/')) if poster.startswith('/') else os.path.join(page_dir, poster)
+                    p_path = os.path.join(SITE_ROOT, poster.lstrip('/')) if poster.startswith('/') else os.path.join(page_dir, poster)
                     if not os.path.exists(p_path):
                         broken_media.append(f"{rel_page} [poster/thumb]: {poster}")
 
@@ -216,8 +220,8 @@ class TestAssetIntegrity(unittest.TestCase):
 
     def test_gallery_comment_contract(self):
         """Comments are safe lists and generated galleries preserve their grouped UI."""
-        build_pages = glob.glob(os.path.join(REPO_ROOT, 'major-builds', '*', 'index.html')) + \
-                      glob.glob(os.path.join(REPO_ROOT, 'quick-builds', '*', 'index.html'))
+        build_pages = glob.glob(os.path.join(SITE_ROOT, 'major-builds', '*', 'index.html')) + \
+                      glob.glob(os.path.join(SITE_ROOT, 'quick-builds', '*', 'index.html'))
         commented_items = []
 
         for page in build_pages:
@@ -248,7 +252,7 @@ class TestSEOAndMetadataContracts(unittest.TestCase):
     def test_seo_and_social_tags(self):
         pages = get_html_pages()
         for page in pages:
-            rel_page = os.path.relpath(page, REPO_ROOT)
+            rel_page = os.path.relpath(page, SITE_ROOT)
             scraper = HTMLAssetScraper()
             with open(page, encoding='utf-8') as f:
                 scraper.feed(f.read())
@@ -275,7 +279,7 @@ class TestSEOAndMetadataContracts(unittest.TestCase):
             self.assertTrue(og_img.startswith(f'{SITE_URL}/'), f"Invalid og:image in {rel_page}: {og_img}")
 
             # OpenGraph image must exist locally
-            local_og_img = os.path.join(REPO_ROOT, og_img.replace(f'{SITE_URL}/', ''))
+            local_og_img = os.path.join(SITE_ROOT, og_img.replace(f'{SITE_URL}/', ''))
             self.assertTrue(os.path.exists(local_og_img), f"og:image does not exist on disk for {rel_page}: {local_og_img}")
 
             # Twitter card tags
@@ -283,7 +287,7 @@ class TestSEOAndMetadataContracts(unittest.TestCase):
             self.assertTrue(scraper.meta.get('twitter:image', '').startswith(f'{SITE_URL}/'), f"Invalid twitter:image in {rel_page}")
 
     def test_sitemap_xml(self):
-        sitemap_path = os.path.join(REPO_ROOT, 'sitemap.xml')
+        sitemap_path = os.path.join(SITE_ROOT, 'sitemap.xml')
         self.assertTrue(os.path.isfile(sitemap_path), "sitemap.xml not found.")
 
         tree = ET.parse(sitemap_path)
@@ -297,14 +301,14 @@ class TestSEOAndMetadataContracts(unittest.TestCase):
         for loc in locs:
             self.assertTrue(loc.startswith(f'{SITE_URL}/'), f"Sitemap URL must start with domain: {loc}")
             rel_path = loc.replace(f'{SITE_URL}/', '')
-            target = os.path.join(REPO_ROOT, rel_path, 'index.html') if rel_path else os.path.join(REPO_ROOT, 'index.html')
+            target = os.path.join(SITE_ROOT, rel_path, 'index.html') if rel_path else os.path.join(SITE_ROOT, 'index.html')
             self.assertTrue(os.path.isfile(target), f"Sitemap entry points to non-existent HTML file: {loc} -> {target}")
 
         # Verify every generated build page is listed in the sitemap
         sitemap_set = set(locs)
         self.assertIn(f'{SITE_URL}/', sitemap_set)
         for page in get_html_pages():
-            rel = os.path.relpath(page, REPO_ROOT)
+            rel = os.path.relpath(page, SITE_ROOT)
             if rel == 'index.html':
                 continue
             folder = os.path.dirname(rel)
@@ -312,7 +316,7 @@ class TestSEOAndMetadataContracts(unittest.TestCase):
             self.assertIn(expected_url, sitemap_set, f"Generated build page missing from sitemap.xml: {expected_url}")
 
     def test_robots_txt(self):
-        robots_path = os.path.join(REPO_ROOT, 'robots.txt')
+        robots_path = os.path.join(SITE_ROOT, 'robots.txt')
         self.assertTrue(os.path.isfile(robots_path), "robots.txt not found.")
         with open(robots_path, encoding='utf-8') as f:
             content = f.read()
@@ -324,8 +328,8 @@ class TestPerformanceAndBudgets(unittest.TestCase):
     """Validates thumbnail companions, file weight limits, and image optimization standards."""
 
     def test_webp_companion_thumbnails(self):
-        thumbs = glob.glob(os.path.join(REPO_ROOT, 'major-builds', '*', 'thumbs', '*')) + \
-                 glob.glob(os.path.join(REPO_ROOT, 'quick-builds', '*', 'thumbs', '*'))
+        thumbs = glob.glob(os.path.join(SITE_ROOT, 'major-builds', '*', 'thumbs', '*')) + \
+                 glob.glob(os.path.join(SITE_ROOT, 'quick-builds', '*', 'thumbs', '*'))
         
         jpg_thumbs = [t for t in thumbs if t.lower().endswith(('.jpg', '.jpeg', '.png'))]
         self.assertGreater(len(jpg_thumbs), 50, "Expected >50 raster thumbnails.")
@@ -335,19 +339,19 @@ class TestPerformanceAndBudgets(unittest.TestCase):
             base, _ = os.path.splitext(thumb)
             webp_path = base + '.webp'
             if not os.path.exists(webp_path):
-                missing_webp.append(os.path.relpath(thumb, REPO_ROOT))
+                missing_webp.append(os.path.relpath(thumb, SITE_ROOT))
 
         self.assertEqual(missing_webp, [], f"Found {len(missing_webp)} thumbnails without WebP companions:\n" + "\n".join(missing_webp[:10]))
 
     def test_thumbnail_weight_budget(self):
-        thumbs = glob.glob(os.path.join(REPO_ROOT, 'major-builds', '*', 'thumbs', '*')) + \
-                 glob.glob(os.path.join(REPO_ROOT, 'quick-builds', '*', 'thumbs', '*'))
+        thumbs = glob.glob(os.path.join(SITE_ROOT, 'major-builds', '*', 'thumbs', '*')) + \
+                 glob.glob(os.path.join(SITE_ROOT, 'quick-builds', '*', 'thumbs', '*'))
 
         over_budget = []
         for thumb in thumbs:
             size_kb = os.path.getsize(thumb) / 1024
             ext = os.path.splitext(thumb)[1].lower()
-            rel = os.path.relpath(thumb, REPO_ROOT)
+            rel = os.path.relpath(thumb, SITE_ROOT)
             is_poster = '_poster' in thumb
 
             # Budgets:
@@ -371,7 +375,7 @@ class TestPerformanceAndBudgets(unittest.TestCase):
     def test_full_photo_weight_budget(self):
         photos = []
         for base in ('major-builds', 'quick-builds'):
-            for root, _dirs, files in os.walk(os.path.join(REPO_ROOT, base)):
+            for root, _dirs, files in os.walk(os.path.join(SITE_ROOT, base)):
                 if os.path.basename(root) == 'thumbs':
                     continue
                 for f in files:
@@ -384,7 +388,7 @@ class TestPerformanceAndBudgets(unittest.TestCase):
             size_mb = os.path.getsize(photo) / (1024 * 1024)
             # Budget: full-size photo <= 3.5 MB
             if size_mb > 3.5:
-                over_budget.append(f"{os.path.relpath(photo, REPO_ROOT)} ({size_mb:.2f} MB > 3.5 MB)")
+                over_budget.append(f"{os.path.relpath(photo, SITE_ROOT)} ({size_mb:.2f} MB > 3.5 MB)")
 
         self.assertEqual(over_budget, [], f"Found {len(over_budget)} full-size photos exceeding 3.5 MB:\n" + "\n".join(over_budget))
 
@@ -486,7 +490,7 @@ class TestGeneratorInvariants(unittest.TestCase):
         self.assertEqual(len(k1), 6)
 
     def test_sha256_computation(self):
-        test_file = os.path.join(REPO_ROOT, 'robots.txt')
+        test_file = os.path.join(SITE_ROOT, 'robots.txt')
         h1 = generate_site.compute_sha256(test_file)
         h2 = generate_site.compute_sha256(test_file)
         self.assertEqual(h1, h2)
@@ -542,7 +546,7 @@ class TestUXStability(unittest.TestCase):
 
     def test_gallery_ux_stability_cdp(self):
         import subprocess
-        ux_script = os.path.join(REPO_ROOT, 'scripts', 'test_gallery_ux.py')
+        ux_script = os.path.join(SITE_ROOT, 'scripts', 'test_gallery_ux.py')
         res = subprocess.run([sys.executable, ux_script], capture_output=True, text=True)
         if res.returncode != 0:
             self.fail(f"UX Stability test failed (code {res.returncode}):\n{res.stdout}\n{res.stderr}")

@@ -11,11 +11,17 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-MAJOR_BUILDS_DIR = os.path.join(BASE_DIR, 'major-builds')
-QUICK_BUILDS_DIR = os.path.join(BASE_DIR, 'quick-builds')
-TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
-CSS_DIR = os.path.join(BASE_DIR, 'css')
-GENERATOR_SCRIPT = os.path.join(BASE_DIR, 'generate_site.py')
+SITE_DIR = os.path.join(BASE_DIR, '_site')
+MAJOR_BUILDS_DIR = os.path.join(BASE_DIR, 'src', 'major-builds')
+QUICK_BUILDS_DIR = os.path.join(BASE_DIR, 'src', 'quick-builds')
+TEMPLATES_DIR = os.path.join(BASE_DIR, 'src', 'templates')
+CSS_DIR = os.path.join(BASE_DIR, 'src', 'css')
+GENERATOR_SCRIPT = os.path.join(BASE_DIR, 'scripts', 'generate_site.py')
+
+# Directories to watch
+WATCH_DIRS = [
+    os.path.join(BASE_DIR, 'src'),
+]
 BUILD_SCRIPT = os.path.join(BASE_DIR, 'scripts', 'build_site.py')
 OUTPUT_DIR = os.path.join(BASE_DIR, '_site')
 

@@ -8,8 +8,9 @@ from datetime import datetime
 from html import escape
 
 from PIL import Image
+import argparse
 
-BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+BASE_DIR = os.getcwd()
 MAJOR_BUILDS_DIR = os.path.join(BASE_DIR, 'major-builds')
 QUICK_BUILDS_DIR = os.path.join(BASE_DIR, 'quick-builds')
 TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
@@ -17,6 +18,26 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 SITE_URL = os.environ.get('SITE_URL', 'https://example.com').rstrip('/')
 GA_MEASUREMENT_ID = os.environ.get('GA_MEASUREMENT_ID', '').strip()
 VIDEO_EXTENSIONS = ('.mp4', '.mov', '.webm')
+
+SITE_CONFIG = {}
+site_config_path = os.path.join(BASE_DIR, 'site.json')
+if os.path.exists(site_config_path):
+    with open(site_config_path, encoding='utf-8') as f:
+        SITE_CONFIG = json.load(f)
+
+def get_site_config(key, default=''):
+    return SITE_CONFIG.get(key, default)
+
+def apply_site_config(html_str):
+    return (html_str
+        .replace('{{ AUTHOR_NAME }}', get_site_config('author_name', 'Author Name'))
+        .replace('{{ ROLE_TITLE }}', get_site_config('role_title', 'Role Title'))
+        .replace('{{ META_DESCRIPTION }}', escape(get_site_config('meta_description', '')))
+        .replace('{{ BIO_HTML }}', get_site_config('bio_html', ''))
+        .replace('{{ LINKEDIN_URL }}', escape(get_site_config('social_links', {}).get('linkedin', '#')))
+        .replace('{{ GITHUB_URL }}', escape(get_site_config('social_links', {}).get('github', '#')))
+        .replace('{{ EMAIL_URL }}', escape(get_site_config('social_links', {}).get('email', '#')))
+    )
 
 def load_template(name):
     path = os.path.join(TEMPLATES_DIR, name)
@@ -912,7 +933,7 @@ def sync_builds():
         </div>
       </a>''')
 
-    rendered_home = (home_tmpl
+    rendered_home = apply_site_config(home_tmpl
         .replace('{{ NAV_LINKS }}', render_nav('home'))
         .replace('{{ BUILD_ID }}', build_id)
         .replace('{{ SITE_URL }}', SITE_URL)
@@ -1011,7 +1032,7 @@ def sync_builds():
 
         og_image = f"{SITE_URL}/major-builds/{b['slug']}/thumbs/{b['cover_img']}" if b.get('cover_img') else f"{SITE_URL}/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
 
-        rendered_build = (major_build_tmpl
+        rendered_build = apply_site_config(major_build_tmpl
             .replace('{{ TITLE }}', escape(b['title'], quote=True))
             .replace('{{ SUBTITLE }}', escape(b['subtitle'], quote=True))
             .replace('{{ SLUG }}', b['slug'])
@@ -1056,7 +1077,7 @@ def sync_builds():
         desc_html = f'<div class="build-description"><p>{escape(qb["description"])}</p></div>' if qb.get('description') else ''
         og_image = f"{SITE_URL}/quick-builds/{qb['slug']}/thumbs/{qb['cover_img']}" if qb.get('cover_img') else f"{SITE_URL}/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
 
-        rendered_qb = (quick_build_tmpl
+        rendered_qb = apply_site_config(quick_build_tmpl
             .replace('{{ TITLE }}', escape(qb['title'], quote=True))
             .replace('{{ SUBTITLE }}', escape(qb['subtitle'], quote=True))
             .replace('{{ SLUG }}', qb['slug'])

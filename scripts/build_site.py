@@ -66,14 +66,14 @@ def copy_source_tree(output, incremental=False):
     if output.exists() and not incremental:
         shutil.rmtree(output)
     if not incremental:
-        shutil.copytree(SOURCE_ROOT, output, ignore=ignore)
+        shutil.copytree(SOURCE_ROOT / "src", output, ignore=ignore)
         return
 
     # A metadata/template/CSS edit does not need to recopy hundreds of MiB of
     # media.  The existing isolated output already contains the source media
     # and its generated thumbnails/posters, so sync just the non-media inputs.
     for source in SOURCE_ROOT.rglob('*'):
-        relative = source.relative_to(SOURCE_ROOT)
+        relative = source.relative_to(SOURCE_ROOT / "src")
         if any(part in ignored_names for part in relative.parts) or source.is_dir():
             continue
         if source.suffix.lower() in MEDIA_EXTENSIONS or source.name.endswith('.pyc'):
@@ -99,32 +99,6 @@ def remove_generated_output(output, preserve_media_derivatives=False):
             for target in build_root.glob("*/thumbs"):
                 if target.is_dir():
                     shutil.rmtree(target)
-
-
-def remove_build_sources(output):
-    for relative in (
-        ".github",
-        ".githooks",
-        ".gitignore",
-        ".vscode",
-        "README.md",
-        "dev_server.py",
-        "generate_site.py",
-        "requirements.txt",
-        "scripts",
-        "templates",
-        "test_site.py",
-    ):
-        target = output / relative
-        if target.is_dir():
-            shutil.rmtree(target)
-        elif target.exists():
-            target.unlink()
-
-    for pattern in ("build.json", "project.json", "*.optimized.mp4", ".DS_Store", "*.pyc"):
-        for target in output.rglob(pattern):
-            if target.is_file():
-                target.unlink()
 
 
 def validate_output(output):
@@ -170,10 +144,10 @@ def main():
     env = os.environ.copy()
     env["BUILD_ID"] = args.build_id
     env["SITE_LASTMOD"] = args.site_lastmod
-    subprocess.run([sys.executable, "generate_site.py"], cwd=output, env=env, check=True)
-    subprocess.run([sys.executable, "test_site.py", "-v"], cwd=output, env=env, check=True)
+    env["SITE_ROOT"] = str(output)
+    subprocess.run([sys.executable, str(SOURCE_ROOT / "scripts" / "generate_site.py")], cwd=output, env=env, check=True)
+    subprocess.run([sys.executable, str(SOURCE_ROOT / "tests" / "test_site.py"), "-v"], cwd=output, env=env, check=True)
 
-    remove_build_sources(output)
     validate_output(output)
 
     files = [path for path in output.rglob("*") if path.is_file()]

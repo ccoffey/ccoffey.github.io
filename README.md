@@ -72,12 +72,14 @@ The `_site/` directory is disposable and ignored by Git.
 
 ## 📸 Project Configuration & Content
 
-1. Copy your media into the relevant project directory under `major-builds/` or `quick-builds/`. 
+All content and template files live in the `src/` directory.
+
+1. Copy your media into the relevant project directory under `src/major-builds/` or `src/quick-builds/`. 
    *(Do not create or edit a `thumbs/` directory—the pipeline handles thumbnails automatically).*
 2. Supported formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.mp4`, `.mov`, `.webm`.
 3. Stage and commit:
    ```bash
-   git add major-builds/claw-machine
+   git add src/major-builds/claw-machine
    git commit -m "Add claw machine media"
    ```
 
@@ -114,6 +116,18 @@ While you can author comments directly in the browser via `dev_server.py`, you c
 }
 ```
 A speech-bubble marker on a thumbnail indicates that comments are available for that item.
+
+---
+
+## 🍴 Forking This Project
+
+If you'd like to use this static site generator for your own portfolio, it is designed to be easily forkable!
+
+1. **Fork the repository** on GitHub.
+2. **Personalize your details:** Edit `src/site.json` and replace the name, job title, bio, and social links with your own.
+3. **Change the avatar:** Replace `src/favicon.ico` with your own image or logo.
+4. **Add your content:** Delete the existing projects in `src/major-builds/` and `src/quick-builds/`, and add your own folders containing your media and `build.json` files.
+5. **Commit and push** to your `master` branch. GitHub Actions will automatically generate and deploy your personalized portfolio!
 
 ---
 
