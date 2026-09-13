@@ -360,8 +360,15 @@ class BrowserRegressionTests(unittest.TestCase):
             inline_toggle.bounding_box()["width"],
             page.locator(".lightbox-comment-avatar").bounding_box()["width"],
         )
+        page.add_style_tag(
+            content=(
+                ".lightbox-inline-comments-toggle, .lightbox-comments-toggle, "
+                ".lightbox-inline-comments-toggle::after, .lightbox-comments-toggle::after "
+                "{ transition: none !important; }"
+            )
+        )
         inline_toggle.hover()
-        page.wait_for_timeout(250)
+        page.wait_for_timeout(100)
         inline_hover_color = inline_toggle.evaluate("node => getComputedStyle(node).backgroundColor")
         self.assertNotEqual(inline_hover_color, "rgba(0, 0, 0, 0)")
         self.assertGreater(
@@ -369,7 +376,7 @@ class BrowserRegressionTests(unittest.TestCase):
             0.9,
         )
         toggle.hover()
-        page.wait_for_timeout(250)
+        page.wait_for_timeout(100)
         self.assertEqual(
             toggle.evaluate("node => getComputedStyle(node).backgroundColor"),
             inline_hover_color,
