@@ -196,6 +196,8 @@ class BrowserRegressionTests(unittest.TestCase):
             baseline_name = name
         baseline = VISUAL_BASELINE_DIR / f"{baseline_name}.png"
         VISUAL_ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
+        page.evaluate("() => new Promise(requestAnimationFrame)")
+        page.evaluate("() => new Promise(requestAnimationFrame)")
         actual = VISUAL_ARTIFACT_DIR / f"{baseline_name}-actual.png"
         page.screenshot(path=str(actual), animations="disabled")
         if target:
