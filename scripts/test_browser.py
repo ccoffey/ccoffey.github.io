@@ -184,6 +184,15 @@ class BrowserRegressionTests(unittest.TestCase):
         page.emulate_media(reduced_motion="reduce")
         page.add_style_tag(content="* { animation: none !important; transition: none !important; }")
         page.evaluate("document.fonts.ready")
+        page.evaluate("""() => Promise.all(
+            Array.from(document.querySelectorAll('.lightbox-comment-avatar')).map(img => {
+                if (img.complete) return Promise.resolve();
+                return new Promise(resolve => {
+                    img.addEventListener('load', resolve);
+                    img.addEventListener('error', resolve);
+                });
+            })
+        )""")
 
         # Chromium's mobile text rasterization differs enough between macOS and
         # Linux to make one shared reference image noisy. Keep the primary
