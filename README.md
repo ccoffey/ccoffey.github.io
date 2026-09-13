@@ -17,9 +17,10 @@ This repository contains the source content and custom static site generator for
   - **Local Authoring Mode:** When running the local development server, you can add, edit, or delete comments directly from the gallery UI. Changes are automatically saved back to the underlying `build.json` files!
 
 <div align="center">
-  <img src="tests/visual-baselines/comments-authoring-desktop.png" width="60%" alt="Local Comment Authoring">
+  <img src="tests/visual-baselines/comments-authoring-desktop.png" width="48%" alt="Local Comment Authoring">
+  <img src="tests/visual-baselines/comments-reader-desktop.png" width="48%" alt="Production Comments View">
   <br/>
-  <em>Local Comment Authoring Interface</em>
+  <em>Left: Local Comment Authoring &nbsp;&nbsp;|&nbsp;&nbsp; Right: Production Comments View</em>
 </div>
 
 ---
@@ -69,30 +70,47 @@ The `_site/` directory is disposable and ignored by Git.
 
 ---
 
-## 📸 Adding Content (Images/Videos)
+## 📸 Project Configuration & Content
 
 1. Copy your media into the relevant project directory under `major-builds/` or `quick-builds/`. 
    *(Do not create or edit a `thumbs/` directory—the pipeline handles thumbnails automatically).*
 2. Supported formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.mp4`, `.mov`, `.webm`.
-3. Update the project's `build.json` (or `project.json`) when changing its cover image, hero video, or text metadata.
-4. Stage and commit:
+3. Stage and commit:
    ```bash
    git add major-builds/claw-machine
    git commit -m "Add claw machine media"
    ```
 
-Before the commit is created, the `.githooks/pre-commit` hook automatically optimizes newly staged media and re-stages it.
+Before the commit is created, the `.githooks/pre-commit` hook automatically optimizes newly staged media (resizes images, strips EXIF, re-encodes video) and re-stages it.
+
+### The `build.json` File
+
+Each project is defined by a `build.json` (or `project.json`) file in its directory. The static site generator reads this file to build the project page.
+
+Key configurations you can define:
+
+- `title` & `subtitle`: The headline text for the project.
+- `hero_video`: The filename of the video to play at the top of the project page. If omitted, the pipeline defaults to the first video found in the directory.
+- `cover_image` (or `cover_img`): The filename of the image to use as the project's thumbnail on the homepage and for OpenGraph tags. If omitted, defaults to the last chronological photo in the folder.
+- `story`: HTML content for the main narrative of a major build.
+- `engineering_highlights`: A list of technical bullet points for major builds.
+- `next_steps`: A list of future plans or iterations for the project.
 
 ### Manual Comment Configuration
 
-While you can use the Local Authoring Mode via `dev_server.py`, you can also manually add comments to a project's `build.json`:
+While you can author comments directly in the browser via `dev_server.py`, you can also manually define them under the `media_descriptions` key in `build.json`:
 
 ```json
-"media_descriptions": {
-  "PXL_20260226_150354165.jpg": [
-    "The early control system was spread across several breadboards before the custom PCB brought everything together."
-  ],
-  "demo.mp4": "The first successful end-to-end test."
+{
+  "title": "Claw Machine",
+  "hero_video": "demo-reel.mp4",
+  "cover_image": "final-machine.jpg",
+  "media_descriptions": {
+    "PXL_20260226_150354165.jpg": [
+      "The early control system was spread across several breadboards before the custom PCB brought everything together."
+    ],
+    "demo.mp4": "The first successful end-to-end test."
+  }
 }
 ```
 A speech-bubble marker on a thumbnail indicates that comments are available for that item.
