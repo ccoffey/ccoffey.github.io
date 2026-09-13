@@ -12,6 +12,7 @@ would. It is intended for CI as well as local verification.
 from __future__ import annotations
 
 import functools
+import json
 import os
 import shutil
 import sys
@@ -19,7 +20,7 @@ import threading
 import unittest
 from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, urlparse
 
 from PIL import Image, ImageChops
 
@@ -40,6 +41,10 @@ VISUAL_BASELINE_DIR = REPO_ROOT / "tests" / "visual-baselines"
 VISUAL_ARTIFACT_DIR = Path(os.environ.get("VISUAL_ARTIFACT_DIR", REPO_ROOT / "test-results" / "visual"))
 UPDATE_VISUAL_BASELINES = "--update-snapshots" in sys.argv
 MAX_DIFFERING_PIXEL_RATIO = float(os.environ.get("VISUAL_MAX_DIFFERING_PIXEL_RATIO", "0.08"))
+VISUAL_COMMENTS = [
+    "The custom PCB was the turning point in the build.",
+    "The finished wiring harness made the mechanism reliable.",
+]
 
 if UPDATE_VISUAL_BASELINES:
     sys.argv.remove("--update-snapshots")
@@ -57,6 +62,28 @@ class QuietRequestHandler(SimpleHTTPRequestHandler):
             # expected and should not make a successful test look like a crash.
             pass
 
+    def send_json(self, payload):
+        body = json.dumps(payload).encode("utf-8")
+        self.send_response(200)
+        self.send_header("Content-Type", "application/json; charset=utf-8")
+        self.send_header("Content-Length", str(len(body)))
+        self.end_headers()
+        self.wfile.write(body)
+
+    def do_GET(self):
+        if urlparse(self.path).path == "/__admin/comments/status" and self.server.admin_enabled:
+            self.send_json({"enabled": True})
+            return
+        super().do_GET()
+
+    def do_POST(self):
+        if urlparse(self.path).path != "/__admin/comments" or not self.server.admin_enabled:
+            self.send_error(404)
+            return
+        length = int(self.headers.get("Content-Length", "0"))
+        payload = json.loads(self.rfile.read(length))
+        self.send_json({"comments": payload["comments"]})
+
 
 class TestHTTPServer(ThreadingHTTPServer):
     daemon_threads = True
@@ -72,6 +99,7 @@ class BrowserRegressionTests(unittest.TestCase):
 
         handler = functools.partial(QuietRequestHandler, directory=str(SITE_ROOT))
         cls.server = TestHTTPServer(("127.0.0.1", 0), handler)
+        cls.server.admin_enabled = False
         cls.server_thread = threading.Thread(target=cls.server.serve_forever, daemon=True)
         cls.server_thread.start()
         cls.base_url = f"http://127.0.0.1:{cls.server.server_port}"
@@ -133,7 +161,21 @@ class BrowserRegressionTests(unittest.TestCase):
             )
         return page
 
-    def assert_visual_snapshot(self, page: Page, name: str):
+    def enable_local_comment_authoring(self):
+        self.server.admin_enabled = True
+        self.addCleanup(setattr, self.server, "admin_enabled", False)
+
+    @staticmethod
+    def set_visual_comments(page: Page):
+        page.evaluate(
+            """comments => {
+                gallery[currentIndex].comments = comments;
+                window.galleryCommentAdmin.rerender();
+            }""",
+            VISUAL_COMMENTS,
+        )
+
+    def assert_visual_snapshot(self, page: Page, name: str, *, target=None):
         """Compare a stable viewport capture to its checked-in visual baseline."""
         page.emulate_media(reduced_motion="reduce")
         page.add_style_tag(content="* { animation: none !important; transition: none !important; }")
@@ -151,7 +193,7 @@ class BrowserRegressionTests(unittest.TestCase):
         baseline = VISUAL_BASELINE_DIR / f"{baseline_name}.png"
         VISUAL_ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
         actual = VISUAL_ARTIFACT_DIR / f"{baseline_name}-actual.png"
-        page.screenshot(path=str(actual), animations="disabled")
+        (target or page).screenshot(path=str(actual), animations="disabled")
 
         if UPDATE_VISUAL_BASELINES:
             VISUAL_BASELINE_DIR.mkdir(parents=True, exist_ok=True)
@@ -213,15 +255,122 @@ class BrowserRegressionTests(unittest.TestCase):
         expected_count = page.evaluate("gallery[currentIndex].comments.length")
         self.assertEqual(page.locator(".lightbox-comment-avatar").count(), 1)
         self.assertEqual(page.locator(".lightbox-comment-text").count(), expected_count)
+        self.assertEqual(page.locator(".lightbox-comment-composer").count(), 0)
+        self.assertEqual(page.locator(".lightbox-comment-delete").count(), 0)
+        self.assertFalse(
+            page.locator(".lightbox-comment-text").first.evaluate("node => node.isContentEditable")
+        )
+        self.assertEqual(page.locator("#lightboxInlineCommentsBtn").count(), 1)
+        comments_box = page.locator("#lightbox-description").bounding_box()
+        group_box = page.locator(".lightbox-comment-group").bounding_box()
+        self.assertAlmostEqual(
+            group_box["x"] + group_box["width"] / 2,
+            comments_box["x"] + comments_box["width"] / 2,
+            delta=2,
+        )
+        self.assertTrue(
+            page.locator(".lightbox-btn").evaluate_all(
+                "buttons => buttons.every(button => Boolean(button.dataset.tooltip))"
+            )
+        )
 
         comments = page.locator("#lightbox-description")
-        toggle = page.get_by_role("button", name="Hide comments")
+        stack = page.locator(".lightbox-comment-stack")
+        toggle = page.locator("#lightboxCommentsBtn")
         self.assertFalse(comments.is_hidden())
-        toggle.click()
-        self.assertTrue(comments.is_hidden())
+        self.assertFalse(stack.is_hidden())
+        inline_toggle = page.locator("#lightboxInlineCommentsBtn")
+        self.assertEqual(
+            inline_toggle.locator("svg").evaluate("node => node.innerHTML"),
+            toggle.locator("svg").evaluate("node => node.innerHTML"),
+        )
+        self.assertEqual(inline_toggle.get_attribute("data-tooltip"), toggle.get_attribute("data-tooltip"))
+        self.assertEqual(
+            inline_toggle.evaluate("node => getComputedStyle(node).backgroundColor"),
+            toggle.evaluate("node => getComputedStyle(node).backgroundColor"),
+        )
+        self.assertEqual(
+            inline_toggle.bounding_box()["width"],
+            page.locator(".lightbox-comment-avatar").bounding_box()["width"],
+        )
+        inline_toggle.hover()
+        page.wait_for_timeout(250)
+        self.assertEqual(
+            inline_toggle.evaluate("node => getComputedStyle(node).backgroundColor"),
+            "rgb(48, 54, 61)",
+        )
+        self.assertEqual(
+            inline_toggle.evaluate("node => getComputedStyle(node, '::after').opacity"),
+            "1",
+        )
+        toggle.hover()
+        page.wait_for_timeout(250)
+        self.assertEqual(
+            toggle.evaluate("node => getComputedStyle(node).backgroundColor"),
+            "rgb(48, 54, 61)",
+        )
+        group_box = page.locator(".lightbox-comment-group").bounding_box()
+        inline_toggle.click()
+        self.assertFalse(comments.is_hidden())
+        self.assertTrue(stack.is_hidden())
+        hidden_group_box = page.locator(".lightbox-comment-group").bounding_box()
+        self.assertAlmostEqual(hidden_group_box["x"], group_box["x"], delta=1)
+        self.assertAlmostEqual(hidden_group_box["y"], group_box["y"], delta=1)
         self.assertEqual(page.locator("#lightboxCommentsBtn").get_attribute("aria-pressed"), "false")
-        page.get_by_role("button", name="Show comments").click()
+        self.assertEqual(toggle.get_attribute("data-tooltip"), "Toggle comments")
+        toggle.click()
         self.assertFalse(comments.is_hidden())
+        self.assertFalse(stack.is_hidden())
+
+    def test_local_comment_authoring_edits_messages_in_place(self):
+        self.enable_local_comment_authoring()
+        page = self.open_commented_lightbox()
+        page.get_by_label("New comment").wait_for()
+        initial_count = page.evaluate("gallery[currentIndex].comments.length")
+
+        first = page.locator(".lightbox-comment-text[data-comment-index]").first
+        first.fill("a")
+        first.press("Enter")
+        page.wait_for_function("gallery[currentIndex].comments[0] === 'a'")
+        self.assertLess(first.bounding_box()["width"], 200)
+        self.assertEqual(page.locator("#lightbox-description").evaluate("node => getComputedStyle(node).overflowY"), "visible")
+        remove = page.get_by_role("button", name="Delete comment 1")
+        first_box = first.bounding_box()
+        remove_box = remove.bounding_box()
+        self.assertLess(remove_box["y"], first_box["y"])
+        self.assertGreater(remove_box["x"] + remove_box["width"] / 2, first_box["x"] + first_box["width"])
+        self.assertEqual(remove.evaluate("node => getComputedStyle(node).backgroundColor"), "rgb(201, 106, 103)")
+        self.assertEqual(remove.locator("svg").count(), 0)
+        self.assertEqual(
+            remove.evaluate("node => getComputedStyle(node, '::before').width"),
+            "10px",
+        )
+
+        composer = page.get_by_label("New comment")
+        self.assertGreaterEqual(composer.bounding_box()["width"], 200)
+        composer.fill("A draft")
+        composer.fill("")
+        composer.press("Tab")
+        self.assertEqual(composer.evaluate("node => node.childNodes.length"), 0)
+        self.assertEqual(page.locator(".lightbox-comment-composer").count(), 1)
+
+        composer.focus()
+        composer.fill("First line")
+        composer.press("Shift+Enter")
+        composer.type("Second line")
+        composer.press("Enter")
+        page.wait_for_function(f"gallery[currentIndex].comments.length === {initial_count + 1}")
+        next_composer = page.get_by_label("New comment")
+        self.assertEqual(page.locator(".lightbox-comment-composer").count(), 1)
+        self.assertTrue(next_composer.evaluate("node => document.activeElement === node"))
+        self.assertEqual(
+            page.evaluate("gallery[currentIndex].comments.at(-1)"),
+            "First line\nSecond line",
+        )
+
+        remove.click()
+        page.wait_for_function(f"gallery[currentIndex].comments.length === {initial_count}")
+        self.assertTrue(next_composer.evaluate("node => document.activeElement === node"))
 
     def test_back_closes_lightbox_and_forward_restores_it(self):
         page = self.new_page()
@@ -281,6 +430,37 @@ class BrowserRegressionTests(unittest.TestCase):
             timeout=10_000,
         )
         self.assert_visual_snapshot(page, "gallery-desktop")
+
+    def test_visual_comments_reader_desktop(self):
+        page = self.open_commented_lightbox()
+        self.set_visual_comments(page)
+        self.assert_visual_snapshot(
+            page,
+            "comments-reader-desktop",
+            target=page.locator("#lightbox-description"),
+        )
+
+    def test_visual_comments_authoring_desktop(self):
+        self.enable_local_comment_authoring()
+        page = self.open_commented_lightbox()
+        page.get_by_label("New comment").wait_for()
+        self.set_visual_comments(page)
+        self.assert_visual_snapshot(
+            page,
+            "comments-authoring-desktop",
+            target=page.locator("#lightbox-description"),
+        )
+
+    def test_visual_comments_authoring_mobile(self):
+        self.enable_local_comment_authoring()
+        page = self.open_commented_lightbox(mobile=True)
+        page.get_by_label("New comment").wait_for()
+        self.set_visual_comments(page)
+        self.assert_visual_snapshot(
+            page,
+            "comments-authoring-mobile",
+            target=page.locator("#lightbox-description"),
+        )
 
 
 if __name__ == "__main__":

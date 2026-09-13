@@ -31,6 +31,7 @@ REPO_ROOT = os.path.abspath(os.environ.get('SITE_ROOT', SOURCE_ROOT))
 SITE_URL = os.environ.get('SITE_URL', 'https://example.com').rstrip('/')
 sys.path.insert(0, SOURCE_ROOT)
 
+import dev_server  # noqa: E402
 import generate_site  # noqa: E402
 from scripts import optimize_staged_media, validate_project_media  # noqa: E402
 
@@ -406,6 +407,52 @@ class TestGeneratorInvariants(unittest.TestCase):
                 'many.jpg': ['First comment', 'Second comment']
             }
         )
+
+    def test_comment_json_is_safe_for_inline_script(self):
+        payload = {'comments': ['A story </script><script>alert("no")</script>']}
+        serialized = generate_site.json_for_script(payload)
+
+        self.assertNotIn('</script', serialized.lower())
+        self.assertEqual(json.loads(serialized), payload)
+
+    def test_local_comment_editor_persists_and_removes_comments(self):
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            config_path = Path(temporary_dir) / 'build.json'
+            config_path.write_text(
+                json.dumps({
+                    'title': 'Test',
+                    'tags': ['Preserve this'],
+                    'media_descriptions': {
+                        'photo.jpg': ['Existing'],
+                        'other.jpg': ['Keep this comment'],
+                    },
+                }),
+                encoding='utf-8',
+            )
+
+            saved = dev_server.write_media_comments(
+                str(config_path), 'photo.jpg', [' First ', '', 'Second ']
+            )
+            self.assertEqual(saved, ['First', 'Second'])
+            self.assertEqual(
+                json.loads(config_path.read_text(encoding='utf-8'))['media_descriptions']['photo.jpg'],
+                ['First', 'Second'],
+            )
+            self.assertEqual(
+                json.loads(config_path.read_text(encoding='utf-8'))['media_descriptions']['other.jpg'],
+                ['Keep this comment'],
+            )
+
+            saved = dev_server.write_media_comments(str(config_path), 'photo.jpg', [])
+            self.assertEqual(saved, [])
+            self.assertNotIn(
+                'photo.jpg',
+                json.loads(config_path.read_text(encoding='utf-8'))['media_descriptions'],
+            )
+            self.assertEqual(
+                json.loads(config_path.read_text(encoding='utf-8'))['tags'],
+                ['Preserve this'],
+            )
 
     def test_parse_photo_date(self):
         # Pixel phone filename

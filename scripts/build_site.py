@@ -131,6 +131,7 @@ def validate_output(output):
     required = [
         output / "index.html",
         output / "css" / "style.css",
+        output / "js" / "comment-admin.js",
         output / "js" / "navigation.js",
         output / ".nojekyll",
     ]
