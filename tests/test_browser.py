@@ -116,7 +116,7 @@ class BrowserRegressionTests(unittest.TestCase):
         cls.server.server_close()
         cls.server_thread.join(timeout=5)
 
-    def new_page(self, *, mobile=False, block_media=True) -> Page:
+    def new_page(self, *, mobile=False, block_media=False) -> Page:
         if mobile:
             context = self.browser.new_context(viewport={"width": 390, "height": 844}, is_mobile=True)
         else:
@@ -138,7 +138,7 @@ class BrowserRegressionTests(unittest.TestCase):
         page.on("pageerror", lambda error: self.fail(f"Unhandled browser error: {error}"))
         return page
 
-    def open_commented_lightbox(self, *, mobile=False, block_media=True) -> Page:
+    def open_commented_lightbox(self, *, mobile=False, block_media=False) -> Page:
         page = self.new_page(mobile=mobile, block_media=block_media)
         page.goto(self.base_url + PROJECT_PATH, wait_until="commit")
         page.locator(".photo-card").first.wait_for()
@@ -179,7 +179,7 @@ class BrowserRegressionTests(unittest.TestCase):
             VISUAL_COMMENTS,
         )
 
-    def assert_visual_snapshot(self, page: Page, name: str, *, target=None):
+    def assert_visual_snapshot(self, page: Page, name: str, *, target=None, crop_box=None):
         """Compare a stable viewport capture to its checked-in visual baseline."""
         page.emulate_media(reduced_motion="reduce")
         page.add_style_tag(content="* { animation: none !important; transition: none !important; }")
@@ -210,11 +210,12 @@ class BrowserRegressionTests(unittest.TestCase):
             _ = target.screenshot(type="jpeg", quality=1, animations="disabled")
         actual = VISUAL_ARTIFACT_DIR / f"{baseline_name}-actual.png"
         page.screenshot(path=str(actual), animations="disabled")
-        if target:
-            box = target.bounding_box()
-            self.assertIsNotNone(box, f"Could not locate visual target for {name}")
+        if target or crop_box:
+            box = crop_box or target.bounding_box()
+            if target:
+                self.assertIsNotNone(box, f"Could not locate visual target for {name}")
             with Image.open(actual) as screenshot:
-                padding = 32
+                padding = 32 if target else 0
                 cropped = screenshot.crop(
                     (
                         max(0, math.floor(box["x"] - padding)),
@@ -475,33 +476,30 @@ class BrowserRegressionTests(unittest.TestCase):
 
     def test_visual_comments_reader_desktop(self):
         page = self.open_commented_lightbox()
-        page.add_style_tag(content="#lightbox-description { width: 450px !important; height: 250px !important; justify-content: flex-end !important; padding-bottom: 20px !important; padding-right: 20px !important; }")
         self.set_visual_comments(page)
         self.assertFalse(page.locator(".lightbox-comment-stack").is_hidden())
         self.assert_visual_snapshot(
             page,
             "comments-reader-desktop",
-            target=page.locator("#lightbox-description"),
+            crop_box={"x": 350, "y": 550, "width": 740, "height": 350},
         )
 
     def test_visual_comments_authoring_desktop(self):
         self.enable_local_comment_authoring()
         page = self.open_commented_lightbox()
         page.get_by_label("New comment").wait_for()
-        page.add_style_tag(content="#lightbox-description { width: 450px !important; height: 250px !important; justify-content: flex-end !important; padding-bottom: 20px !important; padding-right: 20px !important; }")
         self.set_visual_comments(page)
         self.assertFalse(page.locator(".lightbox-comment-stack").is_hidden())
         self.assert_visual_snapshot(
             page,
             "comments-authoring-desktop",
-            target=page.locator("#lightbox-description"),
+            crop_box={"x": 350, "y": 550, "width": 740, "height": 350},
         )
 
     def test_visual_comments_authoring_mobile(self):
         self.enable_local_comment_authoring()
         page = self.open_commented_lightbox(mobile=True)
         page.get_by_label("New comment").wait_for()
-        page.add_style_tag(content="#lightbox-description { width: 450px !important; height: 250px !important; justify-content: flex-end !important; padding-bottom: 20px !important; padding-right: 20px !important; }")
         self.set_visual_comments(page)
         self.assertFalse(page.locator(".lightbox-comment-stack").is_hidden())
         self.assert_visual_snapshot(

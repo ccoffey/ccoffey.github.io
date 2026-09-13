@@ -629,6 +629,7 @@
 
     document.addEventListener("keydown", (e) => {
       if (!lightbox.classList.contains("active")) return;
+      if (e.target.isContentEditable || e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
       if (e.key === "Escape") closeLightbox();
       if (e.key === "ArrowRight") nextLightbox();
       if (e.key === "ArrowLeft") prevLightbox();
