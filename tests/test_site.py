@@ -189,7 +189,7 @@ class TestAssetIntegrity(unittest.TestCase):
                 # 1. Full-size filename
                 fn = item.get('filename')
                 if fn:
-                    fn_path = os.path.join(page_dir, fn)
+                    fn_path = os.path.join(page_dir, "media", fn)
                     if not os.path.exists(fn_path):
                         broken_media.append(f"{rel_page} [filename]: {fn}")
 

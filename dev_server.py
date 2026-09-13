@@ -35,7 +35,7 @@ def get_build_config_path(slug):
         return None
     for root in (MAJOR_BUILDS_DIR, QUICK_BUILDS_DIR):
         build_dir = os.path.join(root, slug)
-        for config_name in ('build.json', 'project.json'):
+        for config_name in ('build.json',):
             config_path = os.path.join(build_dir, config_name)
             if os.path.isfile(config_path):
                 return config_path
@@ -182,7 +182,7 @@ class CustomHandler(SimpleHTTPRequestHandler):
                 raise ValueError('Unknown build or media file.')
             if not isinstance(comments, list) or any(not isinstance(comment, str) for comment in comments):
                 raise ValueError('Comments must be a list of strings.')
-            media_path = os.path.join(os.path.dirname(config_path), filename)
+            media_path = os.path.join(os.path.dirname(config_path), 'media', filename)
             if not os.path.isfile(media_path):
                 raise ValueError('Unknown media file.')
             saved_comments = write_media_comments(config_path, filename, comments)
