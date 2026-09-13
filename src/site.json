@@ -1,0 +1,11 @@
+{
+  "author_name": "Cathal Coffey",
+  "role_title": "Staff Software Engineer",
+  "meta_description": "Staff Software Engineer in Dublin with 12+ years designing, scaling, and operating SaaS products, distributed systems, data infrastructure, billing systems, and developer platforms.",
+  "bio_html": "Staff Software Engineer with 12+ years designing, scaling and operating production software across <a href=\"https://www.amazon.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"bio-company-link\">Amazon</a>, <a href=\"https://www.intercom.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"bio-company-link\">Intercom</a>, <a href=\"https://equals.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"bio-company-link\">Equals</a> and <a href=\"https://www.hubspot.com\" target=\"_blank\" rel=\"noopener noreferrer\" class=\"bio-company-link\">HubSpot</a>. I specialize in robust back-end systems, multi-region cloud infrastructure, safe deployment platforms, datastores and developer tooling, with a track record of owning ambiguous cross-org initiatives.",
+  "social_links": {
+    "linkedin": "https://linkedin.com/in/cathalcoffey",
+    "github": "https://github.com/ccoffey",
+    "email": "coffey.cathal@gmail.com"
+  }
+}

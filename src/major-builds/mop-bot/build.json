@@ -1,0 +1,20 @@
+{
+  "title": "Mop Bot",
+  "subtitle": "Because I was sick of looking at a dirty glass veranda every time I stepped into my back garden and I was not going to clean it by hand",
+  "tags": [
+    "ESP32",
+    "RC PWM",
+    "Differential Drive",
+    "3D Printing"
+  ],
+  "dates": "May 2026 \u2013 Present",
+  "order": 4,
+  "story": "<p>Mop Bot was born from the intersection of four very specific things: a deep appreciation for my Roborock vacuum, a lifelong itch to build a robot, a filthy glass veranda canopy, and a gorgeous radio transmitter that had been sitting in my attic for 15 years.</p>\n\n  <p>That radio controller was a relic from an ambitious quadcopter I tried to build back in college, a drone that unfortunately crashed far more often than it ever flew.</p>\n\n  <p>The result was Mop Bot: an ESP32-powered outdoor cleaning robot. You drive it across the veranda canopy using the joysticks on the radio controller, and flip a dedicated toggle switch to spin the motorized scrubbing mop head.</p>\n\n  <p>While the electronics and 3D-printed frame came together smoothly, wet glass is an unforgiving terrain. Version 1 is functional and an absolute blast to drive, but it is very much an early prototype rather than a finished cleaning appliance.</p>\n\n  <p>Having proven the core idea, I already have clear goals for v2. The biggest challenge is traction on slick, sloped glass, which I plan to solve with a redesigned chassis that puts more weight over the drive wheels. Next is adding an onboard water reservoir and miniature pump so it can wet the glass on demand rather than waiting for a rainy day. Finally, it needs edge-detection sensors underneath so it can't drive off the veranda to its demise, no matter what the pilot does with the control sticks.</p>",
+  "cover_image": "PXL_20260619_164056995.jpg",
+  "hero_video": "PXL_20260906_120530308.mp4",
+  "next_steps": [
+    "Chassis redesign: Rebalance weight distribution to conquer sloped, wet veranda glass.",
+    "Onboard water reservoir & mini pump, no more waiting for a rainy day.",
+    "Edge-detection sensors to prevent the robot from driving over the edge."
+  ]
+}

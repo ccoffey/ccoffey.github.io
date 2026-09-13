@@ -74,7 +74,7 @@ jobs:
       - name: Run browser regression tests
         env:
           SITE_ROOT: _site
-        run: python scripts/test_browser.py
+        run: python tests/test_browser.py
 
       - name: Upload visual test artifacts
         if: failure()

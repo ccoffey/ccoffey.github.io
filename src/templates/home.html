@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>{{ AUTHOR_NAME }}</title>
+  <meta name="description" content="{{ META_DESCRIPTION }}">
+
+  <link rel="canonical" href="{{ SITE_URL }}/">
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+
+  <!-- Open Graph -->
+  <meta property="og:type" content="website">
+  <meta property="og:url" content="{{ SITE_URL }}/">
+  <meta property="og:site_name" content="{{ AUTHOR_NAME }}">
+  <meta property="og:title" content="{{ AUTHOR_NAME }} | {{ ROLE_TITLE }}">
+  <meta property="og:description" content="{{ META_DESCRIPTION }}">
+  <meta property="og:image" content="{{ SITE_URL }}/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg">
+
+  <!-- Twitter -->
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:url" content="{{ SITE_URL }}/">
+  <meta name="twitter:title" content="{{ AUTHOR_NAME }} | {{ ROLE_TITLE }}">
+  <meta name="twitter:description" content="{{ META_DESCRIPTION }}">
+  <meta name="twitter:image" content="{{ SITE_URL }}/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg">
+
+  <link rel="icon" type="image/x-icon" href="/favicon.ico">
+  <link rel="stylesheet" href="/css/style.css?v={{ BUILD_ID }}">
+  {{ ANALYTICS_SNIPPET }}
+</head>
+<body>
+  <nav class="top-nav">
+    <div class="container nav-inner">
+      <button class="nav-menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">
+        <span>Menu</span>
+        <svg class="nav-menu-icon" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true">
+          <path d="M4 7h16"></path>
+          <path d="M4 12h16"></path>
+          <path d="M4 17h16"></path>
+        </svg>
+      </button>
+      <div class="nav-links" id="site-navigation">
+        {{ NAV_LINKS }}
+      </div>
+    </div>
+  </nav>
+
+  <div class="container">
+    <header class="hero">
+      <h1 class="hero-title">{{ AUTHOR_NAME }}</h1>
+      <p class="hero-bio">
+        {{ BIO_HTML }}
+      </p>
+      <p class="hero-bio">
+        <strong>Outside work:</strong> I build embedded systems, custom electronics, robots and other awesome machines.
+      </p>
+      <div class="hero-actions">
+        <a href="{{ GITHUB_URL }}" target="_blank" rel="noopener noreferrer" class="action-link" data-contact="github">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"/></svg>
+          GitHub
+        </a>
+        <a href="{{ LINKEDIN_URL }}" target="_blank" rel="noopener noreferrer" class="action-link" data-contact="linkedin">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"/></svg>
+          LinkedIn
+        </a>
+        <a href="mailto:{{ EMAIL_URL }}" class="action-link" data-contact="email">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M20 4H4c-1.1 0-1.99.9-1.99 2L2 18c0 1.1.9 2 2 2h16c1.1 0 2-.9 2-2V6c0-1.1-.9-2-2-2zm0 4l-8 5-8-5V6l8 5 8-5v2z"/></svg>
+          Email
+        </a>
+      </div>
+    </header>
+
+    <div class="section-title-wrap" id="major-builds">
+      <div class="section-title-row">
+        <h2 class="section-main-title">Major Builds</h2>
+        <span class="builds-count-pill">{{ MAJOR_BUILD_COUNT }}</span>
+      </div>
+      <p class="section-main-desc">Ambitious electronics, software and mechanical builds, often taking months to complete</p>
+    </div>
+
+    <div class="major-builds-grid">
+      {{ MAJOR_BUILD_CARDS }}
+    </div>
+
+    <div class="section-title-wrap section-quick-builds" id="quick-builds">
+      <div class="section-title-row">
+        <h2 class="section-main-title">Quick Builds</h2>
+        <span class="builds-count-pill">{{ QUICK_BUILD_COUNT }}</span>
+      </div>
+      <p class="section-main-desc">Home improvements &amp; fixing broken things instead of throwing them out</p>
+    </div>
+
+    <div class="major-builds-grid quick-builds-grid">
+      {{ QUICK_BUILD_CARDS }}
+    </div>
+  </div>
+
+  <script src="/js/navigation.js?v={{ BUILD_ID }}"></script>
+  <script>
+    // GA4 Event Tracking: Contact buttons (GitHub, LinkedIn, Email)
+    document.querySelectorAll('.hero-actions .action-link').forEach(link => {
+      link.addEventListener('click', function() {
+        const method = this.getAttribute('data-contact') || this.textContent.trim().toLowerCase();
+        if (typeof gtag === 'function') {
+          gtag('event', 'click_contact', {
+            contact_method: method,
+            link_url: this.getAttribute('href')
+          });
+        }
+      });
+    });
+
+    // GA4 Event Tracking: Project card clicks
+    document.querySelectorAll('.major-build-card-link').forEach(link => {
+      link.addEventListener('click', function() {
+        const title = this.querySelector('.grid-card-title')?.textContent?.trim() || '';
+        const href = this.getAttribute('href') || '';
+        const isQuick = href.includes('/quick-builds/');
+        if (typeof gtag === 'function') {
+          gtag('event', 'select_project', {
+            project_title: title,
+            project_url: href,
+            build_type: isQuick ? 'quick' : 'major'
+          });
+        }
+      });
+    });
+  </script>
+</body>
+</html>
