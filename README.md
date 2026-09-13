@@ -2,6 +2,14 @@
 
 This repository contains the source content and custom static site generator for [cathalcoffey.com](https://cathalcoffey.com). 
 
+## Licensing
+
+The reusable site generator, templates, stylesheets, scripts, and documentation
+are available under the [MIT License](LICENSE). The portfolio's original media,
+writing, name, likeness, and branding are excluded and remain [All Rights
+Reserved](CONTENT-LICENSE.md). Forks must replace that content before being
+published.
+
 <div align="center">
   <img src="tests/visual-baselines/home-desktop.png" width="48%" alt="Home Page">
   <img src="tests/visual-baselines/gallery-desktop.png" width="48%" alt="Gallery View">
