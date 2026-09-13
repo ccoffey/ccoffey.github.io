@@ -33,6 +33,7 @@ SITE_URL = os.environ.get('SITE_URL', 'https://example.com').rstrip('/')
 sys.path.insert(0, REPO_ROOT)
 sys.path.insert(0, os.path.join(REPO_ROOT, "scripts"))
 
+import check_performance  # noqa: E402
 import generate_site  # noqa: E402
 import optimize_staged_media  # noqa: E402
 import validate_project_media  # noqa: E402
@@ -405,6 +406,11 @@ class TestPerformanceAndBudgets(unittest.TestCase):
                 over_budget.append(f"{os.path.relpath(photo, SITE_ROOT)} ({size_mb:.2f} MB > 3.5 MB)")
 
         self.assertEqual(over_budget, [], f"Found {len(over_budget)} full-size photos exceeding 3.5 MB:\n" + "\n".join(over_budget))
+
+    def test_initial_page_shell_budget(self):
+        """Keep first-load HTML, CSS, JavaScript, and eager assets lightweight."""
+        errors = check_performance.check_site(Path(SITE_ROOT))
+        self.assertEqual(errors, [], "Performance budget violations:\n" + "\n".join(errors))
 
 
 class TestGeneratorInvariants(unittest.TestCase):

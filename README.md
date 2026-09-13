@@ -179,6 +179,23 @@ The repository includes a comprehensive browser regression suite that runs in a 
 ./scripts/test_browser_docker.sh
 ```
 
+### Performance Budgets
+
+The build enforces deterministic first-load budgets: 128 KiB per public HTML
+document, 50 KiB of CSS, 20 KiB of JavaScript, and 160 KiB for a page's eager
+shell (document plus CSS, JavaScript, and non-lazy assets). Gallery media stays
+out of this initial payload through native lazy loading; its thumbnail and
+full-size media limits are checked separately. Run the check against a built
+site with:
+
+```bash
+python3 scripts/build_site.py
+python3 scripts/check_performance.py _site
+```
+
+If a budget fails, optimize the generated output first. Raise a limit only when
+the additional bytes are intentional and explain the trade-off in the commit.
+
 ### Updating Visual Baselines
 
 Visual tests compare screenshots against the PNG files in

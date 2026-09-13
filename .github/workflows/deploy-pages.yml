@@ -65,6 +65,9 @@ jobs:
           GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
         run: python scripts/build_site.py --output _site
 
+      - name: Check performance budgets
+        run: python scripts/check_performance.py _site
+
       - name: Validate generated HTML
         run: npm run lint:html
 
@@ -95,6 +98,9 @@ jobs:
           SITE_URL: ${{ vars.SITE_URL }}
           GA_MEASUREMENT_ID: ${{ vars.GA_MEASUREMENT_ID }}
         run: python scripts/build_site.py --output _site
+
+      - name: Check performance budgets
+        run: python scripts/check_performance.py _site
 
       - name: Run browser regression tests
         env:
