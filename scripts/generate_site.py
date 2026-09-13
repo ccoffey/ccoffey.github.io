@@ -54,47 +54,54 @@ def analytics_snippet(title='', slug='', build_type=''):
   <script async src="https://www.googletagmanager.com/gtag/js?id={escape(GA_MEASUREMENT_ID, quote=True)}"></script>
   <script>window.dataLayer = window.dataLayer || []; function gtag(){{dataLayer.push(arguments);}} gtag('js', new Date()); gtag('config', {json.dumps(GA_MEASUREMENT_ID)}{config_arg});</script>'''
 
+DATE_IN_FILENAME = re.compile(
+    r'(?<!\d)'
+    r'(?P<year>(?:19|20)\d{2})'
+    r'(?P<date_separator>[-_.]?)'
+    r'(?P<month>0[1-9]|1[0-2])'
+    r'(?P=date_separator)'
+    r'(?P<day>0[1-9]|[12]\d|3[01])'
+    r'(?:'
+    r'(?:[T _-]+|\s+at\s+)'
+    r'(?P<hour>[01]\d|2[0-3])'
+    r'[:._-]?(?P<minute>[0-5]\d)'
+    r'(?:[:._-]?(?P<second>[0-5]\d)(?:\d{3})?)?'
+    r')?'
+    r'(?!\d)',
+    re.IGNORECASE,
+)
+
+
+def parse_media_datetime(filename):
+    """Extract an unambiguous ISO-style date (and optional time) from a filename."""
+    match = DATE_IN_FILENAME.search(filename)
+    if not match:
+        raise ValueError(
+            f"Couldn't parse a date from media filename '{filename}'. Rename it to include "
+            "YYYY-MM-DD, YYYY_MM_DD, YYYY.MM.DD, or YYYYMMDD (optionally followed by a time)."
+        )
+
+    values = match.groupdict()
+    try:
+        return datetime(
+            int(values['year']), int(values['month']), int(values['day']),
+            int(values['hour'] or 0), int(values['minute'] or 0), int(values['second'] or 0),
+        )
+    except ValueError as error:
+        raise ValueError(
+            f"Couldn't parse a valid date from media filename '{filename}'. Rename it to include "
+            "YYYY-MM-DD, YYYY_MM_DD, YYYY.MM.DD, or YYYYMMDD (optionally followed by a time)."
+        ) from error
+
+
 def parse_photo_date(filename):
-    if 'control_panel_graphic' in filename:
-        return 'September 5, 2026 — Control Panel Vinyl Graphic (gorillagraphics.ie)', 'Control Panel Artwork'
-    if 'claw_machine_demo' in filename:
-        return 'September 6, 2026', 'Sep 6, 2026'
-    
-    m_step = re.search(r'step-(\d+)', filename)
-    if m_step:
-        return 'June 4, 2026', 'Jun 4, 2026'
+    dt = parse_media_datetime(filename)
+    return dt.strftime('%B %-d, %Y'), dt.strftime('%b %-d, %Y')
 
-    m_pxl = re.search(r'PXL_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})', filename)
-    if m_pxl:
-        y, mo, d, h, mi, s = m_pxl.groups()
-        dt = datetime(int(y), int(mo), int(d), int(h), int(mi), int(s))
-        return dt.strftime('%B %-d, %Y'), dt.strftime('%b %-d, %Y')
-    
-    m_wa = re.search(r'IMG-(\d{4})(\d{2})(\d{2})-WA(\d+)', filename)
-    if m_wa:
-        y, mo, d, seq = m_wa.groups()
-        dt = datetime(int(y), int(mo), int(d))
-        return dt.strftime('%B %-d, %Y'), dt.strftime('%b %-d, %Y')
-
-    return 'Build Photo', 'Photo'
 
 def get_photo_sort_key(filename):
-    if 'control_panel_graphic' in filename:
-        return (2026, 9, 5, 18, 9, 0)
-    if 'claw_machine_demo' in filename:
-        return (2026, 9, 6, 23, 59, 59)
-    m_step = re.search(r'step-(\d+)', filename)
-    if m_step:
-        return (2026, 6, 4, 10, int(m_step.group(1)), 0)
-    m_pxl = re.search(r'PXL_(\d{4})(\d{2})(\d{2})_(\d{2})(\d{2})(\d{2})', filename)
-    if m_pxl:
-        y, mo, d, h, mi, s = m_pxl.groups()
-        return (int(y), int(mo), int(d), int(h), int(mi), int(s))
-    m_wa = re.search(r'IMG-(\d{4})(\d{2})(\d{2})-WA(\d+)', filename)
-    if m_wa:
-        y, mo, d, seq = m_wa.groups()
-        return (int(y), int(mo), int(d), 12, 0, int(seq))
-    return (1970, 1, 1, 0, 0, 0)
+    dt = parse_media_datetime(filename)
+    return (dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second)
 
 def strip_exif_from_file(filepath):
     """Losslessly strips APP1 (EXIF / GPS / device metadata / XMP) from JPEG files."""
@@ -561,6 +568,12 @@ def process_build_dir(base_dir, slug, url_prefix):
     # 1. Deduplicate media files by SHA-256 hash
     raw_files = deduplicate_project_media(media_dir, raw_files, slug)
 
+    # Media is shown chronologically, so every source filename must carry an
+    # unambiguous date. Validate before modifying or generating derivatives.
+    for f in raw_files:
+        if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp', *VIDEO_EXTENSIONS)):
+            parse_media_datetime(f)
+
     # 2. Sanitize photos (EXIF) and optimize oversized full-size photos
     for f in raw_files:
         if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp')):
@@ -957,7 +970,7 @@ def sync_builds():
         # Hero Video Section: Adaptive Portrait vs Landscape
         if b['hero_video']:
             video_fn = b['hero_video']
-            video_path = os.path.join(MAJOR_BUILDS_DIR, b['slug'], video_fn)
+            video_path = os.path.join(MAJOR_BUILDS_DIR, b['slug'], 'media', video_fn)
             meta = get_video_metadata(video_path)
             if b.get('hero_video_poster'):
                 poster_attr = f' poster="/major-builds/{b["slug"]}/thumbs/{b["hero_video_poster"]}"'

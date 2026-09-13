@@ -473,25 +473,23 @@ class TestGeneratorInvariants(unittest.TestCase):
             )
 
     def test_parse_photo_date(self):
-        # Pixel phone filename
-        long_d, short_d = generate_site.parse_photo_date('PXL_20260906_064952583.jpg')
-        self.assertEqual(long_d, 'September 6, 2026')
-        self.assertEqual(short_d, 'Sep 6, 2026')
+        filenames = (
+            '20260906.jpg',
+            '2026-09-06.jpg',
+            '2026_09_06.jpg',
+            '2026.09.06.jpg',
+            'IMG_20260906_064952583.jpg',
+            'Screenshot 2026-09-06 at 06.49.52.png',
+        )
+        for filename in filenames:
+            with self.subTest(filename=filename):
+                long_d, short_d = generate_site.parse_photo_date(filename)
+                self.assertEqual(long_d, 'September 6, 2026')
+                self.assertEqual(short_d, 'Sep 6, 2026')
 
-        # WhatsApp image filename
-        long_d, short_d = generate_site.parse_photo_date('IMG-20260607-WA0003.jpg')
-        self.assertEqual(long_d, 'June 7, 2026')
-        self.assertEqual(short_d, 'Jun 7, 2026')
-
-        # Custom named graphics
-        long_d, short_d = generate_site.parse_photo_date('control_panel_graphic.png')
-        self.assertIn('September 5, 2026', long_d)
-        self.assertEqual(short_d, 'Control Panel Artwork')
-
-        # Generic fallback
-        long_d, short_d = generate_site.parse_photo_date('random_photo_test.jpg')
-        self.assertEqual(long_d, 'Build Photo')
-        self.assertEqual(short_d, 'Photo')
+    def test_parse_photo_date_rejects_undated_filenames(self):
+        with self.assertRaisesRegex(ValueError, "Couldn't parse a date from media filename 'photo.jpg'"):
+            generate_site.parse_photo_date('photo.jpg')
 
     def test_get_photo_sort_key(self):
         k1 = generate_site.get_photo_sort_key('PXL_20260115_100000000.jpg')

@@ -16,7 +16,7 @@
     "PXL_20260226_150354165.jpg": [
       "This is the point where I knew I needed to design a custom PCB."
     ],
-    "claw_machine_demo.mp4": [
+    "2026-09-06T235959_claw-machine-demo.mp4": [
       "a",
       "b"
     ],
@@ -28,7 +28,7 @@
       "This is another comment"
     ]
   },
-  "hero_video": "claw_machine_demo.mp4",
+  "hero_video": "2026-09-06T235959_claw-machine-demo.mp4",
   "next_steps": [
     "Paint & Graphics: At the very least I need to sand and paint this so that it doesn't look so raw. I am also considering designing custom graphics",
     "Redesign the claw drop mechanism so that it detects when the claw goes slack instead of just dropping a fixed ammount which fails to grab tall teddies",

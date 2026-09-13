@@ -36,8 +36,8 @@ published.
   </tr>
 </table>
 
-- **Inline Comments:** 
-  - **In-Prod (Reader Mode):** Visitors can view context-rich comments tied to specific photos or videos in the gallery.
+- **Inline Comments:**
+  - **Production Reader Mode:** Visitors can view context-rich comments tied to specific photos or videos in the gallery.
   - **Local Authoring Mode:** When running the local development server, you can add, edit, or delete comments directly from the gallery UI. Changes are automatically saved back to the underlying `build.json` files!
 
 <table align="center" width="100%">
@@ -46,8 +46,8 @@ published.
     <td align="center" width="50%"><strong>Production Comments View</strong></td>
   </tr>
   <tr>
-    <td align="center"><img src="tests/visual-baselines/comments-authoring-desktop.png" alt="Local Comment Authoring" style="max-width:100%;"></td>
-    <td align="center"><img src="tests/visual-baselines/comments-reader-desktop.png" alt="Production Comments View" style="max-width:100%;"></td>
+    <td align="center"><img src="docs/images/comments-authoring.png" alt="Local Comment Authoring" style="max-width:100%;"></td>
+    <td align="center"><img src="docs/images/comments-reader.png" alt="Production Comments View" style="max-width:100%;"></td>
   </tr>
 </table>
 
@@ -89,10 +89,10 @@ Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
 If you just want to build and serve an isolated copy without file watching:
 
 ```bash
-python3 scripts/build_site.py --output _site
+python3 scripts/build_site.py
 python3 -m http.server 8000 --directory _site
 ```
-The `_site/` directory is disposable and ignored by Git. 
+The `_site/` directory is disposable and ignored by Git. Pass `--output <directory>` only when you need a different destination.
 
 > **Warning**: The VS Code tasks provide the same isolated build and preview workflow. Do not run `generate_site.py` directly from the repository root: that generator is intended to run inside the isolated build and can rewrite source media in place.
 
@@ -112,6 +112,18 @@ All content and template files live in the `src/` directory.
    ```
 
 Before the commit is created, the `.githooks/pre-commit` hook automatically optimizes newly staged media (resizes images, strips EXIF, re-encodes video) and re-stages it.
+
+### Media Filenames and Dates
+
+The gallery sorts media chronologically. Every media filename must therefore include an unambiguous year-first date; it does not matter which device or application created the file.
+
+Supported date forms are:
+
+- `20260906` — compact date, with an optional time such as `20260906_064952583`.
+- `2026-09-06`, `2026_09_06`, or `2026.09.06` — separated dates, with an optional time such as `2026-09-06T06:49:52`.
+- `Screenshot 2026-09-06 at 06.49.52.png` — the standard macOS screenshot form.
+
+The rest of the filename is yours to choose: `2026-09-06_control-panel.png` and `build_20260906.mp4` are both valid. A build fails before modifying media if it cannot find a supported date, and tells you exactly which file to rename.
 
 ### The `build.json` File
 
@@ -160,46 +172,30 @@ If you'd like to use this static site generator for your own portfolio, it is de
 
 ## 🧪 Testing and Linting
 
-The repository includes a comprehensive browser regression suite that runs in headless Chromium (just like in CI).
+The repository includes a comprehensive browser regression suite that runs in a pinned Linux Playwright container—the exact browser environment used in CI.
 
 ### Browser Regression Tests
 ```bash
-python3 -m pip install -r requirements-test.txt
-python3 -m playwright install chromium
-python3 scripts/build_site.py --output _site
-SITE_ROOT=_site python3 tests/test_browser.py
+./scripts/test_browser_docker.sh
 ```
 
 ### Updating Visual Baselines
 
 Visual tests compare screenshots against the PNG files in
 `tests/visual-baselines/`. When a UI change is intentional, regenerate the
-local references after rebuilding the site:
+Linux references using the same pinned container as CI:
 
 ```bash
-python3 scripts/build_site.py --output _site
-SITE_ROOT=_site python3 tests/test_browser.py --update-snapshots
+./scripts/test_browser_docker.sh --update-snapshots
 ```
 
 Review the changed PNGs before committing them. Do not refresh a baseline just
 to make a regression disappear: first confirm that the screenshot reflects the
 intended UI.
 
-CI runs on Linux while local development is usually macOS. Text rasterization
-can differ enough that a deliberate, reviewed UI is valid on one platform but
-fails on the other. The test runner automatically prefers a `-linux.png`
-baseline on Linux when it exists. If CI alone fails, download and inspect its
-visual-test artifact, then add the reviewed `*-actual.png` as the matching
-`*-linux.png` baseline:
-
-```bash
-gh run download <run-id> --name visual-test-artifacts --dir /private/tmp/site-visual-artifacts
-cp /private/tmp/site-visual-artifacts/<name>-actual.png tests/visual-baselines/<name>-linux.png
-```
-
-For example, `<name>` can be `comments-reader-desktop`. Commit the new Linux
-reference alongside the corresponding UI change, push it, and confirm the next
-GitHub Actions run is green.
+Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) once
+to run this command locally. The first run downloads the pinned browser image;
+after that, the same command produces the same Linux screenshots as CI.
 
 ### Linting
 **Python:**
@@ -212,7 +208,7 @@ python3 -m ruff check .
 npm ci
 npm run lint:js
 npm run lint:css
-python3 scripts/build_site.py --output _site
+python3 scripts/build_site.py
 npm run lint:html
 ```
 
@@ -220,7 +216,7 @@ npm run lint:html
 
 ## 🏗️ Architecture & Responsibilities
 
-- **Source Repository (src/):** Project JSON, templates, CSS, JavaScript, and source media.
+- **Source:** `src/` — project JSON, templates, CSS, JavaScript, and source media.
 - **Pre-commit Hook:** Optimizes only newly staged source images and videos.
-- **Generated `_site/`:** Temporary local or CI output (safely excluded from version control by `.gitignore`).
+- **Generated:** `_site/` — temporary local or CI output, safely excluded from version control by `.gitignore`.
 - **GitHub Actions:** Generates thumbnails/posters, extracts robots.txt/sitemap, runs tests, and deploys the complete static site to GitHub Pages.
