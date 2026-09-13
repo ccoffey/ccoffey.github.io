@@ -12,6 +12,22 @@ This repository contains the source content and custom static site generator for
 - **Blazing Fast Static Generation:** A custom Python pipeline compiles templates, JSON metadata, and media into a highly optimized, dependency-free static site.
 - **Media Optimization:** A Git pre-commit hook automatically strips EXIF data, resizes large images, and re-encodes videos for the web.
 - **Immersive Gallery:** A responsive full-screen media viewer with deep-linking, touch support, and keyboard navigation.
+- **Project Portfolios:** Beautifully crafted pages for your work.
+  - **Major Builds:** Detailed write-ups featuring a massive Hero Video, engineering highlights, and a story narrative.
+  - **Quick Builds:** Lightweight photo-grid galleries for smaller projects.
+  - **Cover Art Selection:** Explicitly choose which image acts as the cover thumbnail for each project on the home page.
+
+<table align="center" width="100%">
+  <tr>
+    <td align="center" width="50%"><strong>Major Builds (with Hero Video)</strong></td>
+    <td align="center" width="50%"><strong>Quick Builds</strong></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="tests/visual-baselines/major-build-desktop.png" alt="Major Build Page" style="max-width:100%;"></td>
+    <td align="center"><img src="tests/visual-baselines/quick-build-desktop.png" alt="Quick Build Page" style="max-width:100%;"></td>
+  </tr>
+</table>
+
 - **Inline Comments:** 
   - **In-Prod (Reader Mode):** Visitors can view context-rich comments tied to specific photos or videos in the gallery.
   - **Local Authoring Mode:** When running the local development server, you can add, edit, or delete comments directly from the gallery UI. Changes are automatically saved back to the underlying `build.json` files!
