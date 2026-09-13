@@ -16,12 +16,16 @@ This repository contains the source content and custom static site generator for
   - **In-Prod (Reader Mode):** Visitors can view context-rich comments tied to specific photos or videos in the gallery.
   - **Local Authoring Mode:** When running the local development server, you can add, edit, or delete comments directly from the gallery UI. Changes are automatically saved back to the underlying `build.json` files!
 
-<div align="center">
-  <img src="tests/visual-baselines/comments-authoring-desktop.png" width="48%" alt="Local Comment Authoring">
-  <img src="tests/visual-baselines/comments-reader-desktop.png" width="48%" alt="Production Comments View">
-  <br/>
-  <em>Left: Local Comment Authoring &nbsp;&nbsp;|&nbsp;&nbsp; Right: Production Comments View</em>
-</div>
+<table align="center" width="100%">
+  <tr>
+    <td align="center" width="50%"><strong>Local Comment Authoring</strong></td>
+    <td align="center" width="50%"><strong>Production Comments View</strong></td>
+  </tr>
+  <tr>
+    <td align="center"><img src="tests/visual-baselines/comments-authoring-desktop.png" alt="Local Comment Authoring" style="max-width:100%;"></td>
+    <td align="center"><img src="tests/visual-baselines/comments-reader-desktop.png" alt="Production Comments View" style="max-width:100%;"></td>
+  </tr>
+</table>
 
 ---
 

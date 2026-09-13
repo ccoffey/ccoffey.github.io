@@ -475,6 +475,7 @@ class BrowserRegressionTests(unittest.TestCase):
 
     def test_visual_comments_reader_desktop(self):
         page = self.open_commented_lightbox()
+        page.add_style_tag(content="#lightbox-description { width: 450px !important; height: 250px !important; justify-content: flex-end !important; padding-bottom: 20px !important; padding-right: 20px !important; }")
         self.set_visual_comments(page)
         self.assertFalse(page.locator(".lightbox-comment-stack").is_hidden())
         self.assert_visual_snapshot(
@@ -487,6 +488,7 @@ class BrowserRegressionTests(unittest.TestCase):
         self.enable_local_comment_authoring()
         page = self.open_commented_lightbox()
         page.get_by_label("New comment").wait_for()
+        page.add_style_tag(content="#lightbox-description { width: 450px !important; height: 250px !important; justify-content: flex-end !important; padding-bottom: 20px !important; padding-right: 20px !important; }")
         self.set_visual_comments(page)
         self.assertFalse(page.locator(".lightbox-comment-stack").is_hidden())
         self.assert_visual_snapshot(
@@ -499,6 +501,7 @@ class BrowserRegressionTests(unittest.TestCase):
         self.enable_local_comment_authoring()
         page = self.open_commented_lightbox(mobile=True)
         page.get_by_label("New comment").wait_for()
+        page.add_style_tag(content="#lightbox-description { width: 450px !important; height: 250px !important; justify-content: flex-end !important; padding-bottom: 20px !important; padding-right: 20px !important; }")
         self.set_visual_comments(page)
         self.assertFalse(page.locator(".lightbox-comment-stack").is_hidden())
         self.assert_visual_snapshot(
