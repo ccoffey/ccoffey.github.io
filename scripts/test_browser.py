@@ -171,6 +171,9 @@ class BrowserRegressionTests(unittest.TestCase):
             """comments => {
                 gallery[currentIndex].comments = comments;
                 window.galleryCommentAdmin.rerender();
+                const description = document.getElementById('lightbox-description');
+                description.classList.remove('comments-hidden');
+                description.querySelector('.lightbox-comment-stack')?.removeAttribute('aria-hidden');
             }""",
             VISUAL_COMMENTS,
         )
@@ -434,6 +437,7 @@ class BrowserRegressionTests(unittest.TestCase):
     def test_visual_comments_reader_desktop(self):
         page = self.open_commented_lightbox()
         self.set_visual_comments(page)
+        self.assertFalse(page.locator(".lightbox-comment-stack").is_hidden())
         self.assert_visual_snapshot(
             page,
             "comments-reader-desktop",
@@ -445,6 +449,7 @@ class BrowserRegressionTests(unittest.TestCase):
         page = self.open_commented_lightbox()
         page.get_by_label("New comment").wait_for()
         self.set_visual_comments(page)
+        self.assertFalse(page.locator(".lightbox-comment-stack").is_hidden())
         self.assert_visual_snapshot(
             page,
             "comments-authoring-desktop",
@@ -456,6 +461,7 @@ class BrowserRegressionTests(unittest.TestCase):
         page = self.open_commented_lightbox(mobile=True)
         page.get_by_label("New comment").wait_for()
         self.set_visual_comments(page)
+        self.assertFalse(page.locator(".lightbox-comment-stack").is_hidden())
         self.assert_visual_snapshot(
             page,
             "comments-authoring-mobile",
