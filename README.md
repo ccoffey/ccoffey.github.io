@@ -2,6 +2,14 @@
 
 This repository contains the source content and custom static site generator for [cathalcoffey.com](https://cathalcoffey.com). 
 
+## Licensing
+
+The reusable site generator, templates, stylesheets, scripts, and documentation
+are available under the [MIT License](LICENSE). The portfolio's original media,
+writing, name, likeness, and branding are excluded and remain [All Rights
+Reserved](CONTENT-LICENSE.md). Forks must replace that content before being
+published.
+
 <div align="center">
   <img src="tests/visual-baselines/home-desktop.png" width="48%" alt="Home Page">
   <img src="tests/visual-baselines/gallery-desktop.png" width="48%" alt="Gallery View">
@@ -158,12 +166,40 @@ The repository includes a comprehensive browser regression suite that runs in he
 ```bash
 python3 -m pip install -r requirements-test.txt
 python3 -m playwright install chromium
-SITE_ROOT=_site python3 scripts/test_browser.py
+python3 scripts/build_site.py --output _site
+SITE_ROOT=_site python3 tests/test_browser.py
 ```
-If you make an intentional visual change, you can update the visual baselines by running:
+
+### Updating Visual Baselines
+
+Visual tests compare screenshots against the PNG files in
+`tests/visual-baselines/`. When a UI change is intentional, regenerate the
+local references after rebuilding the site:
+
 ```bash
-SITE_ROOT=_site python3 scripts/test_browser.py --update-snapshots
+python3 scripts/build_site.py --output _site
+SITE_ROOT=_site python3 tests/test_browser.py --update-snapshots
 ```
+
+Review the changed PNGs before committing them. Do not refresh a baseline just
+to make a regression disappear: first confirm that the screenshot reflects the
+intended UI.
+
+CI runs on Linux while local development is usually macOS. Text rasterization
+can differ enough that a deliberate, reviewed UI is valid on one platform but
+fails on the other. The test runner automatically prefers a `-linux.png`
+baseline on Linux when it exists. If CI alone fails, download and inspect its
+visual-test artifact, then add the reviewed `*-actual.png` as the matching
+`*-linux.png` baseline:
+
+```bash
+gh run download <run-id> --name visual-test-artifacts --dir /private/tmp/site-visual-artifacts
+cp /private/tmp/site-visual-artifacts/<name>-actual.png tests/visual-baselines/<name>-linux.png
+```
+
+For example, `<name>` can be `comments-reader-desktop`. Commit the new Linux
+reference alongside the corresponding UI change, push it, and confirm the next
+GitHub Actions run is green.
 
 ### Linting
 **Python:**
