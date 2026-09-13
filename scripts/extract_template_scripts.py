@@ -8,7 +8,7 @@ import shutil
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-TEMPLATE_DIR = REPO_ROOT / "src", "templates"
+TEMPLATE_DIR = REPO_ROOT / "src" / "templates"
 OUTPUT_DIR = REPO_ROOT / ".lint-tmp"
 INLINE_SCRIPT = re.compile(r"<script(?![^>]*\bsrc=)[^>]*>(.*?)</script>", re.IGNORECASE | re.DOTALL)
 TEMPLATE_EXPRESSION = re.compile(r"{{.*?}}", re.DOTALL)
