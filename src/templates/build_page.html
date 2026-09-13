@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>{{ TITLE }} | {{ AUTHOR_NAME }}</title>
   <meta name="description" content="{{ SUBTITLE }}">
-  <link rel="canonical" href="{{ SITE_URL }}/quick-builds/{{ SLUG }}/">
+  <link rel="canonical" href="{{ SITE_URL }}{{ BUILD_PATH }}">
 
   <!-- Security Headers -->
   <meta http-equiv="X-Content-Type-Options" content="nosniff">
@@ -17,7 +17,7 @@
   <meta property="og:site_name" content="{{ AUTHOR_NAME }}">
   <meta property="og:title" content="{{ TITLE }} | {{ AUTHOR_NAME }}">
   <meta property="og:description" content="{{ SUBTITLE }}">
-  <meta property="og:url" content="{{ SITE_URL }}/quick-builds/{{ SLUG }}/">
+  <meta property="og:url" content="{{ SITE_URL }}{{ BUILD_PATH }}">
   <meta property="og:image" content="{{ OG_IMAGE_URL }}">
 
   <!-- Twitter Card -->
@@ -54,8 +54,10 @@
       <div class="tag-row">
         {{ TAGS }}
       </div>
-      {{ DESCRIPTION }}
+      {{ HEADER_CONTENT }}
     </header>
+
+    {{ BODY_CONTENT }}
 
     <div class="gallery-header">
       <div class="gallery-title">
@@ -99,6 +101,14 @@
   </div>
 
   <script>
+    // Build-specific data is deliberately small; gallery behavior lives in this
+    // shared template so major and quick builds cannot drift apart.
+    window.buildPageConfig = {
+      title: "{{ TITLE }}",
+      slug: "{{ SLUG }}",
+      type: "{{ BUILD_TYPE }}"
+    };
+
     window.addEventListener("DOMContentLoaded", () => {
       const initialIdx = findGalleryIndexFromHash(window.location.hash);
       if (initialIdx !== -1) {
@@ -627,6 +637,7 @@
     };
 
   </script>
+  <script src="/js/major-build.js?v={{ BUILD_ID }}"></script>
   <script src="/js/comment-admin.js?v={{ BUILD_ID }}"></script>
   <script src="/js/navigation.js?v={{ BUILD_ID }}"></script>
 </body>

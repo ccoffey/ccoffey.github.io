@@ -745,8 +745,9 @@ def sync_builds():
         return
 
     home_tmpl = load_template('home.html')
-    major_build_tmpl = load_template('major_build.html')
-    quick_build_tmpl = load_template('quick_build.html')
+    # Major and quick builds share the gallery/lightbox template. Their only
+    # difference is the content inserted around the shared gallery surface.
+    build_page_tmpl = load_template('build_page.html')
 
     # Collect Major Builds
     major_slugs = [d for d in os.listdir(MAJOR_BUILDS_DIR) 
@@ -951,7 +952,6 @@ def sync_builds():
         tags_html = '\n        '.join(f'<span class="tech-tag">{escape(tag)}</span>' for tag in b['tags'])
         
         story_box_html = render_story_box(b['story'])
-        engineering_section_html = ''
         next_steps_html = render_next_steps(b.get('next_steps', []))
 
         # Hero Video Section: Adaptive Portrait vs Landscape
@@ -1028,10 +1028,12 @@ def sync_builds():
 
         og_image = f"{SITE_URL}/major-builds/{b['slug']}/thumbs/{b['cover_image']}" if b.get('cover_image') else f"{SITE_URL}/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
 
-        rendered_build = apply_site_config(major_build_tmpl
+        rendered_build = apply_site_config(build_page_tmpl
             .replace('{{ TITLE }}', escape(b['title'], quote=True))
             .replace('{{ SUBTITLE }}', escape(b['subtitle'], quote=True))
             .replace('{{ SLUG }}', b['slug'])
+            .replace('{{ BUILD_TYPE }}', 'major')
+            .replace('{{ BUILD_PATH }}', f"/major-builds/{b['slug']}/")
             .replace('{{ OG_IMAGE_URL }}', og_image)
             .replace('{{ DATES }}', b['dates'])
             .replace('{{ TAGS }}', tags_html)
@@ -1039,10 +1041,8 @@ def sync_builds():
             .replace('{{ SITE_URL }}', SITE_URL)
             .replace('{{ ANALYTICS_SNIPPET }}', analytics_snippet(b['title'], b['slug'], 'major'))
             .replace('{{ NAV_LINKS }}', render_nav('major', b['slug']))
-            .replace('{{ HERO_SECTION }}', hero_section_html)
-            .replace('{{ STORY_SECTION }}', story_section_html)
-            .replace('{{ ENGINEERING_SECTION }}', engineering_section_html)
-            .replace('{{ NEXT_STEPS_SECTION }}', next_steps_section_html)
+            .replace('{{ HEADER_CONTENT }}', '')
+            .replace('{{ BODY_CONTENT }}', '\n'.join((hero_section_html, story_section_html, next_steps_section_html)))
             .replace('{{ GALLERY_SUMMARY }}', gallery_summary(b['gallery']))
             .replace('{{ PHOTO_GRID }}', '\n'.join(media_html))
             .replace('{{ GALLERY_JSON }}', gallery_json))
@@ -1073,13 +1073,16 @@ def sync_builds():
         desc_html = f'<div class="build-description"><p>{escape(qb["description"])}</p></div>' if qb.get('description') else ''
         og_image = f"{SITE_URL}/quick-builds/{qb['slug']}/thumbs/{qb['cover_image']}" if qb.get('cover_image') else f"{SITE_URL}/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
 
-        rendered_qb = apply_site_config(quick_build_tmpl
+        rendered_qb = apply_site_config(build_page_tmpl
             .replace('{{ TITLE }}', escape(qb['title'], quote=True))
             .replace('{{ SUBTITLE }}', escape(qb['subtitle'], quote=True))
             .replace('{{ SLUG }}', qb['slug'])
+            .replace('{{ BUILD_TYPE }}', 'quick')
+            .replace('{{ BUILD_PATH }}', f"/quick-builds/{qb['slug']}/")
             .replace('{{ OG_IMAGE_URL }}', og_image)
             .replace('{{ DATES }}', qb['dates'])
-            .replace('{{ DESCRIPTION }}', desc_html)
+            .replace('{{ HEADER_CONTENT }}', desc_html)
+            .replace('{{ BODY_CONTENT }}', '')
             .replace('{{ TAGS }}', tags_html)
             .replace('{{ BUILD_ID }}', build_id)
             .replace('{{ SITE_URL }}', SITE_URL)

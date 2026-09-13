@@ -245,6 +245,20 @@ class TestAssetIntegrity(unittest.TestCase):
 
         self.assertGreaterEqual(len(commented_items), 1, "Expected at least one commented gallery item.")
 
+    def test_build_pages_share_the_gallery_runtime_contract(self):
+        """Major and quick builds use the same generated gallery surface."""
+        build_pages = glob.glob(os.path.join(SITE_ROOT, 'major-builds', '*', 'index.html')) + \
+                      glob.glob(os.path.join(SITE_ROOT, 'quick-builds', '*', 'index.html'))
+
+        self.assertGreaterEqual(len(build_pages), 2, "Expected major and quick build pages.")
+        for page in build_pages:
+            with open(page, encoding='utf-8') as f:
+                content = f.read()
+            rel_page = os.path.relpath(page, SITE_ROOT)
+            self.assertIn('window.buildPageConfig = {', content, f"Missing shared page config in {rel_page}")
+            self.assertIn('/js/major-build.js', content, f"Missing shared major-build enhancement in {rel_page}")
+            self.assertIn('function openLightbox(', content, f"Missing shared gallery runtime in {rel_page}")
+
 
 class TestSEOAndMetadataContracts(unittest.TestCase):
     """Validates SEO metadata, OpenGraph tags, sitemap.xml, and robots.txt."""
