@@ -33,11 +33,11 @@ SITE_URL = os.environ.get('SITE_URL', 'https://example.com').rstrip('/')
 sys.path.insert(0, REPO_ROOT)
 sys.path.insert(0, os.path.join(REPO_ROOT, "scripts"))
 
-import dev_server  # noqa: E402
 import generate_site  # noqa: E402
-import dev_server  # noqa: E402
 import optimize_staged_media  # noqa: E402
 import validate_project_media  # noqa: E402
+
+import dev_server  # noqa: E402
 
 
 class HTMLAssetScraper(HTMLParser):
