@@ -13,6 +13,7 @@ from __future__ import annotations
 
 import functools
 import json
+import math
 import os
 import shutil
 import sys
@@ -196,7 +197,21 @@ class BrowserRegressionTests(unittest.TestCase):
         baseline = VISUAL_BASELINE_DIR / f"{baseline_name}.png"
         VISUAL_ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
         actual = VISUAL_ARTIFACT_DIR / f"{baseline_name}-actual.png"
-        (target or page).screenshot(path=str(actual), animations="disabled")
+        page.screenshot(path=str(actual), animations="disabled")
+        if target:
+            box = target.bounding_box()
+            self.assertIsNotNone(box, f"Could not locate visual target for {name}")
+            with Image.open(actual) as screenshot:
+                padding = 32
+                cropped = screenshot.crop(
+                    (
+                        max(0, math.floor(box["x"] - padding)),
+                        max(0, math.floor(box["y"] - padding)),
+                        min(screenshot.width, math.ceil(box["x"] + box["width"] + padding)),
+                        min(screenshot.height, math.ceil(box["y"] + box["height"] + padding)),
+                    )
+                )
+                cropped.save(actual)
 
         if UPDATE_VISUAL_BASELINES:
             VISUAL_BASELINE_DIR.mkdir(parents=True, exist_ok=True)
