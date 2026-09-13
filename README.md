@@ -120,6 +120,14 @@ For a watched preview that rebuilds when source files change, run:
 python3 dev_server.py
 ```
 
+When opened through this development server, the full-screen gallery also has
+local comment authoring. Click a comment bubble to edit it in place, type into
+the always-ready **Write a comment…** bubble to add one, or use the × in a
+comment's top-right corner to delete it.
+Changes save directly to that build's JSON metadata and trigger the usual local
+rebuild. These controls and their write endpoint do not exist on the deployed
+static site.
+
 The VS Code tasks provide the same isolated build and preview workflow. Do not
 run `generate_site.py` directly from the repository root: that generator is
 intended to run inside the isolated build and can rewrite source media in place.
