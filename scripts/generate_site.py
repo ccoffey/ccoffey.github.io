@@ -472,37 +472,6 @@ def render_story_box(story_html):
       </div>
     </section>'''
 
-def render_engineering_section(highlights, status=''):
-    if not highlights:
-        return ''
-
-    cards = []
-    for highlight in highlights:
-        cards.append(f'''
-        <article class="engineering-highlight-card">
-          <p class="engineering-highlight-label">{escape(highlight.get('label', ''))}</p>
-          <h3>{escape(highlight.get('title', ''))}</h3>
-          <p>{escape(highlight.get('description', ''))}</p>
-        </article>''')
-
-    status_html = ''
-    if status:
-        status_html = f'<p class="engineering-status">{escape(status)}</p>'
-
-    return f'''
-    <section class="engineering-summary" aria-labelledby="engineering-summary-title">
-      <div class="engineering-summary-header">
-        <div>
-          <p class="engineering-summary-kicker">Working-system evidence</p>
-          <h2 id="engineering-summary-title">Engineering at a glance</h2>
-        </div>
-        {status_html}
-      </div>
-      <div class="engineering-highlight-grid">
-{''.join(cards)}
-      </div>
-    </section>'''
-
 def render_next_steps(next_steps):
     if not next_steps:
         return ''
