@@ -12,5 +12,6 @@ _site/
 /quick-builds/*/index.html
 /quick-builds/*/thumbs/
 /test-results/
+/scratch/
 /.lint-tmp/
 /node_modules/
