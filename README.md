@@ -187,5 +187,5 @@ npm run lint:html
 
 - **Source Repository:** Project JSON, templates, CSS, JavaScript, and source media.
 - **Pre-commit Hook:** Optimizes only newly staged source images and videos.
-- **Generated `_site/`:** Temporary local or CI output; **never commit it**.
+- **Generated `_site/`:** Temporary local or CI output (safely excluded from version control by `.gitignore`).
 - **GitHub Actions:** Generates thumbnails/posters, extracts robots.txt/sitemap, runs tests, and deploys the complete static site to GitHub Pages.
