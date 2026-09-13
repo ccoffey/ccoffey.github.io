@@ -13,13 +13,13 @@ This repository contains the source content and custom static site generator for
 - **Media Optimization:** A Git pre-commit hook automatically strips EXIF data, resizes large images, and re-encodes videos for the web.
 - **Immersive Gallery:** A responsive full-screen media viewer with deep-linking, touch support, and keyboard navigation.
 - **Project Portfolios:** Beautifully crafted pages for your work.
-  - **Major Builds:** Detailed write-ups featuring a massive Hero Video, engineering highlights, and a story narrative.
-  - **Quick Builds:** Lightweight photo-grid galleries for smaller projects.
+  - **Major Builds (with Hero Video & Build Story):** Detailed write-ups featuring a massive Hero Video and a story narrative.
+  - **Quick Builds:** Lightweight photo and video galleries for smaller projects. Identical gallery experience to major builds, but with a brief description instead of a hero video and story narrative.
   - **Cover Art Selection:** Explicitly choose which image acts as the cover thumbnail for each project on the home page.
 
 <table align="center" width="100%">
   <tr>
-    <td align="center" width="50%"><strong>Major Builds (with Hero Video)</strong></td>
+    <td align="center" width="50%"><strong>Major Builds (with Hero Video & Build Story)</strong></td>
     <td align="center" width="50%"><strong>Quick Builds</strong></td>
   </tr>
   <tr>
@@ -74,7 +74,7 @@ Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/).
 
 **Authoring Comments:** When accessed via this dev server, the gallery includes the **Local Comment Authoring** feature. Click a comment bubble to edit it in place, type into the always-ready *Write a comment…* bubble, or click the `×` to delete it. Changes save directly to your local JSON metadata and trigger a rebuild. 
 
-*(These authoring endpoints do not exist on the deployed production site).*
+> **Note**: These authoring endpoints do not exist on the deployed production site.
 
 ### 3. Manual Build & Preview
 
@@ -94,7 +94,7 @@ The `_site/` directory is disposable and ignored by Git.
 
 All content and template files live in the `src/` directory.
 
-1. Copy your media into the relevant project directory under `src/major-builds/` or `src/quick-builds/`. 
+1. Copy your media into the `media/` folder of the relevant project directory under `src/major-builds/` or `src/quick-builds/`. 
    *(Do not create or edit a `thumbs/` directory—the pipeline handles thumbnails automatically).*
 2. Supported formats: `.jpg`, `.jpeg`, `.png`, `.webp`, `.mp4`, `.mov`, `.webm`.
 3. Stage and commit:
@@ -107,15 +107,14 @@ Before the commit is created, the `.githooks/pre-commit` hook automatically opti
 
 ### The `build.json` File
 
-Each project is defined by a `build.json` (or `project.json`) file in its directory. The static site generator reads this file to build the project page.
+Each project is defined by a `build.json` file in its directory. The static site generator reads this file to build the project page.
 
 Key configurations you can define:
 
 - `title` & `subtitle`: The headline text for the project.
 - `hero_video`: The filename of the video to play at the top of the project page. If omitted, the pipeline defaults to the first video found in the directory.
-- `cover_image` (or `cover_img`): The filename of the image to use as the project's thumbnail on the homepage and for OpenGraph tags. If omitted, defaults to the last chronological photo in the folder.
+- `cover_image`: The filename of the image to use as the project's thumbnail on the homepage and for OpenGraph tags. If omitted, defaults to the last chronological photo in the folder.
 - `story`: HTML content for the main narrative of a major build.
-- `engineering_highlights`: A list of technical bullet points for major builds.
 - `next_steps`: A list of future plans or iterations for the project.
 
 ### Manual Comment Configuration
@@ -185,7 +184,7 @@ npm run lint:html
 
 ## 🏗️ Architecture & Responsibilities
 
-- **Source Repository:** Project JSON, templates, CSS, JavaScript, and source media.
+- **Source Repository (src/):** Project JSON, templates, CSS, JavaScript, and source media.
 - **Pre-commit Hook:** Optimizes only newly staged source images and videos.
 - **Generated `_site/`:** Temporary local or CI output (safely excluded from version control by `.gitignore`).
 - **GitHub Actions:** Generates thumbnails/posters, extracts robots.txt/sitemap, runs tests, and deploys the complete static site to GitHub Pages.

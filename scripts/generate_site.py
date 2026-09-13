@@ -523,8 +523,6 @@ def render_next_steps(next_steps):
 def process_build_dir(base_dir, slug, url_prefix):
     folder_path = os.path.join(base_dir, slug)
     config_path = os.path.join(folder_path, 'build.json')
-    if not os.path.exists(config_path):
-        config_path = os.path.join(folder_path, 'project.json')
 
     config = {}
     if os.path.exists(config_path) and os.path.getsize(config_path) > 0:
@@ -552,18 +550,21 @@ def process_build_dir(base_dir, slug, url_prefix):
     thumbs_dir = os.path.join(folder_path, 'thumbs')
     os.makedirs(thumbs_dir, exist_ok=True)
 
-    raw_files = [f for f in os.listdir(folder_path)
-                 if not f.startswith('.')
-                 and '.optimized.' not in f.lower()
-                 and f not in ('thumbs', 'index.html', 'build.json', 'project.json')]
+    media_dir = os.path.join(folder_path, 'media')
+    if not os.path.exists(media_dir):
+        raw_files = []
+    else:
+        raw_files = [f for f in os.listdir(media_dir)
+                     if not f.startswith('.')
+                     and '.optimized.' not in f.lower()]
 
     # 1. Deduplicate media files by SHA-256 hash
-    raw_files = deduplicate_project_media(folder_path, raw_files, slug)
+    raw_files = deduplicate_project_media(media_dir, raw_files, slug)
 
     # 2. Sanitize photos (EXIF) and optimize oversized full-size photos
     for f in raw_files:
         if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp')):
-            full_path = os.path.join(folder_path, f)
+            full_path = os.path.join(media_dir, f)
             optimize_full_photo(full_path, max_dim=2560, quality=85)
             if f.lower().endswith(('.jpg', '.jpeg')):
                 strip_exif_from_file(full_path)
@@ -585,7 +586,7 @@ def process_build_dir(base_dir, slug, url_prefix):
     for f in raw_files:
         f_lower = f.lower()
         if f_lower.endswith(('.jpg', '.jpeg', '.png', '.webp')):
-            src = os.path.join(folder_path, f)
+            src = os.path.join(media_dir, f)
             stem = os.path.splitext(f)[0]
             dst_orig = os.path.join(thumbs_dir, f)
             dst_webp = os.path.join(thumbs_dir, f"{stem}.webp")
@@ -619,7 +620,7 @@ def process_build_dir(base_dir, slug, url_prefix):
     # 4. Check for videos to optimize
     for f in raw_files:
         if f.lower().endswith(VIDEO_EXTENSIONS):
-            optimize_video_if_needed(os.path.join(folder_path, f))
+            optimize_video_if_needed(os.path.join(media_dir, f))
 
     # 5. Collect media files
     raw_files.sort()
@@ -633,7 +634,7 @@ def process_build_dir(base_dir, slug, url_prefix):
         elif f_lower.endswith(('.jpg', '.jpeg', '.png', '.webp')):
             date_str, short_date = parse_photo_date(f)
             # Calculate aspect ratio
-            src = os.path.join(folder_path, f)
+            src = os.path.join(media_dir, f)
             thumb = os.path.join(thumbs_dir, f)
             ar = 1.333
             try:
@@ -649,7 +650,7 @@ def process_build_dir(base_dir, slug, url_prefix):
             photos.append({
                 'type': 'image',
                 'filename': f,
-                'full': f"{url_prefix}/{slug}/{f}",
+                'full': f"{url_prefix}/{slug}/media/{f}",
                 'thumb': f"{url_prefix}/{slug}/thumbs/{f}",
                 'thumb_webp': f"{url_prefix}/{slug}/thumbs/{thumb_stem}.webp",
                 'date': date_str,
@@ -662,17 +663,17 @@ def process_build_dir(base_dir, slug, url_prefix):
     photos.sort(key=lambda p: get_photo_sort_key(p['filename']))
 
     # Determine cover image: check build.json config first, fallback to latest photo
-    configured_cover = config.get('cover_image') or config.get('cover_img') or ''
-    if configured_cover and os.path.exists(os.path.join(folder_path, configured_cover)):
-        cover_img = configured_cover
+    configured_cover = config.get('cover_image', '')
+    if configured_cover and os.path.exists(os.path.join(media_dir, configured_cover)):
+        cover_image = configured_cover
     else:
         if configured_cover:
             print(f"[{slug}] Note: Configured cover_image '{configured_cover}' not found, defaulting.")
-        cover_img = photos[-1]['filename'] if photos else ''
+        cover_image = photos[-1]['filename'] if photos else ''
 
     # Determine hero video: check build.json config first
     configured_video = config.get('hero_video') or ''
-    if configured_video and os.path.exists(os.path.join(folder_path, configured_video)):
+    if configured_video and os.path.exists(os.path.join(media_dir, configured_video)):
         hero_video = configured_video
     elif configured_video:
         print(f"[{slug}] Note: Configured hero_video '{configured_video}' not found.")
@@ -685,13 +686,13 @@ def process_build_dir(base_dir, slug, url_prefix):
     # Extract first frame as hero video poster thumbnail.
     hero_video_poster = ''
     if hero_video:
-        vid_src = os.path.join(folder_path, hero_video)
+        vid_src = os.path.join(media_dir, hero_video)
         hero_video_poster = ensure_video_poster(vid_src, thumbs_dir)
 
     # Add all videos (including hero video) to the chronological gallery.
     gallery_videos = []
     for video_fn in videos:
-        video_path = os.path.join(folder_path, video_fn)
+        video_path = os.path.join(media_dir, video_fn)
         poster_fn = ensure_video_poster(video_path, thumbs_dir)
         if not poster_fn:
             print(f"[{slug}] Warning: No poster generated for gallery video {video_fn}; skipping it.")
@@ -702,7 +703,7 @@ def process_build_dir(base_dir, slug, url_prefix):
         gallery_videos.append({
             'type': 'video',
             'filename': video_fn,
-            'full': f"{url_prefix}/{slug}/{video_fn}",
+            'full': f"{url_prefix}/{slug}/media/{video_fn}",
             'thumb': f"{url_prefix}/{slug}/thumbs/{poster_fn}",
             'thumb_webp': f"{url_prefix}/{slug}/thumbs/{poster_stem}.webp",
             'date': date_str,
@@ -726,8 +727,7 @@ def process_build_dir(base_dir, slug, url_prefix):
         'order': config.get('order', 99),
         'story': config.get('story', ''),
         'status': config.get('status', ''),
-        'engineering_highlights': config.get('engineering_highlights', []),
-        'cover_img': cover_img,
+        'cover_image': cover_image,
         'hero_video': hero_video,
         'hero_video_poster': hero_video_poster,
         'next_steps': config.get('next_steps', []),
@@ -848,8 +848,8 @@ def sync_builds():
     major_cards_html = []
     for b in major_builds:
         b_title = escape(b['title'])
-        cover_base = os.path.splitext(b['cover_img'])[0] if b.get('cover_img') else ''
-        thumb_src = f"/major-builds/{b['slug']}/thumbs/{b['cover_img']}" if b.get('cover_img') else ''
+        cover_base = os.path.splitext(b['cover_image'])[0] if b.get('cover_image') else ''
+        thumb_src = f"/major-builds/{b['slug']}/thumbs/{b['cover_image']}" if b.get('cover_image') else ''
         thumb_webp_src = f"/major-builds/{b['slug']}/thumbs/{cover_base}.webp" if cover_base else ''
         tags_html = ''.join(f'<span class="tech-tag">{escape(tag)}</span>' for tag in b['tags'])
         if thumb_webp_src:
@@ -887,8 +887,8 @@ def sync_builds():
     for qb in quick_builds:
         qb_title = escape(qb['title'])
         tags_html = ''.join(f'<span class="tech-tag">{escape(tag)}</span>' for tag in qb['tags'])
-        cover_base = os.path.splitext(qb['cover_img'])[0] if qb.get('cover_img') else ''
-        thumb_src = f"/quick-builds/{qb['slug']}/thumbs/{qb['cover_img']}" if qb.get('cover_img') else ''
+        cover_base = os.path.splitext(qb['cover_image'])[0] if qb.get('cover_image') else ''
+        thumb_src = f"/quick-builds/{qb['slug']}/thumbs/{qb['cover_image']}" if qb.get('cover_image') else ''
         thumb_webp_src = f"/quick-builds/{qb['slug']}/thumbs/{cover_base}.webp" if cover_base else ''
         if thumb_src:
             if thumb_webp_src:
@@ -951,10 +951,7 @@ def sync_builds():
         tags_html = '\n        '.join(f'<span class="tech-tag">{escape(tag)}</span>' for tag in b['tags'])
         
         story_box_html = render_story_box(b['story'])
-        engineering_section_html = render_engineering_section(
-            b.get('engineering_highlights', []),
-            b.get('status', '')
-        )
+        engineering_section_html = ''
         next_steps_html = render_next_steps(b.get('next_steps', []))
 
         # Hero Video Section: Adaptive Portrait vs Landscape
@@ -964,8 +961,8 @@ def sync_builds():
             meta = get_video_metadata(video_path)
             if b.get('hero_video_poster'):
                 poster_attr = f' poster="/major-builds/{b["slug"]}/thumbs/{b["hero_video_poster"]}"'
-            elif b["cover_img"]:
-                poster_attr = f' poster="/major-builds/{b["slug"]}/thumbs/{b["cover_img"]}"'
+            elif b["cover_image"]:
+                poster_attr = f' poster="/major-builds/{b["slug"]}/thumbs/{b["cover_image"]}"'
             else:
                 poster_attr = ''
 
@@ -983,7 +980,7 @@ def sync_builds():
           </div>
           <div class="hero-portrait-player-wrap">
             <video class="hero-portrait-player" controls preload="metadata" playsinline{poster_attr}>
-              <source src="/major-builds/{b['slug']}/{video_fn}" type="video/mp4">
+              <source src="/major-builds/{b['slug']}/media/{video_fn}" type="video/mp4">
               Your browser does not support HTML5 video.
             </video>
           </div>
@@ -1002,7 +999,7 @@ def sync_builds():
     <div class="hero-video-wrapper landscape-hero" style="max-width: 960px; margin: 1.5rem auto 2.25rem auto;">
       <div class="landscape-video-box" style="aspect-ratio: {ar}; width: 100%;">
         <video class="video-actual-player" controls preload="metadata" playsinline{poster_attr} style="width: 100%; height: 100%; object-fit: contain;">
-          <source src="/major-builds/{b['slug']}/{video_fn}" type="video/mp4">
+          <source src="/major-builds/{b['slug']}/media/{video_fn}" type="video/mp4">
           Your browser does not support HTML5 video.
         </video>
       </div>
@@ -1029,7 +1026,7 @@ def sync_builds():
                       for idx, item in enumerate(b['gallery'])]
         gallery_json = json_for_script(b['gallery'])
 
-        og_image = f"{SITE_URL}/major-builds/{b['slug']}/thumbs/{b['cover_img']}" if b.get('cover_img') else f"{SITE_URL}/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
+        og_image = f"{SITE_URL}/major-builds/{b['slug']}/thumbs/{b['cover_image']}" if b.get('cover_image') else f"{SITE_URL}/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
 
         rendered_build = apply_site_config(major_build_tmpl
             .replace('{{ TITLE }}', escape(b['title'], quote=True))
@@ -1074,7 +1071,7 @@ def sync_builds():
 
         gallery_json = json_for_script(qb['gallery'])
         desc_html = f'<div class="build-description"><p>{escape(qb["description"])}</p></div>' if qb.get('description') else ''
-        og_image = f"{SITE_URL}/quick-builds/{qb['slug']}/thumbs/{qb['cover_img']}" if qb.get('cover_img') else f"{SITE_URL}/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
+        og_image = f"{SITE_URL}/quick-builds/{qb['slug']}/thumbs/{qb['cover_image']}" if qb.get('cover_image') else f"{SITE_URL}/major-builds/claw-machine/thumbs/PXL_20260906_064952583.jpg"
 
         rendered_qb = apply_site_config(quick_build_tmpl
             .replace('{{ TITLE }}', escape(qb['title'], quote=True))
