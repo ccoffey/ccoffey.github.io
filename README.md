@@ -220,3 +220,6 @@ npm run lint:html
 - **Pre-commit Hook:** Optimizes only newly staged source images and videos.
 - **Generated:** `_site/` — temporary local or CI output, safely excluded from version control by `.gitignore`.
 - **GitHub Actions:** Generates thumbnails/posters, extracts robots.txt/sitemap, runs tests, and deploys the complete static site to GitHub Pages.
+
+See [repository maintenance](docs/repository-maintenance.md) for the media,
+repository-weight, and published-history policy.

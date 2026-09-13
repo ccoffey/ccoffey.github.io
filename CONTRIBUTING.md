@@ -25,6 +25,9 @@ and serves the result at `http://127.0.0.1:8000/`.
 - Do not commit generated `_site/` output or thumbnail directories.
 - The tracked pre-commit hook optimizes newly staged media and removes EXIF
   metadata. Let it finish and review the resulting staged files.
+- Keep source media that is needed to reproduce the site, but never commit raw
+  footage, generated derivatives, or duplicate exports. The full policy is in
+  [repository maintenance](docs/repository-maintenance.md).
 - Do not add credentials, private keys, personal addresses, or location data.
 
 ## Verification
