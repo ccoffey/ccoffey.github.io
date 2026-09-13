@@ -450,6 +450,18 @@ class BrowserRegressionTests(unittest.TestCase):
         page.locator(".hero").wait_for()
         self.assert_visual_snapshot(page, "home-mobile")
 
+    def test_visual_major_build_desktop(self):
+        page = self.new_page(block_media=False)
+        page.goto(self.base_url + PROJECT_PATH, wait_until="commit")
+        page.locator(".build-header-full").wait_for()
+        self.assert_visual_snapshot(page, "major-build-desktop")
+
+    def test_visual_quick_build_desktop(self):
+        page = self.new_page(block_media=False)
+        page.goto(self.base_url + QUICK_PROJECT_PATH, wait_until="commit")
+        page.locator(".build-header-full").wait_for()
+        self.assert_visual_snapshot(page, "quick-build-desktop")
+
     def test_visual_gallery_desktop(self):
         page = self.new_page(block_media=False)
         page.goto(self.base_url + PROJECT_PATH, wait_until="commit")
