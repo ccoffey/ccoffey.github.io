@@ -196,8 +196,9 @@ class BrowserRegressionTests(unittest.TestCase):
             baseline_name = name
         baseline = VISUAL_BASELINE_DIR / f"{baseline_name}.png"
         VISUAL_ARTIFACT_DIR.mkdir(parents=True, exist_ok=True)
-        page.evaluate("() => new Promise(requestAnimationFrame)")
-        page.evaluate("() => new Promise(requestAnimationFrame)")
+        if target:
+            # Force Playwright to wait for the element to be fully painted and stable
+            _ = target.screenshot(type="jpeg", quality=1, animations="disabled")
         actual = VISUAL_ARTIFACT_DIR / f"{baseline_name}-actual.png"
         page.screenshot(path=str(actual), animations="disabled")
         if target:
