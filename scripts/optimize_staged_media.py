@@ -41,8 +41,10 @@ def staged_paths() -> list[Path]:
 def is_project_media(path: Path) -> bool:
     parts = path.parts
     return (
-        len(parts) == 3
-        and parts[0] in {"major-builds", "quick-builds"}
+        len(parts) == 5
+        and parts[0] == "src"
+        and parts[1] in {"major-builds", "quick-builds"}
+        and parts[3] == "media"
         and path.suffix.lower() in MEDIA_EXTENSIONS
     )
 

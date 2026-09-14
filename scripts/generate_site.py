@@ -719,8 +719,6 @@ def process_build_dir(base_dir, slug, url_prefix):
         'url_prefix': url_prefix
     }
 
-process_project_dir = process_build_dir
-
 def sync_builds():
     if not os.path.exists(MAJOR_BUILDS_DIR):
         print(f"Major builds directory not found: {MAJOR_BUILDS_DIR}")
@@ -1121,8 +1119,6 @@ Sitemap: {SITE_URL}/sitemap.xml
     with open(robots_path, 'w', encoding='utf-8') as f:
         f.write(content)
     print("Generated robots.txt")
-
-sync_projects = sync_builds
 
 if __name__ == '__main__':
     sync_builds()

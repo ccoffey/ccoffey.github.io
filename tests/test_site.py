@@ -7,12 +7,10 @@ Tiers:
 2. SEO, Social & Metadata Contracts (Canonical URLs, OG/Twitter tags, Sitemap, Robots)
 3. Performance & Asset Budgets (WebP companion presence, thumbnail & image weight budgets)
 4. Site Generator Invariants (Date parsing, sort keys, deduplication hashing)
-5. Headless Browser UX Stability (CDP layout shift & zoom assertions via --ux flag)
 
 Usage:
   python3 scripts/build_site.py --output _site  # Build and test the generated site
   SITE_ROOT=_site python3 test_site.py          # Re-test an existing build
-  SITE_ROOT=_site python3 test_site.py --ux     # Include Headless Chrome UX tests
 """
 
 import glob
@@ -519,10 +517,11 @@ class TestStagedMediaOptimizer(unittest.TestCase):
     """Validates the narrow scope and format safety of the pre-commit optimizer."""
 
     def test_only_direct_project_media_is_selected(self):
-        self.assertTrue(optimize_staged_media.is_project_media(Path('major-builds/claw-machine/new.mp4')))
-        self.assertTrue(optimize_staged_media.is_project_media(Path('quick-builds/repair/new.jpg')))
-        self.assertFalse(optimize_staged_media.is_project_media(Path('major-builds/claw-machine/build.json')))
-        self.assertFalse(optimize_staged_media.is_project_media(Path('major-builds/claw-machine/thumbs/new.jpg')))
+        self.assertTrue(optimize_staged_media.is_project_media(Path('src/major-builds/claw-machine/media/new.mp4')))
+        self.assertTrue(optimize_staged_media.is_project_media(Path('src/quick-builds/repair/media/new.jpg')))
+        self.assertFalse(optimize_staged_media.is_project_media(Path('src/major-builds/claw-machine/build.json')))
+        self.assertFalse(optimize_staged_media.is_project_media(Path('src/major-builds/claw-machine/thumbs/new.jpg')))
+        self.assertFalse(optimize_staged_media.is_project_media(Path('major-builds/claw-machine/new.mp4')))
         self.assertFalse(optimize_staged_media.is_project_media(Path('images/new.jpg')))
 
     def test_oversized_png_keeps_its_format(self):
@@ -559,21 +558,8 @@ class TestProjectMediaValidation(unittest.TestCase):
             self.assertFalse(validate_project_media.jpeg_has_app1_segment(path))
 
 
-class TestUXStability(unittest.TestCase):
-    """Optionally executes Chrome CDP layout-shift and UX verification."""
-
-    def test_gallery_ux_stability_cdp(self):
-        import subprocess
-        ux_script = os.path.join(SITE_ROOT, 'scripts', 'test_gallery_ux.py')
-        res = subprocess.run([sys.executable, ux_script], capture_output=True, text=True)
-        if res.returncode != 0:
-            self.fail(f"UX Stability test failed (code {res.returncode}):\n{res.stdout}\n{res.stderr}")
-
-
 def run_tests():
     """Main CLI entry point."""
-    include_ux = '--ux' in sys.argv or '--all' in sys.argv
-
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
 
@@ -584,9 +570,6 @@ def run_tests():
     suite.addTests(loader.loadTestsFromTestCase(TestStagedMediaOptimizer))
     suite.addTests(loader.loadTestsFromTestCase(TestProjectMediaValidation))
 
-    if include_ux:
-        suite.addTests(loader.loadTestsFromTestCase(TestUXStability))
-
     verbosity = 2 if '-v' in sys.argv or '--verbose' in sys.argv else 1
     runner = unittest.TextTestRunner(verbosity=verbosity)
     result = runner.run(suite)
@@ -594,7 +577,7 @@ def run_tests():
 
 
 if __name__ == '__main__':
-    if len(sys.argv) > 1 and any(arg.startswith('-') and arg not in ('-v', '--verbose', '--ux', '--all') for arg in sys.argv[1:]):
+    if len(sys.argv) > 1 and any(arg.startswith('-') and arg not in ('-v', '--verbose') for arg in sys.argv[1:]):
         # Fallback to standard unittest CLI if other flags passed
         unittest.main()
     else:

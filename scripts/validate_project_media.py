@@ -68,8 +68,8 @@ def changed_project_media(base_ref: str) -> list[Path]:
 def all_project_media() -> list[Path]:
     return [
         path.relative_to(REPO_ROOT)
-        for directory in (REPO_ROOT / "major-builds", REPO_ROOT / "quick-builds")
-        for path in directory.glob("*/*")
+        for directory in (REPO_ROOT / "src" / "major-builds", REPO_ROOT / "src" / "quick-builds")
+        for path in directory.glob("*/media/*")
         if path.is_file() and not path.is_symlink() and is_project_media(path.relative_to(REPO_ROOT))
     ]
 
