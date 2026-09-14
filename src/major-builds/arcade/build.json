@@ -9,7 +9,7 @@
   ],
   "dates": "June 2026 \u2013 September 2026",
   "order": 2,
-  "story": "<p>My twin brother and I built an arcade machine together years ago. As far as I know, it still sits proudly in the lobby of the engineering department of NUI Maynooth, where it entertains visitors and collects money (20c a game) for the engineering club we used to belong to.</p>\n\n  <p>I wanted to build another one, but a much smaller, sleeker one this time. The unit in the engineering department was a massive, full-size and very rectangular cabinet housing a desktop PC that had to be weighed down with sandbags so it wouldn't get knocked over by over-eager students. This time, I just wanted to build from the control deck up and either wall-mount it in my kids' playroom or sit it on top of an existing table.</p>\n\n  <p>I framed the internal skeleton from 2×2 planed white deal timber and skinned it with MDF. To create the exterior contours, I skinned the cabinet again with 3D-printed PLA panels—piecing them together like a giant jigsaw puzzle because my Prusa MK3S+ build plate is approximately 200×200 mm. The joysticks and buttons were actually a leftover set from that first college build; like so many other things, they had been patiently waiting in my attic for a new purpose.</p>\n\n  <p>To eliminate the seams, I filled the joints with Isopon P38 body filler (typically used in car repair, a first for me), followed by endless rounds of sanding, spraying high-build primer (another first for me), and finishing with leftover paint from my attic that we used on the doors under our stairs last year.</p>\n\n  <p>The electronics were intentionally kept straightforward: a Raspberry Pi 5 running RetroPie with an external hard drive and a cheap set of speakers. To make the cabinet truly special, I bought and disassembled USB adapters for original Nintendo 64 and GameCube controllers, integrating the ports directly into the cabinet so I could play the games I loved growing up together with my own children, using my original childhood controllers.</p>\n\n  <p>One of the hardest parts of the project was getting the joystick positions and button ergonomics correct, requiring multiple drilling templates and extensive trial and error. The control panel will eventually be wrapped in a custom vinyl graphic printed by Gorilla Graphics (<a href=\"https://gorillagraphics.ie\" target=\"_blank\" rel=\"noopener\" style=\"color: var(--accent);\">gorillagraphics.ie</a>). I am still tweaking the final design.</p>",
+  "story": "<p>My twin brother and I built an arcade machine together years ago. As far as I know, it still sits proudly in the lobby of the engineering department of NUI Maynooth, where it entertains visitors and collects money (20c a game) for the engineering club we used to belong to.</p>\n\n  <p>I wanted to build another one, but a much smaller, sleeker one this time. The unit in the engineering department was a massive, full-size and very rectangular cabinet housing a desktop PC that had to be weighed down with sandbags so it wouldn't get knocked over by over-eager students. This time, I just wanted to build from the control deck up and either wall-mount it in my kids' playroom or sit it on top of an existing table.</p>\n\n  <p>I framed the internal skeleton from 2\u00d72 planed white deal timber and skinned it with MDF. To create the exterior contours, I skinned the cabinet again with 3D-printed PLA panels\u2014piecing them together like a giant jigsaw puzzle because my Prusa MK3S+ build plate is approximately 200\u00d7200 mm. The joysticks and buttons were actually a leftover set from that first college build; like so many other things, they had been patiently waiting in my attic for a new purpose.</p>\n\n  <p>To eliminate the seams, I filled the joints with Isopon P38 body filler (typically used in car repair, a first for me), followed by endless rounds of sanding, spraying high-build primer (another first for me), and finishing with leftover paint from my attic that we used on the doors under our stairs last year.</p>\n\n  <p>The electronics were intentionally kept straightforward: a Raspberry Pi 5 running RetroPie with an external hard drive and a cheap set of speakers. To make the cabinet truly special, I bought and disassembled USB adapters for original Nintendo 64 and GameCube controllers, integrating the ports directly into the cabinet so I could play the games I loved growing up together with my own children, using my original childhood controllers.</p>\n\n  <p>One of the hardest parts of the project was getting the joystick positions and button ergonomics correct, requiring multiple drilling templates and extensive trial and error. The control panel will eventually be wrapped in a custom vinyl graphic printed by Gorilla Graphics (<a href=\"https://gorillagraphics.ie\" target=\"_blank\" rel=\"noopener\" style=\"color: var(--accent);\">gorillagraphics.ie</a>). I am still tweaking the final design.</p>",
   "cover_image": "PXL_20260906_115406018.jpg",
   "hero_video": "PXL_20260906_115858017.mp4",
   "next_steps": [
@@ -17,5 +17,55 @@
     "Install GameCube controller ports and holders",
     "Finish fine detailing around the monitor cutout",
     "Still a few visible seams that I am not happy about"
-  ]
+  ],
+  "media_descriptions": {
+    "IMG-20260610-WA0011.jpg": [
+      "This was my original design. I planned to wall mount it onto two studs behind the drywall in my kids' playroom."
+    ],
+    "IMG-20260610-WA0013.jpg": [
+      "I didn't like how boxy my original design was, so I used Nano Banana via Gemini to imagine a curvier finish.",
+      "This ended up inspiring me to 3D print a shell that added curves to my original design. The final build ended up looking a bit like this, but without the slanted keyboard and odd protruding bottom."
+    ],
+    "PXL_20260614_191114359.MP.jpg": [
+      "I wish I had a drill press, as it would have made the job much more accurate and significantly less difficult."
+    ],
+    "PXL_20260622_104305404.jpg": [
+      "I started to 3D print and glue on the curves.",
+      "My Prusa mk3 has a built plate that is only 250mm x 210mm x 210mm so the shell was a huge PLA jigsaw."
+    ],
+    "PXL_20260622_200320372.jpg": [
+      "I initially used wood filler to fill the gaps between the PLA jigsaw pieces but later ended up using Isopon p38 body filler."
+    ],
+    "PXL_20260623_063527281.jpg": [
+      "I printed the first version of this keyboard artwork on my home printer across four A4 sheets placed side by side. It wasn't great, but it proved the concept."
+    ],
+    "PXL_20260624_140130605.jpg": [
+      "These are N64 controller ports sourced from a cheap controller-to-USB module. I desoldered them from the original PCB and attached extension cables so they could be embedded into either side of the arcade frame."
+    ],
+    "PXL_20260826_075001152.jpg": [
+      "I got this because I read online that Isopon P38 body filler is toxic and hazardous during curing and application. I also planned to do plenty of sanding and spray painting during this project, so it was a good investment either way."
+    ],
+    "PXL_20260829_115733622.jpg": [
+      "The PLA jigsaw is finally complete and ready for primer."
+    ],
+    "PXL_20260831_094322392.jpg": [
+      "Hiding the jigsaw seams was difficult, especially because Isopon P38 body filler dries so quickly and there were so many seams to fill."
+    ],
+    "PXL_20260831_193202774.jpg": [
+      "I wasn't happy with my first attempt so I sanded again."
+    ],
+    "PXL_20260902_093252061.jpg": [
+      "I did a much better job with the high build primer spray the second time around."
+    ],
+    "PXL_20260904_175325421.MP.jpg": [
+      "I am starting to be happy with the finish... but still not perfect."
+    ],
+    "PXL_20260905_180900000_control_panel_graphic.png": [
+      "AI generated artwork for the keyboard. This was so large I had to have Nano Banana to generate it in sections, then stitch them together again. It was a pain to get right.",
+      "Positing the joystick and button holes was its own epic saga."
+    ],
+    "PXL_20260906_114753701.jpg": [
+      "Still a very visible seam line above the screen that I was unhappy about."
+    ]
+  }
 }
