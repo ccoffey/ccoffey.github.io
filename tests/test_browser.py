@@ -316,6 +316,28 @@ class BrowserRegressionTests(unittest.TestCase):
         self.assertEqual(lightbox.get_attribute("aria-hidden"), "true")
         self.assertEqual(page.evaluate("window.location.hash"), "")
 
+    def test_lightbox_traps_focus_and_restores_the_gallery_trigger(self):
+        page = self.new_page()
+        page.goto(self.base_url + PROJECT_PATH, wait_until="commit")
+        trigger = page.locator(".photo-card").first
+        trigger.wait_for()
+        trigger.focus()
+        trigger.click()
+
+        lightbox = page.locator("#lightbox")
+        self.assertEqual(lightbox.get_attribute("role"), "dialog")
+        self.assertEqual(lightbox.get_attribute("aria-modal"), "true")
+        self.assertTrue(page.get_by_role("button", name="Close").evaluate("node => document.activeElement === node"))
+
+        page.keyboard.press("Shift+Tab")
+        self.assertTrue(page.get_by_role("button", name="Next").evaluate("node => document.activeElement === node"))
+        page.keyboard.press("Tab")
+        self.assertTrue(page.get_by_role("button", name="Close").evaluate("node => document.activeElement === node"))
+
+        page.keyboard.press("Escape")
+        self.assertEqual(lightbox.get_attribute("aria-hidden"), "true")
+        self.assertTrue(trigger.evaluate("node => document.activeElement === node"))
+
     def test_comment_deep_link_groups_messages_and_can_be_hidden(self):
         page = self.open_commented_lightbox()
         self.assertEqual(page.locator("#lightbox").get_attribute("aria-hidden"), "false")

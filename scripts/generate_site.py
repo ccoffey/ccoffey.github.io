@@ -842,7 +842,6 @@ def sync_builds():
         major_trigger_cls = 'nav-item-link nav-dropdown-trigger active-nav' if active_type == 'major' else 'nav-item-link nav-dropdown-trigger'
         quick_trigger_cls = 'nav-item-link nav-dropdown-trigger active-nav' if active_type == 'quick' else 'nav-item-link nav-dropdown-trigger'
 
-        # Major builds items
         major_items = []
         for b in major_builds:
             item_act = ' is-active' if (active_type == 'major' and b['slug'] == active_slug) else ''
@@ -856,7 +855,6 @@ def sync_builds():
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>''')
 
-        # Quick builds items
         quick_items = []
         for qb in quick_builds:
             item_act = ' is-active' if (active_type == 'quick' and qb['slug'] == active_slug) else ''
@@ -1106,6 +1104,7 @@ def sync_builds():
             .replace('{{ SUBTITLE }}', escape(b['subtitle'], quote=True))
             .replace('{{ SLUG }}', b['slug'])
             .replace('{{ BUILD_TYPE }}', 'major')
+            .replace('{{ BUILD_TYPE_LABEL }}', 'Major build')
             .replace('{{ BUILD_PATH }}', f"/major-builds/{b['slug']}/")
             .replace('{{ OG_IMAGE_URL }}', og_image)
             .replace('{{ DATES }}', b['dates'])
@@ -1118,6 +1117,8 @@ def sync_builds():
             .replace('{{ BODY_CONTENT }}', '\n'.join((hero_section_html, story_section_html, next_steps_section_html)))
             .replace('{{ GALLERY_SUMMARY }}', gallery_summary(b['gallery']))
             .replace('{{ PHOTO_GRID }}', '\n'.join(media_html))
+            .replace('{{ COLLECTION_URL }}', '/#major-builds')
+            .replace('{{ COLLECTION_LABEL }}', 'More major builds')
             .replace('{{ GALLERY_JSON }}', gallery_json))
 
         build_out = os.path.join(MAJOR_BUILDS_DIR, b['slug'], 'index.html')
@@ -1151,6 +1152,7 @@ def sync_builds():
             .replace('{{ SUBTITLE }}', escape(qb['subtitle'], quote=True))
             .replace('{{ SLUG }}', qb['slug'])
             .replace('{{ BUILD_TYPE }}', 'quick')
+            .replace('{{ BUILD_TYPE_LABEL }}', 'Quick build')
             .replace('{{ BUILD_PATH }}', f"/quick-builds/{qb['slug']}/")
             .replace('{{ OG_IMAGE_URL }}', og_image)
             .replace('{{ DATES }}', qb['dates'])
@@ -1163,6 +1165,8 @@ def sync_builds():
             .replace('{{ NAV_LINKS }}', render_nav('quick', qb['slug']))
             .replace('{{ GALLERY_SUMMARY }}', gallery_summary(qb['gallery']))
             .replace('{{ PHOTO_GRID }}', gallery_markup)
+            .replace('{{ COLLECTION_URL }}', '/#quick-builds')
+            .replace('{{ COLLECTION_LABEL }}', 'More quick builds')
             .replace('{{ GALLERY_JSON }}', gallery_json))
 
         qb_out = os.path.join(QUICK_BUILDS_DIR, qb['slug'], 'index.html')

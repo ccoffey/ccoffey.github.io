@@ -31,7 +31,7 @@
   {{ ANALYTICS_SNIPPET }}
 </head>
 <body>
-  <nav class="top-nav">
+  <nav class="top-nav" aria-label="Primary">
     <div class="container nav-inner">
       <button class="nav-menu-toggle" type="button" aria-expanded="false" aria-controls="site-navigation">
         <span>Menu</span>
@@ -49,6 +49,7 @@
 
   <div class="container">
     <header class="build-header-full">
+      <p class="build-eyebrow">{{ BUILD_TYPE_LABEL }}</p>
       <h1 class="build-heading">{{ TITLE }}</h1>
       <p class="build-sub">{{ SUBTITLE }}</p>
       <div class="tag-row">
@@ -70,11 +71,16 @@
     <div class="photo-grid">
       {{ PHOTO_GRID }}
     </div>
+
+    <nav class="build-explore" aria-label="Explore more projects">
+      <a href="{{ COLLECTION_URL }}">{{ COLLECTION_LABEL }}</a>
+      <a href="/">All projects</a>
+    </nav>
   </div>
 
-  <div id="lightbox" class="lightbox" aria-hidden="true" onclick="handleBackdropClick(event)">
+  <div id="lightbox" class="lightbox" role="dialog" aria-modal="true" aria-labelledby="lightbox-title" aria-hidden="true" tabindex="-1" onclick="handleBackdropClick(event)">
     <div class="lightbox-backdrop"></div>
-    <button class="lightbox-btn lightbox-close" onclick="closeLightbox()" aria-label="Close" data-tooltip="Close">&times;</button>
+    <button class="lightbox-btn lightbox-close" id="lightboxCloseBtn" onclick="closeLightbox()" aria-label="Close" data-tooltip="Close">&times;</button>
     <button class="lightbox-btn lightbox-fullscreen" id="lightboxFullscreenBtn" onclick="toggleLightboxFullscreen()" aria-label="Toggle Fullscreen" data-tooltip="Toggle fullscreen">
       <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M8 3H5a2 2 0 0 0-2 2v3m18 0V5a2 2 0 0 0-2-2h-3m0 18h3a2 2 0 0 0 2-2v-3M3 16v3a2 2 0 0 0 2 2h3"/></svg>
     </button>
@@ -130,6 +136,8 @@
     const lightboxZoomBtn = document.getElementById("lightboxZoomBtn");
     const lightboxCommentsBtn = document.getElementById("lightboxCommentsBtn");
     const lightboxFullscreenBtn = document.getElementById("lightboxFullscreenBtn");
+    const lightboxCloseBtn = document.getElementById("lightboxCloseBtn");
+    let lightboxReturnFocus = null;
 
     let isZoomed = false;
     let isPanning = false;
@@ -379,11 +387,15 @@
 
     function openLightbox(index, updateHistory = true) {
       if (index < 0 || index >= gallery.length) return;
+      if (!lightbox.classList.contains("active") && document.activeElement instanceof HTMLElement) {
+        lightboxReturnFocus = document.activeElement;
+      }
       currentIndex = index;
       updateLightboxContent();
       lightbox.classList.add("active");
       lightbox.setAttribute("aria-hidden", "false");
       document.body.style.overflow = "hidden";
+      window.requestAnimationFrame(() => lightboxCloseBtn?.focus());
 
       if (updateHistory) {
         syncHashToItem(gallery[index], true);
@@ -419,6 +431,12 @@
 
       if (updateHistory && window.location.hash) {
         history.replaceState(null, "", window.location.pathname + window.location.search);
+      }
+
+      const returnFocus = lightboxReturnFocus;
+      lightboxReturnFocus = null;
+      if (returnFocus?.isConnected) {
+        returnFocus.focus({preventScroll: true});
       }
     }
 
@@ -595,6 +613,21 @@
     document.addEventListener("keydown", (e) => {
       if (!lightbox.classList.contains("active")) return;
       if (e.target.isContentEditable || e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if (e.key === "Tab") {
+        const focusable = [...lightbox.querySelectorAll('button:not([hidden]):not([disabled]), [href], video[controls]')]
+          .filter(element => element.getClientRects().length > 0);
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (!first || !last) return;
+        if (e.shiftKey && document.activeElement === first) {
+          e.preventDefault();
+          last.focus();
+        } else if (!e.shiftKey && document.activeElement === last) {
+          e.preventDefault();
+          first.focus();
+        }
+        return;
+      }
       if (e.key === "Escape") closeLightbox();
       if (e.key === "ArrowRight") nextLightbox();
       if (e.key === "ArrowLeft") prevLightbox();

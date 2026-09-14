@@ -47,7 +47,7 @@
   });
 
   document.addEventListener('keydown', (event) => {
-    if (event.key !== 'Escape') return;
+    if (event.key !== 'Escape' || menuToggle.getAttribute('aria-expanded') !== 'true') return;
     setMenuOpen(false);
     menuToggle.focus();
   });
