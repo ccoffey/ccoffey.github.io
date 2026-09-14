@@ -330,7 +330,12 @@ class BrowserRegressionTests(unittest.TestCase):
         self.assertTrue(page.get_by_role("button", name="Close").evaluate("node => document.activeElement === node"))
 
         page.keyboard.press("Shift+Tab")
-        self.assertTrue(page.get_by_role("button", name="Next").evaluate("node => document.activeElement === node"))
+        self.assertTrue(page.evaluate("""() => {
+            const focusable = [...document.querySelectorAll(
+                '#lightbox button:not([hidden]):not([disabled]), #lightbox [href], #lightbox video[controls]'
+            )].filter(element => element.getClientRects().length > 0);
+            return document.activeElement === focusable.at(-1);
+        }"""))
         page.keyboard.press("Tab")
         self.assertTrue(page.get_by_role("button", name="Close").evaluate("node => document.activeElement === node"))
 
