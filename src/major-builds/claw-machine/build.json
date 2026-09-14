@@ -20,7 +20,7 @@
       "This is GiGO Akihabara Building 1, the place that inspired me to build my own claw machine during a family holiday."
     ],
     "PXL_20250701_073947235.jpg": [
-      "The building's first four floors are packed with hundreds of arcade machines. My kids loved this place a little too much."
+      "The building's first four floors are packed with hundreds of claw machines. My kids loved this place a little too much."
     ],
     "PXL_20251126_201639320.jpg": [
       "This was my first attempt at a linear rail"
@@ -35,7 +35,8 @@
       "Modeling the entire system in Tinkercad proved to be a brilliant decision that kept paying dividends, as 3D printing everything allowed me to eliminate the minor misalignments that were causing wobbling and jittering."
     ],
     "PXL_20260113_102250615.jpg": [
-      "This was the first PCB I ever designed. After teaching myself KiCad by watching countless YouTube videos, I had the board manufactured by PCBWay. Since it was my first attempt, I made a hilarious mistake: I completely forgot to add ports to plug in the Nema17 motors, making the board almost entirely useless!"
+      "This was the first PCB I ever designed. After teaching myself KiCad by watching countless YouTube videos, I had the board manufactured by PCBWay. Since it was my first attempt, I made a hilarious mistake: I completely forgot to add ports to plug in the Nema17 motors, making the board almost entirely useless!",
+      "This PCB only had two power rails (24V and 5V). I later added an audio module and a break-beam sensor both running on 5V, as well as a coin collector running on 12V. I also decided to add a dedicated 3.3V rail instead of using the ESP32's 3V3."
     ],
     "PXL_20260202_152216406.jpg": [
       "At this point in the project, I had four power rails (3.3V, 5V, 12V, and 24V) across a maze of interconnected breadboards. Simple mistakes kept frying chips, turning my home office radiator into a graveyard for ESP32s and TMC2209s."
