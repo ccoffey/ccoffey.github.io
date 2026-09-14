@@ -3,6 +3,7 @@
   const saveEndpoint = "/__admin/comments";
   let enabled = false;
   let saveTimer;
+  const savedCommentsByMedia = new Map();
 
   const hooks = () => window.galleryCommentAdmin;
 
@@ -12,12 +13,32 @@
       .filter(Boolean);
   }
 
+  function mediaKey(item) {
+    return `${hooks()?.slug || ""}/${item.filename}`;
+  }
+
+  function rememberSavedComments(item) {
+    const key = mediaKey(item);
+    if (!savedCommentsByMedia.has(key)) savedCommentsByMedia.set(key, [...item.comments]);
+    return key;
+  }
+
+  function setSaveStatus(container, message = "", isError = false) {
+    const status = container?.querySelector(".lightbox-comment-save-status");
+    if (!status) return;
+    status.hidden = !message;
+    status.textContent = message;
+    status.classList.toggle("is-error", isError);
+  }
+
   async function save(container, comments = commentsFrom(container)) {
     const galleryHooks = hooks();
     const item = galleryHooks?.currentItem();
     if (!item) return;
 
+    const key = rememberSavedComments(item);
     item.comments = comments;
+    setSaveStatus(container, "Saving comment…");
     try {
       const response = await fetch(saveEndpoint, {
         method: "POST",
@@ -27,7 +48,12 @@
       const result = await response.json();
       if (!response.ok) throw new Error(result.error || "Could not save comment.");
       item.comments = result.comments;
+      savedCommentsByMedia.set(key, [...result.comments]);
+      setSaveStatus(container, "Saved locally");
     } catch (error) {
+      item.comments = [...(savedCommentsByMedia.get(key) || [])];
+      galleryHooks.rerender();
+      setSaveStatus(document.getElementById("lightbox-description"), error.message || "Could not save comment.", true);
       console.error(error.message || "Could not save comment.");
     }
   }
@@ -70,6 +96,8 @@
     if (!enabled) return;
     const stack = container.querySelector(".lightbox-comment-stack");
     if (!stack) return;
+    const item = hooks()?.currentItem();
+    if (item) rememberSavedComments(item);
 
     for (const text of [...stack.querySelectorAll(".lightbox-comment-text")]) {
       const index = [...stack.querySelectorAll(".lightbox-comment-text")].indexOf(text);
@@ -107,6 +135,12 @@
     }
 
     addComposer(stack);
+
+    const status = document.createElement("p");
+    status.className = "lightbox-comment-save-status";
+    status.setAttribute("role", "status");
+    status.hidden = true;
+    container.append(status);
   }
 
   window.localCommentAdmin = {

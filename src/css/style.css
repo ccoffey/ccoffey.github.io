@@ -1351,6 +1351,13 @@ header.hero {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   white-space: pre-wrap;
 }
+.lightbox-comment-save-status {
+  margin: 0;
+  color: rgba(230, 237, 243, 0.8);
+  font-size: 0.75rem;
+  text-align: center;
+}
+.lightbox-comment-save-status.is-error { color: #ffaba8; }
 .lightbox-comment-editor-row {
   display: flex;
   align-items: center;

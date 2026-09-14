@@ -135,6 +135,15 @@ class CustomHandler(SimpleHTTPRequestHandler):
         self.send_header('Expires', '0')
         super().end_headers()
 
+    def copyfile(self, source, outputfile):
+        try:
+            super().copyfile(source, outputfile)
+        except (BrokenPipeError, ConnectionResetError):
+            # Reloading after a local rebuild cancels in-flight image and media
+            # requests. The browser has intentionally gone away, so there is
+            # nothing actionable to report in the development-server console.
+            pass
+
     def send_json(self, status, payload):
         body = json.dumps(payload).encode('utf-8')
         self.send_response(status)

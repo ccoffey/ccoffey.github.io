@@ -14,7 +14,46 @@
   "cover_image": "PXL_20260906_064952583.jpg",
   "media_descriptions": {
     "PXL_20260226_150354165.jpg": [
-      "This is the point where I knew I needed to design a custom PCB."
+      "The new PCB arrived just in time, as the wiring was turning into a complete spaghetti mess."
+    ],
+    "PXL_20250624_063803965.jpg": [
+      "This is GiGO Akihabara Building 1, the place that inspired me to build my own claw machine during a family holiday."
+    ],
+    "PXL_20250701_073947235.jpg": [
+      "The building's first four floors are packed with hundreds of arcade machines. My kids loved this place a little too much."
+    ],
+    "PXL_20251126_201639320.jpg": [
+      "This was my first attempt at a linear rail"
+    ],
+    "PXL_20251206_143729720.mp4": [
+      "This is the first prototype of the claw raise and drop mechanism. I did the simplest possible thing and 3D printed a spool to fit directly onto the D-shaped shaft of a Nema17 motor."
+    ],
+    "PXL_20251216_142128137.mp4": [
+      "This is the point where it first started to feel like a real claw machine."
+    ],
+    "PXL_20251220_205533443.jpg": [
+      "Modeling the entire system in Tinkercad proved to be a brilliant decision that kept paying dividends, as 3D printing everything allowed me to eliminate the minor misalignments that were causing wobbling and jittering."
+    ],
+    "PXL_20260113_102250615.jpg": [
+      "This was the first PCB I ever designed. After teaching myself KiCad by watching countless YouTube videos, I had the board manufactured by PCBWay. Since it was my first attempt, I made a hilarious mistake: I completely forgot to add ports to plug in the Nema17 motors, making the board almost entirely useless!"
+    ],
+    "PXL_20260202_152216406.jpg": [
+      "At this point in the project, I had four power rails (3.3V, 5V, 12V, and 24V) across a maze of interconnected breadboards. Simple mistakes kept frying chips, turning my home office radiator into a graveyard for ESP32s and TMC2209s."
+    ],
+    "IMG-20260209-WA0001.jpg": [
+      "This is the trace view of my second PCB design in KiCad. Routing the traces turned out to be surprisingly good fun!"
+    ],
+    "IMG-20260209-WA0002.jpg": [
+      "I didn't forget the Nema17 ports this time."
+    ],
+    "PXL_20260218_124035886.jpg": [
+      "I decided to extract the power system into its own dedicated 3D-printed box. Powered by a 24V input split in parallel across three buck converters, the enclosure outputs four distinct voltage rails: 24V (simple pass-thru), 12V, 5V, and 3.3V. It also has a fuse and a large capacitor on the 24V power input."
+    ],
+    "PXL_20260225_091256636.jpg": [
+      "This is the second version of the PCB, and it worked so well that it is still the one in use today."
+    ],
+    "PXL_20260226_165637811.jpg": [
+      "Everything soldered up, ready for testing."
     ]
   },
   "hero_video": "2026-09-06T235959_claw-machine-demo.mp4",

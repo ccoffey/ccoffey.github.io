@@ -454,6 +454,7 @@ class BrowserRegressionTests(unittest.TestCase):
         composer.type("Second line")
         composer.press("Enter")
         page.wait_for_function(f"gallery[currentIndex].comments.length === {initial_count + 1}")
+        page.get_by_role("status").filter(has_text="Saved locally").wait_for()
         next_composer = page.get_by_label("New comment")
         self.assertEqual(page.locator(".lightbox-comment-composer").count(), 1)
         self.assertTrue(next_composer.evaluate("node => document.activeElement === node"))
