@@ -71,6 +71,11 @@ git config core.hooksPath .githooks
 ```
 > **Note**: The hook setting is local to this clone. Run the `git config` command again if you clone the repository onto another computer.
 
+For GitHub Pages deployments, set the repository Actions variable `SITE_URL` to
+the public HTTPS origin (for example, `https://cathalcoffey.com`). The build
+rejects an empty or non-HTTPS value so generated canonical, social, sitemap,
+and robots URLs cannot silently become relative paths.
+
 ### 2. Local Development Server (Recommended)
 
 To start a watched preview that automatically rebuilds when source files (HTML, CSS, JS, JSON) change, run:

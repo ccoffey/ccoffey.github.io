@@ -7,6 +7,7 @@ import shutil
 import subprocess
 import sys
 from pathlib import Path
+from urllib.parse import urlparse
 
 SOURCE_ROOT = Path(__file__).resolve().parent.parent
 GENERATED_ROOT_FILES = ("index.html", "robots.txt", "sitemap.xml")
@@ -54,6 +55,21 @@ def safe_output_path(value):
     return output
 
 
+def validate_site_url(value):
+    """Require an absolute HTTPS URL when deployment configuration supplies one."""
+    parsed = urlparse(value)
+    if (
+        parsed.scheme != "https"
+        or not parsed.netloc
+        or parsed.path not in ("", "/")
+        or parsed.params
+        or parsed.query
+        or parsed.fragment
+    ):
+        raise ValueError("SITE_URL must be an absolute HTTPS origin, for example https://cathalcoffey.com")
+    return value.rstrip("/")
+
+
 MEDIA_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.webp', '.mp4', '.mov', '.webm'}
 
 
@@ -72,8 +88,9 @@ def copy_source_tree(output, incremental=False):
     # A metadata/template/CSS edit does not need to recopy hundreds of MiB of
     # media.  The existing isolated output already contains the source media
     # and its generated thumbnails/posters, so sync just the non-media inputs.
-    for source in SOURCE_ROOT.rglob('*'):
-        relative = source.relative_to(SOURCE_ROOT / "src")
+    source_tree = SOURCE_ROOT / "src"
+    for source in source_tree.rglob('*'):
+        relative = source.relative_to(source_tree)
         if any(part in ignored_names for part in relative.parts) or source.is_dir():
             continue
         if source.suffix.lower() in MEDIA_EXTENSIONS or source.name.endswith('.pyc'):
@@ -135,6 +152,11 @@ def main():
         help="Deterministic YYYY-MM-DD value written to sitemap.xml",
     )
     args = parser.parse_args()
+
+    # An explicit value comes from deployment configuration. Reject an empty or
+    # malformed value rather than silently emitting relative SEO metadata.
+    if "SITE_URL" in os.environ:
+        validate_site_url(os.environ["SITE_URL"])
 
     output = safe_output_path(args.output)
     if args.incremental and not output.exists():

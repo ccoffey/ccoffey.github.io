@@ -31,6 +31,7 @@ SITE_URL = os.environ.get('SITE_URL', 'https://example.com').rstrip('/')
 sys.path.insert(0, REPO_ROOT)
 sys.path.insert(0, os.path.join(REPO_ROOT, "scripts"))
 
+import build_site  # noqa: E402
 import check_performance  # noqa: E402
 import generate_site  # noqa: E402
 import optimize_staged_media  # noqa: E402
@@ -505,12 +506,59 @@ class TestGeneratorInvariants(unittest.TestCase):
         # Ensure tuple comparability
         self.assertEqual(len(k1), 6)
 
+    def test_video_mime_type_matches_supported_extensions(self):
+        self.assertEqual(generate_site.video_mime_type('demo.mp4'), 'video/mp4')
+        self.assertEqual(generate_site.video_mime_type('demo.mov'), 'video/quicktime')
+        self.assertEqual(generate_site.video_mime_type('demo.webm'), 'video/webm')
+
     def test_sha256_computation(self):
         test_file = os.path.join(SITE_ROOT, 'robots.txt')
         h1 = generate_site.compute_sha256(test_file)
         h2 = generate_site.compute_sha256(test_file)
         self.assertEqual(h1, h2)
         self.assertEqual(len(h1), 64)
+
+
+class TestBuildAndWatcherContracts(unittest.TestCase):
+    """Guard local-only build and watch behavior that CI clean builds do not exercise."""
+
+    def test_incremental_copy_syncs_only_the_source_tree(self):
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            root = Path(temporary_dir)
+            source = root / 'src'
+            (source / 'js').mkdir(parents=True)
+            (source / 'js' / 'app.js').write_text('first', encoding='utf-8')
+            (root / 'stylelint.config.mjs').write_text('outside source tree', encoding='utf-8')
+            output = root / 'output'
+
+            original_root = build_site.SOURCE_ROOT
+            try:
+                build_site.SOURCE_ROOT = root
+                build_site.copy_source_tree(output)
+                (source / 'js' / 'app.js').write_text('second', encoding='utf-8')
+                build_site.copy_source_tree(output, incremental=True)
+            finally:
+                build_site.SOURCE_ROOT = original_root
+
+            self.assertEqual((output / 'js' / 'app.js').read_text(encoding='utf-8'), 'second')
+
+    def test_site_url_must_be_an_https_origin(self):
+        self.assertEqual(build_site.validate_site_url('https://cathalcoffey.com/'), 'https://cathalcoffey.com')
+        for value in ('', 'http://cathalcoffey.com', 'https://', 'https://cathalcoffey.com/path', 'not a url'):
+            with self.subTest(value=value):
+                with self.assertRaises(ValueError):
+                    build_site.validate_site_url(value)
+
+    def test_watcher_includes_all_source_inputs(self):
+        state = dev_server.get_dir_state()
+        expected = {
+            os.path.join(REPO_ROOT, 'src', 'site.json'),
+            os.path.join(REPO_ROOT, 'src', 'js', 'navigation.js'),
+            os.path.join(REPO_ROOT, 'src', 'templates', 'home.html'),
+            os.path.join(REPO_ROOT, 'scripts', 'generate_site.py'),
+            os.path.join(REPO_ROOT, 'scripts', 'build_site.py'),
+        }
+        self.assertTrue(expected.issubset(state), f'Missing watched inputs: {expected - set(state)}')
 
 
 class TestStagedMediaOptimizer(unittest.TestCase):
@@ -567,6 +615,7 @@ def run_tests():
     suite.addTests(loader.loadTestsFromTestCase(TestSEOAndMetadataContracts))
     suite.addTests(loader.loadTestsFromTestCase(TestPerformanceAndBudgets))
     suite.addTests(loader.loadTestsFromTestCase(TestGeneratorInvariants))
+    suite.addTests(loader.loadTestsFromTestCase(TestBuildAndWatcherContracts))
     suite.addTests(loader.loadTestsFromTestCase(TestStagedMediaOptimizer))
     suite.addTests(loader.loadTestsFromTestCase(TestProjectMediaValidation))
 

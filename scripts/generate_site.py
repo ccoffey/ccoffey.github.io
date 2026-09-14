@@ -960,7 +960,7 @@ def sync_builds():
           </div>
           <div class="hero-portrait-player-wrap">
             <video class="hero-portrait-player" controls preload="metadata" playsinline{poster_attr}>
-              <source src="/major-builds/{b['slug']}/media/{video_fn}" type="video/mp4">
+              <source src="/major-builds/{b['slug']}/media/{video_fn}" type="{video_mime_type(video_fn)}">
               Your browser does not support HTML5 video.
             </video>
           </div>
@@ -979,7 +979,7 @@ def sync_builds():
     <div class="hero-video-wrapper landscape-hero" style="max-width: 960px; margin: 1.5rem auto 2.25rem auto;">
       <div class="landscape-video-box" style="aspect-ratio: {ar}; width: 100%;">
         <video class="video-actual-player" controls preload="metadata" playsinline{poster_attr} style="width: 100%; height: 100%; object-fit: contain;">
-          <source src="/major-builds/{b['slug']}/media/{video_fn}" type="video/mp4">
+          <source src="/major-builds/{b['slug']}/media/{video_fn}" type="{video_mime_type(video_fn)}">
           Your browser does not support HTML5 video.
         </video>
       </div>

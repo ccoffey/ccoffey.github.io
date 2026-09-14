@@ -640,28 +640,12 @@ header.hero {
   padding-bottom: 1.5rem;
   border-bottom: 1px solid var(--border);
 }
-.build-header-full .build-meta-row {
-  display: flex;
-  justify-content: space-between;
-  align-items: baseline;
-  flex-wrap: wrap;
-  gap: 0.75rem;
-}
 .build-header-full .build-heading {
   font-size: 2.25rem;
   font-weight: 800;
   letter-spacing: -0.03em;
   line-height: 1.2;
   color: var(--text);
-}
-.build-header-full .build-date-badge {
-  font-size: 0.85rem;
-  font-weight: 600;
-  color: var(--text-muted);
-  background: var(--bg-surface);
-  padding: 0.3rem 0.8rem;
-  border-radius: 20px;
-  border: 1px solid var(--border);
 }
 .build-header-full .build-sub {
   font-size: 1.12rem;

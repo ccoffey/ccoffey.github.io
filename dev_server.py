@@ -11,16 +11,15 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
-SITE_DIR = os.path.join(BASE_DIR, '_site')
 MAJOR_BUILDS_DIR = os.path.join(BASE_DIR, 'src', 'major-builds')
 QUICK_BUILDS_DIR = os.path.join(BASE_DIR, 'src', 'quick-builds')
-TEMPLATES_DIR = os.path.join(BASE_DIR, 'src', 'templates')
-CSS_DIR = os.path.join(BASE_DIR, 'src', 'css')
-GENERATOR_SCRIPT = os.path.join(BASE_DIR, 'scripts', 'generate_site.py')
-
-# Directories to watch
+# Source and generator inputs that affect the served output.
 WATCH_DIRS = [
     os.path.join(BASE_DIR, 'src'),
+]
+WATCH_FILES = [
+    os.path.join(BASE_DIR, 'scripts', 'generate_site.py'),
+    os.path.join(BASE_DIR, 'scripts', 'build_site.py'),
 ]
 BUILD_SCRIPT = os.path.join(BASE_DIR, 'scripts', 'build_site.py')
 OUTPUT_DIR = os.path.join(BASE_DIR, '_site')
@@ -79,43 +78,28 @@ def run_builder(incremental=False):
 
 def get_dir_state():
     state = {}
-    if os.path.exists(GENERATOR_SCRIPT):
-        try:
-            state[GENERATOR_SCRIPT] = os.path.getmtime(GENERATOR_SCRIPT)
-        except OSError:
-            pass
+    for watched_file in WATCH_FILES:
+        if os.path.exists(watched_file):
+            try:
+                state[watched_file] = os.path.getmtime(watched_file)
+            except OSError:
+                pass
 
-    if os.path.exists(TEMPLATES_DIR):
-        for root, _dirs, files in os.walk(TEMPLATES_DIR):
+    for watched_dir in WATCH_DIRS:
+        if not os.path.exists(watched_dir):
+            continue
+        for root, dirs, files in os.walk(watched_dir):
+            # Derivatives are generated into the preview and should never
+            # trigger a source rebuild. Do not descend into them either.
+            dirs[:] = [directory for directory in dirs if directory != 'thumbs']
             for f in files:
-                p = os.path.join(root, f)
-                try:
-                    state[p] = os.path.getmtime(p)
-                except OSError:
-                    pass
-
-    if os.path.exists(CSS_DIR):
-        for root, _dirs, files in os.walk(CSS_DIR):
-            for f in files:
-                p = os.path.join(root, f)
-                try:
-                    state[p] = os.path.getmtime(p)
-                except OSError:
-                    pass
-
-    for d in (MAJOR_BUILDS_DIR, QUICK_BUILDS_DIR):
-        if os.path.exists(d):
-            for root, _dirs, files in os.walk(d):
-                if 'thumbs' in root:
+                if f.startswith('.') or f == 'index.html':
                     continue
-                for f in files:
-                    if f.startswith('.') or f == 'index.html':
-                        continue
-                    path = os.path.join(root, f)
-                    try:
-                        state[path] = os.path.getmtime(path)
-                    except OSError:
-                        pass
+                path = os.path.join(root, f)
+                try:
+                    state[path] = os.path.getmtime(path)
+                except OSError:
+                    pass
 
     return state
 
