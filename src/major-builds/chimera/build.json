@@ -8,7 +8,7 @@
   ],
   "dates": "July 2026 \u2013 Present",
   "order": 3,
-  "story": "<p>Before building Chimera, I had already built a private messaging server and Android app (which I called TwinChat) so that my brother and I could have secure conversations without relying on Meta's WhatsApp, which we were using prior to this.</p>\n\n  <p>The cryptographic setup was fairly straightforward: each of us had a public/private key pair, with the private key never leaving the Android device. We used a Diffie–Hellman key exchange with our public keys to establish a shared conversation key, routing encrypted payloads through a Dropwizard RESTful web service hosted on an Ubuntu server in my home office. I recreated all the WhatsApp features we loved: emoji reactions, GIFs, quote and respond, and even photo sharing (which were also transmitted as securely encrypted blobs).</p>\n\n  <p>My brother and I used TwinChat daily for about a year until he broke his personal phone and switched to a locked down work phone that blocked sideloading unpublished APKs outside the Google Play Store. Booo. Losing our private channel sparked an idea: what if we built our own dedicated hardware communicator that could run TwinChat? Our own app running on our own hardware. It could start as a simple, pocketable device inspired by the Nokia 3210s that we had in secondary school, many many years ago.</p>\n\n  <p>That was the spark, but building a standalone communicator took much longer than anticipated since I ended up having to write an entire embedded operating system from scratch first. I created a dynamic status bar with battery and WiFi indicators, along with a full WiFi manager that scans for SSIDs, accepts credentials, persists them to flash storage, and automatically reconnects when known networks are in range. Then came device settings for audio volume and screen brightness, followed by a PIN to unlock security layer.</p>\n\n  <p>Next, I needed to dial in the primary input: a single rotary encoder with a push button. To refine the interaction model, I built a native clone of Nokia's Snake. Naturally, an arcade game demanded 8 bit audio for sound effects and background music, followed by flash persistence for high scores.</p>\n\n  <p>To ensure the hardware was tamper resistant, I went deep into ESP32 silicon security: provisioning Secure Boot and Flash Encryption. I also knew we needed seamless over-the-air (OTA) updates—flashing both devices over USB during rapid development would quickly become a pain. Rather than risk embedding sensitive GitHub credentials in device flash, I designed a secure update pipeline: the source repository is private, and releases are brokered through a Cloudflare Worker proxy. Chimera connects over TLS 1.3 (validated against Mozilla's root CA bundle once clock-synced via NTP) with a pre-shared device secret header. The worker authenticates with GitHub using an edge-encrypted PAT, caches release assets to protect API limits, and streams the binary down into Chimera's inactive OTA slot with SHA-256 validation and hardware rollback protection. Moving to the latest firmware just requires a standard reboot.</p>\n\n  <p>Chimera is still a work in progress. Now that the hardware and OS foundation are rock solid, I'm finally back to building the messaging client itself. Stay tuned.</p>",
+  "story": "<p>Before building Chimera, I had already built a private messaging server and Android app (which I called TwinChat) so that my brother and I could have secure conversations without relying on Meta's WhatsApp, which we were using prior to this.</p>\n\n  <p>The cryptographic setup was fairly straightforward: each of us had a public/private key pair, with the private key never leaving the Android device. We used a Diffie\u2013Hellman key exchange with our public keys to establish a shared conversation key, routing encrypted payloads through a Dropwizard RESTful web service hosted on an Ubuntu server in my home office. I recreated all the WhatsApp features we loved: emoji reactions, GIFs, quote and respond, and even photo sharing (which were also transmitted as securely encrypted blobs).</p>\n\n  <p>My brother and I used TwinChat daily for about a year until he broke his personal phone and switched to a locked down work phone that blocked sideloading unpublished APKs outside the Google Play Store. Booo. Losing our private channel sparked an idea: what if we built our own dedicated hardware communicator that could run TwinChat? Our own app running on our own hardware. It could start as a simple, pocketable device inspired by the Nokia 3210s that we had in secondary school, many many years ago.</p>\n\n  <p>That was the spark, but building a standalone communicator took much longer than anticipated since I ended up having to write an entire embedded operating system from scratch first. I created a dynamic status bar with battery and WiFi indicators, along with a full WiFi manager that scans for SSIDs, accepts credentials, persists them to flash storage, and automatically reconnects when known networks are in range. Then came device settings for audio volume and screen brightness, followed by a PIN to unlock security layer.</p>\n\n  <p>Next, I needed to dial in the primary input: a single rotary encoder with a push button. To refine the interaction model, I built a native clone of Nokia's Snake. Naturally, an arcade game demanded 8 bit audio for sound effects and background music, followed by flash persistence for high scores.</p>\n\n  <p>To ensure the hardware was tamper resistant, I went deep into ESP32 silicon security: provisioning Secure Boot and Flash Encryption. I also knew we needed seamless over-the-air (OTA) updates\u2014flashing both devices over USB during rapid development would quickly become a pain. Rather than risk embedding sensitive GitHub credentials in device flash, I designed a secure update pipeline: the source repository is private, and releases are brokered through a Cloudflare Worker proxy. Chimera connects over TLS 1.3 (validated against Mozilla's root CA bundle once clock-synced via NTP) with a pre-shared device secret header. The worker authenticates with GitHub using an edge-encrypted PAT, caches release assets to protect API limits, and streams the binary down into Chimera's inactive OTA slot with SHA-256 validation and hardware rollback protection. Moving to the latest firmware just requires a standard reboot.</p>\n\n  <p>Chimera is still a work in progress. Now that the hardware and OS foundation are rock solid, I'm finally back to building the messaging client itself. Stay tuned.</p>",
   "cover_image": "PXL_20260906_083726119_frame_8s.jpg",
   "hero_video": "PXL_20260906_083726119.mp4",
   "next_steps": [
@@ -16,5 +16,39 @@
     "Downsize the rotary encoder (it's too tall)",
     "Better cable management",
     "Better fitting case"
-  ]
+  ],
+  "media_descriptions": {
+    "PXL_20260403_120151195.jpg": [
+      "Initially I started with an e-ink display and a 4x4 keyboard but it just didn't feel right."
+    ],
+    "PXL_20260706_145200477.jpg": [
+      "Pretty early on I swapped out the e-ink display for a monochromatic OLED, and the 4x4 keyboard for a rotary encoder with push button.",
+      "The user interface became so much easier to build once I remove the worry about over refreshing the e-ink to make simple battery charging animations, or stressing over burn-in and when to perform full versus partial refreshes. e-ink displays are hard work that I just didn't need at this early stage of the project."
+    ],
+    "PXL_20260706_182736342.jpg": [
+      "Getting the boot screen working was a really awesome moment. The graphic was my first attempt at using Nano Banana to generate a chimera, in case you were wondering what that was supposed to be."
+    ],
+    "PXL_20260709_194918365.jpg": [
+      "The rotary knob is ridiculously oversized, but otherwise, it's starting to take shape.",
+      "It looks a bit more like a Game Boy Pocket and a little less like a Nokia 3210 than I originally dreamed but I kind of like it."
+    ],
+    "PXL_20260710_111839297.mp4": [
+      "The Chimera boot logo is looking so much better now. It took me a while to figure out how to describe what I wanted to Nano Banana."
+    ],
+    "PXL_20260717_192805643.jpg": [
+      "Putting together a gift box for my twin brother so he can build his own Chimera device and contribute to its development."
+    ],
+    "PXL_20260719_072638522.jpg": [
+      "The FireBeetle 2 ESP32-C5 includes onboard LiPo charging and an internal divider on IO1 to monitor battery voltage. However, it doesn't route the USB 5V rail or the charger's status pin to any GPIOs. To fix this, a custom voltage divider on A3 (GPIO4) lets Chimera distinguish between a plugged in USB cable and a fully charged battery, enabling accurate battery charging animations."
+    ],
+    "PXL_20260720_104920915.jpg": [
+      "Time to add a microphone"
+    ],
+    "PXL_20260906_084430957.jpg": [
+      "Starting to get pretty messing. Need to do something about all these cables."
+    ],
+    "PXL_20260906_083938747.jpg": [
+      "I am incredibly happy with how the LCD screen fits perfectly into the 3D printed face plate."
+    ]
+  }
 }
