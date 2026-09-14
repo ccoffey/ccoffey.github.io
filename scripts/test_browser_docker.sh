@@ -26,11 +26,11 @@ fi
     apt-get install --yes ffmpeg
     groupadd --gid "$HOST_GID" browser-tests 2>/dev/null || true
     useradd --uid "$HOST_UID" --gid "$HOST_GID" --create-home browser-tests 2>/dev/null || true
-    su browser-tests -s /bin/bash -c "
+    su -s /bin/bash -c "
       export PYTHONUSERBASE=/tmp/browser-tests-python
       export HOME=/tmp/browser-tests-home
       python -m pip install --user --requirement requirements-test.txt
       python scripts/build_site.py
       SITE_ROOT=_site python tests/test_browser.py \"\$@\"
-    " bash "$@"
+    " -- browser-tests browser-tests "$@"
   ' bash "$@"

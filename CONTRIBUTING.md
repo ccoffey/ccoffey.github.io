@@ -22,6 +22,8 @@ and serves the result at `http://127.0.0.1:8000/`.
 - Keep project content in `src/major-builds/` or `src/quick-builds/`.
 - Put source photos and videos in that project's `media/` directory; use
   `build.json` for titles, stories, cover media, tags, and gallery comments.
+- `story` is trusted HTML and is rendered as-is. Do not submit unreviewed HTML;
+  all other `build.json` fields are validated by the build.
 - Do not commit generated `_site/` output or thumbnail directories.
 - The tracked pre-commit hook optimizes newly staged media and removes EXIF
   metadata. Let it finish and review the resulting staged files.

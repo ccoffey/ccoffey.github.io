@@ -17,7 +17,7 @@ published.
 
 ## ✨ Features
 
-- **Blazing Fast Static Generation:** A custom Python pipeline compiles templates, JSON metadata, and media into a highly optimized, dependency-free static site.
+- **Blazing Fast Static Generation:** A custom Python pipeline compiles templates, JSON metadata, and media into highly optimized static output with no server-side runtime.
 - **Media Optimization:** A Git pre-commit hook automatically strips EXIF data, resizes large images, and re-encodes videos for the web.
 - **Immersive Gallery:** A responsive full-screen media viewer with deep-linking, touch support, and keyboard navigation.
 - **Project Portfolios:** Beautifully crafted pages for your work.
@@ -141,6 +141,10 @@ Key configurations you can define:
 - `cover_image`: The filename of the image to use as the project's thumbnail on the homepage and for OpenGraph tags. If omitted, defaults to the last chronological photo in the folder.
 - `story`: HTML content for the main narrative of a major build.
 - `next_steps`: A list of future plans or iterations for the project.
+
+`story` is trusted HTML authored by repository maintainers. It is intentionally
+rendered without sanitization, so do not accept unreviewed HTML in pull
+requests. All other `build.json` fields are validated as data during the build.
 
 ### Manual Comment Configuration
 

@@ -100,6 +100,16 @@ def get_html_pages():
 class TestAssetIntegrity(unittest.TestCase):
     """Validates that all asset references and internal hyperlinks resolve to existing files on disk."""
 
+    def test_homepage_links_to_configured_source_repository(self):
+        with open(os.path.join(SITE_ROOT, 'site.json'), encoding='utf-8') as source_file:
+            source_url = json.load(source_file)['site_source_url']
+        with open(os.path.join(SITE_ROOT, 'index.html'), encoding='utf-8') as homepage:
+            content = homepage.read()
+
+        self.assertIn(f'href="{source_url}"', content)
+        self.assertIn('data-contact="site-source"', content)
+        self.assertIn('Site source', content)
+
     def test_all_pages_exist(self):
         pages = get_html_pages()
         self.assertGreaterEqual(len(pages), 9, "Expected at least 9 main HTML pages.")
@@ -431,6 +441,33 @@ class TestGeneratorInvariants(unittest.TestCase):
             }
         )
 
+    def test_build_config_rejects_unknown_and_invalid_fields(self):
+        with self.assertRaisesRegex(ValueError, "unsupported field"):
+            generate_site.validate_build_config({'titlle': 'Typo'}, 'test-build')
+        with self.assertRaisesRegex(ValueError, "'order' must be an integer"):
+            generate_site.validate_build_config({'order': True}, 'test-build')
+        with self.assertRaisesRegex(ValueError, "non-empty list"):
+            generate_site.validate_build_config({'tags': []}, 'test-build')
+
+    def test_build_slug_allows_existing_plus_signs_but_rejects_paths(self):
+        generate_site.validate_build_slug('prusa-mk3s+-hotend-repair')
+        with self.assertRaisesRegex(ValueError, "Invalid build directory"):
+            generate_site.validate_build_slug('../test-build')
+
+    def test_media_references_must_exist_and_match_their_type(self):
+        with self.assertRaisesRegex(ValueError, "missing media file"):
+            generate_site.validate_media_references(
+                {'cover_image': 'missing.jpg'}, 'test-build', ['actual.jpg']
+            )
+        with self.assertRaisesRegex(ValueError, "must reference an image"):
+            generate_site.validate_media_references(
+                {'cover_image': 'clip.mp4'}, 'test-build', ['clip.mp4']
+            )
+        with self.assertRaisesRegex(ValueError, "must be a plain filename"):
+            generate_site.validate_media_references(
+                {'hero_video': '../clip.mp4'}, 'test-build', ['clip.mp4']
+            )
+
     def test_comment_json_is_safe_for_inline_script(self):
         payload = {'comments': ['A story </script><script>alert("no")</script>']}
         serialized = generate_site.json_for_script(payload)
@@ -512,11 +549,13 @@ class TestGeneratorInvariants(unittest.TestCase):
         self.assertEqual(generate_site.video_mime_type('demo.webm'), 'video/webm')
 
     def test_sha256_computation(self):
-        test_file = os.path.join(SITE_ROOT, 'robots.txt')
-        h1 = generate_site.compute_sha256(test_file)
-        h2 = generate_site.compute_sha256(test_file)
-        self.assertEqual(h1, h2)
-        self.assertEqual(len(h1), 64)
+        with tempfile.NamedTemporaryFile() as test_file:
+            test_file.write(b'content to hash')
+            test_file.flush()
+            h1 = generate_site.compute_sha256(test_file.name)
+            h2 = generate_site.compute_sha256(test_file.name)
+            self.assertEqual(h1, h2)
+            self.assertEqual(len(h1), 64)
 
 
 class TestBuildAndWatcherContracts(unittest.TestCase):

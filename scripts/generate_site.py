@@ -17,6 +17,13 @@ TEMPLATES_DIR = os.path.join(BASE_DIR, 'templates')
 SITE_URL = os.environ.get('SITE_URL', 'https://example.com').rstrip('/')
 GA_MEASUREMENT_ID = os.environ.get('GA_MEASUREMENT_ID', '').strip()
 VIDEO_EXTENSIONS = ('.mp4', '.mov', '.webm')
+IMAGE_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.webp')
+MEDIA_EXTENSIONS = IMAGE_EXTENSIONS + VIDEO_EXTENSIONS
+BUILD_SLUG_PATTERN = re.compile(r'[a-z0-9](?:[a-z0-9+-]*[a-z0-9])?')
+BUILD_CONFIG_KEYS = {
+    'title', 'subtitle', 'description', 'tags', 'dates', 'order', 'story',
+    'status', 'cover_image', 'hero_video', 'next_steps', 'media_descriptions',
+}
 
 SITE_CONFIG = {}
 site_config_path = os.path.join(BASE_DIR, 'site.json')
@@ -35,8 +42,92 @@ def apply_site_config(html_str):
         .replace('{{ BIO_HTML }}', get_site_config('bio_html', ''))
         .replace('{{ LINKEDIN_URL }}', escape(get_site_config('social_links', {}).get('linkedin', '#')))
         .replace('{{ GITHUB_URL }}', escape(get_site_config('social_links', {}).get('github', '#')))
+        .replace('{{ SITE_SOURCE_URL }}', escape(get_site_config('site_source_url', '#')))
         .replace('{{ EMAIL_URL }}', escape(get_site_config('social_links', {}).get('email', '#')))
     )
+
+
+def validate_build_slug(slug):
+    if not isinstance(slug, str) or not BUILD_SLUG_PATTERN.fullmatch(slug):
+        raise ValueError(
+            f"Invalid build directory '{slug}'. Build directory names must use lowercase letters, "
+            "digits, hyphens, and plus signs."
+        )
+
+
+def is_safe_media_filename(filename):
+    return (
+        isinstance(filename, str)
+        and filename == os.path.basename(filename)
+        and filename not in {'.', '..'}
+        and not any(character in filename for character in ('/', '\\', '\x00'))
+    )
+
+
+def validate_string_field(config, slug, field):
+    if field in config and not isinstance(config[field], str):
+        raise ValueError(f"[{slug}] '{field}' must be a string.")
+
+
+def validate_build_config(config, slug):
+    """Validate the supported build.json shape before rendering or processing media."""
+    if not isinstance(config, dict):
+        raise ValueError(f"[{slug}] build.json must contain a JSON object.")
+
+    unknown_keys = sorted(set(config) - BUILD_CONFIG_KEYS)
+    if unknown_keys:
+        raise ValueError(f"[{slug}] build.json has unsupported field(s): {', '.join(unknown_keys)}.")
+
+    for field in ('title', 'subtitle', 'description', 'dates', 'story', 'status', 'cover_image', 'hero_video'):
+        validate_string_field(config, slug, field)
+
+    if 'order' in config and (not isinstance(config['order'], int) or isinstance(config['order'], bool)):
+        raise ValueError(f"[{slug}] 'order' must be an integer.")
+
+    if 'tags' in config:
+        tags = config['tags']
+        if not isinstance(tags, list) or not tags or any(not isinstance(tag, str) or not tag.strip() for tag in tags):
+            raise ValueError(f"[{slug}] 'tags' must be a non-empty list of non-empty strings.")
+
+    if 'next_steps' in config:
+        steps = config['next_steps']
+        if not isinstance(steps, list) or any(not isinstance(step, str) or not step.strip() for step in steps):
+            raise ValueError(f"[{slug}] 'next_steps' must be a list of non-empty strings.")
+
+    if 'media_descriptions' in config:
+        descriptions = config['media_descriptions']
+        if not isinstance(descriptions, dict):
+            raise ValueError(f"[{slug}] 'media_descriptions' must be an object keyed by filename.")
+        for filename, comments in descriptions.items():
+            if not isinstance(filename, str) or not is_safe_media_filename(filename):
+                raise ValueError(f"[{slug}] media description keys must be plain media filenames.")
+            values = [comments] if isinstance(comments, str) else comments
+            if not isinstance(values, list) or not values or any(
+                not isinstance(comment, str) or not comment.strip() for comment in values
+            ):
+                raise ValueError(
+                    f"[{slug}] media description for '{filename}' must be a string or non-empty list of non-empty strings."
+                )
+
+
+def validate_media_references(config, slug, raw_files):
+    """Ensure configured media names are safe, present, and of the expected type."""
+    media_files = set(raw_files)
+    for field, extensions in (('cover_image', IMAGE_EXTENSIONS), ('hero_video', VIDEO_EXTENSIONS)):
+        filename = config.get(field)
+        if not filename:
+            continue
+        if not is_safe_media_filename(filename):
+            raise ValueError(f"[{slug}] '{field}' must be a plain filename, not a path.")
+        if filename not in media_files:
+            raise ValueError(f"[{slug}] '{field}' references missing media file '{filename}'.")
+        if not filename.lower().endswith(extensions):
+            expected = 'image' if field == 'cover_image' else 'video'
+            raise ValueError(f"[{slug}] '{field}' must reference an {expected} file: '{filename}'.")
+
+    for filename in config.get('media_descriptions', {}):
+        if filename not in media_files:
+            raise ValueError(f"[{slug}] media_descriptions references missing media file '{filename}'.")
 
 def load_template(name):
     path = os.path.join(TEMPLATES_DIR, name)
@@ -497,6 +588,7 @@ def render_next_steps(next_steps):
     </section>'''
 
 def process_build_dir(base_dir, slug, url_prefix):
+    validate_build_slug(slug)
     folder_path = os.path.join(base_dir, slug)
     config_path = os.path.join(folder_path, 'build.json')
 
@@ -505,9 +597,9 @@ def process_build_dir(base_dir, slug, url_prefix):
         try:
             with open(config_path, encoding='utf-8') as f:
                 config = json.load(f)
-        except Exception as e:
-            print(f"[{slug}] Warning: Error loading {config_path}: {e}")
-            config = {}
+        except (OSError, json.JSONDecodeError) as error:
+            raise ValueError(f"[{slug}] Could not parse build.json: {error}") from error
+    validate_build_config(config, slug)
 
     defaults = {
         'title': slug.replace('-', ' ').title(),
@@ -522,10 +614,6 @@ def process_build_dir(base_dir, slug, url_prefix):
         if k not in config or not config[k]:
             config[k] = v
 
-    media_descriptions = load_media_descriptions(config, slug)
-    thumbs_dir = os.path.join(folder_path, 'thumbs')
-    os.makedirs(thumbs_dir, exist_ok=True)
-
     media_dir = os.path.join(folder_path, 'media')
     if not os.path.exists(media_dir):
         raw_files = []
@@ -534,18 +622,23 @@ def process_build_dir(base_dir, slug, url_prefix):
                      if not f.startswith('.')
                      and '.optimized.' not in f.lower()]
 
+    validate_media_references(config, slug, raw_files)
+    media_descriptions = load_media_descriptions(config, slug)
+    thumbs_dir = os.path.join(folder_path, 'thumbs')
+    os.makedirs(thumbs_dir, exist_ok=True)
+
     # 1. Deduplicate media files by SHA-256 hash
     raw_files = deduplicate_project_media(media_dir, raw_files, slug)
 
     # Media is shown chronologically, so every source filename must carry an
     # unambiguous date. Validate before modifying or generating derivatives.
     for f in raw_files:
-        if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp', *VIDEO_EXTENSIONS)):
+        if f.lower().endswith(MEDIA_EXTENSIONS):
             parse_media_datetime(f)
 
     # 2. Sanitize photos (EXIF) and optimize oversized full-size photos
     for f in raw_files:
-        if f.lower().endswith(('.jpg', '.jpeg', '.png', '.webp')):
+        if f.lower().endswith(IMAGE_EXTENSIONS):
             full_path = os.path.join(media_dir, f)
             optimize_full_photo(full_path, max_dim=2560, quality=85)
             if f.lower().endswith(('.jpg', '.jpeg')):
@@ -567,7 +660,7 @@ def process_build_dir(base_dir, slug, url_prefix):
     # 4. Generate missing thumbnails (WebP with JPEG fallback)
     for f in raw_files:
         f_lower = f.lower()
-        if f_lower.endswith(('.jpg', '.jpeg', '.png', '.webp')):
+        if f_lower.endswith(IMAGE_EXTENSIONS):
             src = os.path.join(media_dir, f)
             stem = os.path.splitext(f)[0]
             dst_orig = os.path.join(thumbs_dir, f)
@@ -613,7 +706,7 @@ def process_build_dir(base_dir, slug, url_prefix):
         f_lower = f.lower()
         if f_lower.endswith(('.mp4', '.mov', '.webm')):
             videos.append(f)
-        elif f_lower.endswith(('.jpg', '.jpeg', '.png', '.webp')):
+        elif f_lower.endswith(IMAGE_EXTENSIONS):
             date_str, short_date = parse_photo_date(f)
             # Calculate aspect ratio
             src = os.path.join(media_dir, f)

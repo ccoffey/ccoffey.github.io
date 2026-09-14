@@ -25,7 +25,7 @@ BUILD_SCRIPT = os.path.join(BASE_DIR, 'scripts', 'build_site.py')
 OUTPUT_DIR = os.path.join(BASE_DIR, '_site')
 
 MEDIA_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.webp', '.mp4', '.mov', '.webm'}
-BUILD_SLUG_PATTERN = re.compile(r"[a-z0-9]+(?:-[a-z0-9]+)*")
+BUILD_SLUG_PATTERN = re.compile(r"[a-z0-9](?:[a-z0-9+-]*[a-z0-9])?")
 
 
 def get_build_config_path(slug):
