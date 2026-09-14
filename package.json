@@ -7,7 +7,7 @@
     "lint:html": "html-validate \"${SITE_ROOT:-_site}/**/*.html\""
   },
   "devDependencies": {
-    "@eslint/js": "9.36.0",
+    "@eslint/js": "10.0.1",
     "eslint": "9.36.0",
     "globals": "16.3.0",
     "html-validate": "10.4.0",
