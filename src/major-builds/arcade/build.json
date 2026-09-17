@@ -13,10 +13,7 @@
   "cover_image": "PXL_20260906_115406018.jpg",
   "hero_video": "PXL_20260906_115858017.mp4",
   "next_steps": [
-    "Wrap control panel in custom vinyl graphic artwork from gorillagraphics.ie",
-    "Install GameCube controller ports and holders",
-    "Finish fine detailing around the monitor cutout",
-    "Still a few visible seams that I am not happy about"
+    "Play games, have fun!"
   ],
   "media_descriptions": {
     "IMG-20260610-WA0011.jpg": [
@@ -66,6 +63,18 @@
     ],
     "PXL_20260906_114753701.jpg": [
       "Still a very visible seam line above the screen that I was unhappy about."
+    ],
+    "PXL_20260913_144036007.jpg": [
+      "Found my very first prototype in the attic today! Comparing this early artwork to the final version shows just how much this project has evolved."
+    ],
+    "PXL_20260911_155213285.jpg": [
+      "I 3D printed corner brackets to hold the screen snugly against the opening, and I also cleaned up all the wiring."
+    ],
+    "PXL_20260917_094439572.jpg": [
+      "I finally got around to mounting the GameCube controllers."
+    ],
+    "PXL_20260911_123821759.jpg": [
+      "This is the final test print on my home 2D printer before sending it off to https://www.gorillagraphics.ie/ to get it printed for real."
     ]
   }
 }
