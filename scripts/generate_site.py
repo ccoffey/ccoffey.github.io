@@ -331,7 +331,7 @@ def optimize_full_photo(photo_path, max_dim=2560, quality=85):
                     img_res = img.copy()
                 
                 extension = os.path.splitext(photo_path)[1].lower()
-                tmp_dst = photo_path + ".tmp" + extension
+                tmp_dst = os.path.join(os.path.dirname(photo_path), "." + os.path.basename(photo_path) + ".tmp" + extension)
                 if extension in ('.jpg', '.jpeg'):
                     if img_res.mode not in ('RGB', 'L'):
                         img_res = img_res.convert('RGB')
