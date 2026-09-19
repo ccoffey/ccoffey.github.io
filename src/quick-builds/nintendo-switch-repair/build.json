@@ -1,0 +1,92 @@
+{
+  "title": "Nintendo Switch Repair",
+  "subtitle": "Not charging, no signs of life at all.",
+  "description": "Last week, my kids' Nintendo Switch completely died and refused to charge. I found a short on the M92T36 power management IC, micro-soldered a replacement chip, and now it's working again",
+  "tags": [
+    "Micro soldering",
+    "Console repair"
+  ],
+  "dates": "September 2026",
+  "order": 5,
+  "cover_image": "WhatsApp Image 2026-09-19 at 18.10.10.jpg",
+  "photos": {
+    "WhatsApp Image 2026-09-19 at 18.10.10.jpg": 0,
+    "WhatsApp Image 2026-09-19 at 18.17.46.jpeg": 1,
+    "WhatsApp Image 2026-09-19 at 18.32.39.jpeg": 2,
+    "WhatsApp Video 2026-09-26 at 18.35.08.mp4": 3,
+    "6f45a7c0911ee30f1d647e5edf7d354203fdfd06 IMG_018_ 2026-09-19 at 18.50.35.jpeg": 4,
+    "Screenshot 2026-09-19 at 18.25.16.png": 5,
+    "2026-09-27 at 15.29.00.MOV": 6,
+    "WhatsApp Image 2026-09-27 at 15.30.54.jpeg": 7,
+    "2026-09-27 at 15.42.00.JPG": 8,
+    "WhatsApp Video 2026-09-27 at 16.08.53.mp4": 9,
+    "2026-09-28 at 15.20.00.JPG": 10,
+    "2026-09-28 at 15.00.00.MOV": 11,
+    "IMG_005.JPG": 12,
+    "2026-09-28 at 15.10.00.MOV": 13,
+    "IMG_008.JPG": 14,
+    "IMG_009.JPG": 15,
+    "IMG_011.JPG": 16
+  },
+  "media_descriptions": {
+    "WhatsApp Image 2026-09-19 at 18.17.46.jpeg": [
+      "My Yojock meter isn't powering on, which confirms the Switch motherboard is drawing zero power."
+    ],
+    "WhatsApp Image 2026-09-19 at 18.32.39.jpeg": [
+      "The M92T36 is the power management chip for the Nintendo Switch."
+    ],
+    "Screenshot 2026-09-19 at 18.25.16.png": [
+      "I ordered a brand new M92T36 chip from MBI Tech Parts, a family owned supplier based in Donegal, Ireland."
+    ],
+    "WhatsApp Image 2026-09-19 at 18.10.10.jpg": [
+      "I tested the battery with a multimeter and found that while the charge is very low, it is still healthy."
+    ],
+    "2026-09-27 at 15.29.00.MOV": [
+      "I removed the M92T36 Charge Control Chip using my rework station."
+    ],
+    "WhatsApp Image 2026-09-27 at 15.30.54.jpeg": [
+      "Then I cleaned everything up using 99.9% IPA and these new nano-cleaning sponges. They are so much better than the cotton buds I had been using until now because they don't leave annoying strands of fiber behind!"
+    ],
+    "2026-09-27 at 15.42.00.JPG": [
+      "Post cleaning"
+    ],
+    "WhatsApp Video 2026-09-27 at 16.08.53.mp4": [
+      "New theory: the USBC port needs to be replaced."
+    ],
+    "2026-09-28 at 15.10.00.MOV": [
+      "Clean-up time! I used plenty of 99.9% IPA along with some brand new tools to replace the terrible cotton buds I was using previously."
+    ],
+    "2026-09-28 at 15.00.00.MOV": [
+      "I decided to remove the USB-C port. My 3rd time using a rework station."
+    ],
+    "2026-09-28 at 15.20.00.JPG": [
+      "The VBUS short (Pin 9 of the M92T36) is gone now, so the USB-C port was the real root cause all along.",
+      "From what I've read online, normally when a USB-C port needs to be replaced like mine did, it's already too late for the M92T36 IC because it likely received a voltage spike and blew up, requiring replacement as well."
+    ],
+    "WhatsApp Video 2026-09-26 at 18.35.08.mp4": [
+      "A dead short on the capacitor across pins 8 (GND) and 9 (VBUS), possibly caused by the M92T36 being shorted internally?\""
+    ],
+    "6f45a7c0911ee30f1d647e5edf7d354203fdfd06 IMG_018_ 2026-09-19 at 18.50.35.jpeg": [
+      "The short I am using is that Pin 9 (VBUS) is being pulled to GND"
+    ],
+    "IMG_005.JPG": [
+      "Old USB-C port removed"
+    ],
+    "IMG_008.JPG": [
+      "Added some flux so that I can tin the new USB-C port"
+    ],
+    "IMG_009.JPG": [
+      "Tinned and ready to be installed"
+    ],
+    "IMG_011.JPG": [
+      "I'm not entirely happy with the solder around the four anchor points, but for my current level of experience, it's not too bad."
+    ],
+    "IMG_012.JPG": [
+      "Good news: I managed to install the new M92T36 chip. \nBad news: My hand was so shaky that I knocked at least five components off their pads while trying to place it.",
+      "What a mess!!!"
+    ],
+    "IMG_017.JPG": [
+      "Only one at the top of the chip but that is also going to need re-alignment."
+    ]
+  }
+}
