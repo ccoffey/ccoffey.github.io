@@ -504,6 +504,39 @@ class BrowserRegressionTests(unittest.TestCase):
         page.keyboard.press("Escape")
         self.assertEqual(menu.get_attribute("aria-expanded"), "false")
 
+    def test_narrative_story_expands_fully_on_mobile(self):
+        page = self.new_page(mobile=True)
+        page.goto(self.base_url + PROJECT_PATH, wait_until="commit")
+        collapsible = page.locator("#narrativeCollapsible")
+        toggle_btn = page.locator("#narrativeToggleBtn")
+        toggle_text = page.locator("#narrativeToggleText")
+        last_paragraph = page.locator("#narrativeContent p").last
+
+        collapsible.wait_for()
+        self.assertEqual(toggle_text.inner_text(), "Read full story")
+        initial_height = collapsible.bounding_box()["height"]
+        self.assertLessEqual(initial_height, 165)
+
+        toggle_btn.click()
+        page.locator("#narrativeCollapsible.expanded").wait_for()
+        page.locator("#narrativeToggleText").filter(has_text="Collapse story").wait_for()
+        page.wait_for_timeout(500)
+
+        collapsible_box = collapsible.bounding_box()
+        last_p_box = last_paragraph.bounding_box()
+        self.assertGreater(collapsible_box["height"], 2500, "Mobile story should expand beyond the old 2500px cutoff")
+        self.assertLessEqual(
+            last_p_box["y"] + last_p_box["height"],
+            collapsible_box["y"] + collapsible_box["height"] + 2,
+            "The final paragraph of the story must not be clipped",
+        )
+
+        toggle_btn.click()
+        page.locator("#narrativeCollapsible:not(.expanded)").wait_for()
+        page.locator("#narrativeToggleText").filter(has_text="Read full story").wait_for()
+        page.wait_for_timeout(500)
+        self.assertLessEqual(collapsible.bounding_box()["height"], 165)
+
     def test_visual_home_desktop(self):
         page = self.new_page(block_media=False)
         page.goto(self.base_url + "/", wait_until="commit")

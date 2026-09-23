@@ -8,18 +8,41 @@
     const icon = document.getElementById("narrativeToggleIcon");
     if (!container) return;
 
-    const isExpanded = container.classList.toggle("expanded");
-    if (text) text.textContent = isExpanded ? "Collapse story" : "Read full story";
-    if (icon) icon.style.transform = isExpanded ? "rotate(180deg)" : "rotate(0deg)";
+    const isExpanding = !container.classList.contains("expanded");
+    if (text) text.textContent = isExpanding ? "Collapse story" : "Read full story";
+    if (icon) icon.style.transform = isExpanding ? "rotate(180deg)" : "rotate(0deg)";
 
-    if (isExpanded && typeof gtag === "function") {
-      gtag("event", "read_story", {
-        project_title: config.title,
-        project_slug: config.slug,
-      });
-    }
+    if (isExpanding) {
+      if (typeof gtag === "function") {
+        gtag("event", "read_story", {
+          project_title: config.title,
+          project_slug: config.slug,
+        });
+      }
 
-    if (!isExpanded) {
+      const startHeight = container.offsetHeight;
+      const endHeight = container.scrollHeight;
+      container.style.maxHeight = startHeight + "px";
+      container.classList.add("expanded");
+      container.offsetHeight; // force reflow
+      container.style.maxHeight = endHeight + "px";
+
+      const onEnd = (e) => {
+        if (e && (e.target !== container || e.propertyName !== "max-height")) return;
+        container.removeEventListener("transitionend", onEnd);
+        if (container.classList.contains("expanded")) {
+          container.style.maxHeight = "none";
+        }
+      };
+      container.addEventListener("transitionend", onEnd);
+      setTimeout(onEnd, 450);
+    } else {
+      const startHeight = container.offsetHeight;
+      container.style.maxHeight = startHeight + "px";
+      container.classList.remove("expanded");
+      container.offsetHeight; // force reflow
+      container.style.maxHeight = "";
+
       const box = container.closest(".narrative-box");
       if (box && box.getBoundingClientRect().top < 80) {
         box.scrollIntoView({ behavior: "smooth", block: "start" });

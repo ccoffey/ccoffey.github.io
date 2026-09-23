@@ -819,7 +819,7 @@ header.hero {
   max-height: 520px;
 }
 .hero-split-container .narrative-collapsible.expanded {
-  max-height: 2500px;
+  max-height: none;
 }
 @media (max-width: 860px) {
   .hero-split-container {
@@ -834,7 +834,7 @@ header.hero {
     max-height: 160px;
   }
   .hero-split-container .narrative-collapsible.expanded {
-    max-height: 2500px;
+    max-height: none;
   }
 }
 
@@ -863,7 +863,7 @@ header.hero {
   transition: max-height 0.4s ease;
 }
 .narrative-collapsible.expanded {
-  max-height: 2500px;
+  max-height: none;
 }
 .narrative-content {
   font-size: 1.02rem;
