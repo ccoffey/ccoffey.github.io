@@ -73,6 +73,19 @@ def validate_site_url(value):
 MEDIA_EXTENSIONS = {'.jpg', '.jpeg', '.png', '.webp', '.mp4', '.mov', '.webm'}
 
 
+def is_generated_output_file(rel_path):
+    parts = rel_path.parts
+    if len(parts) == 1 and parts[0] in GENERATED_ROOT_FILES:
+        return True
+    if any(part == "thumbs" for part in parts):
+        return True
+    if len(parts) == 3 and parts[0] in ("major-builds", "quick-builds") and parts[2] == "index.html":
+        return True
+    if rel_path.name.endswith((".tmp", ".optimized")):
+        return True
+    return False
+
+
 def copy_source_tree(output, incremental=False):
     ignored_names = {".git", "_site", "__pycache__", ".DS_Store"}
 
@@ -85,19 +98,50 @@ def copy_source_tree(output, incremental=False):
         shutil.copytree(SOURCE_ROOT / "src", output, ignore=ignore)
         return
 
-    # A metadata/template/CSS edit does not need to recopy hundreds of MiB of
-    # media.  The existing isolated output already contains the source media
-    # and its generated thumbnails/posters, so sync just the non-media inputs.
+    # Incremental sync: copy new/modified files (including media) without
+    # blowing away derivatives, and prune removed/renamed files from output.
     source_tree = SOURCE_ROOT / "src"
+    source_files = set()
+
     for source in source_tree.rglob('*'):
         relative = source.relative_to(source_tree)
         if any(part in ignored_names for part in relative.parts) or source.is_dir():
             continue
-        if source.suffix.lower() in MEDIA_EXTENSIONS or source.name.endswith('.pyc'):
+        if source.suffix.lower() == '.pyc' or source.name in ignored_names:
             continue
+
+        source_files.add(relative)
         destination = output / relative
-        destination.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(source, destination)
+        is_media = source.suffix.lower() in MEDIA_EXTENSIONS
+
+        if not destination.exists():
+            destination.parent.mkdir(parents=True, exist_ok=True)
+            shutil.copy2(source, destination)
+        else:
+            src_stat = source.stat()
+            dst_stat = destination.stat()
+            if not is_media:
+                if src_stat.st_mtime != dst_stat.st_mtime or src_stat.st_size != dst_stat.st_size:
+                    shutil.copy2(source, destination)
+            else:
+                if src_stat.st_mtime > dst_stat.st_mtime:
+                    shutil.copy2(source, destination)
+
+    # Prune files from output that no longer exist in source_tree,
+    # preserving generated assets (HTML, sitemap, thumbnails, posters).
+    for dest_file in output.rglob('*'):
+        if dest_file.is_dir():
+            continue
+        relative = dest_file.relative_to(output)
+        if any(part in ignored_names for part in relative.parts):
+            continue
+        if is_generated_output_file(relative):
+            continue
+        if relative not in source_files:
+            try:
+                dest_file.unlink()
+            except OSError:
+                pass
 
 
 def remove_generated_output(output, preserve_media_derivatives=False):

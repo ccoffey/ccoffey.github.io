@@ -109,20 +109,8 @@ def watcher_loop():
         time.sleep(1.0)
         current_state = get_dir_state()
         if current_state != last_state:
-            changed_paths = {
-                path for path in set(last_state) | set(current_state)
-                if last_state.get(path) != current_state.get(path)
-            }
-            # Only unchanged file sets containing non-media edits can reuse the
-            # copied media. New, removed, or changed photos/videos need a clean
-            # build so the preview exactly mirrors the source tree.
-            incremental = (
-                set(last_state) == set(current_state)
-                and all(os.path.splitext(path)[1].lower() not in MEDIA_EXTENSIONS for path in changed_paths)
-            )
-            mode = "incremental" if incremental else "full"
-            print(f"[Watcher] Detected changes in source files. Running {mode} isolated build...")
-            run_builder(incremental=incremental)
+            print("[Watcher] Detected changes in source files. Running isolated build...")
+            run_builder(incremental=True)
             last_state = get_dir_state()
 
 class CustomHandler(SimpleHTTPRequestHandler):
@@ -187,7 +175,7 @@ class CustomHandler(SimpleHTTPRequestHandler):
 if __name__ == '__main__':
     port = 8000
     print(f"Starting auto-syncing dev server on http://localhost:{port} ...")
-    run_builder()
+    run_builder(incremental=True)
     
     t = threading.Thread(target=watcher_loop, daemon=True)
     t.start()

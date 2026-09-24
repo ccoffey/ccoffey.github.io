@@ -1,0 +1,72 @@
+{
+  "title": "PS5 HDMI Port Repair",
+  "subtitle": "My very first time using a microscope & a hot air rework station",
+  "description": "My brother-in-law's PS5 took a tumble when his kids accidentally knocked it over, leaving it dangling by its HDMI port. Time to learn how to microsolder!",
+  "tags": [
+    "Microsoldering",
+    "Microscope",
+    "Rework Station",
+    "Hardware Repair",
+    "PS5"
+  ],
+  "dates": "September 2026",
+  "order": 1,
+  "cover_image": "PXL_20260924_082814676.jpg",
+  "media_descriptions": {
+    "PXL_20260824_144640900.mp4": [
+      "This was four weeks ago, before I even owned a microscope. I had to record the damage using my phone's 5x zoom!",
+      "I naively thought I could just resolder the loose pins in place without replacing the whole port. How little I knew back then."
+    ],
+    "PXL_20260908_080643347.jpg": [
+      "Microscope unlocked!!!",
+      "This is the MUSTOOL G1200D Digital Microscope. I picked it up for an absolute steal (\u20ac46.38) on banggood.com"
+    ],
+    "PXL_20260923_165221575.jpg": [
+      "Hot air soldering station unlocked!!!",
+      "This was not a steal, this is serious hobby equipment: the Atten ST-862D hot air rework station. I picked it up for \u20ac175 from reichelt.com"
+    ],
+    "PXL_20260924_072737842.MP.jpg": [
+      "I found this monkey wrench to be super helpful for holding the new HDMI port steady while I tinned it."
+    ],
+    "PXL_20260924_072816706.jpg": [
+      "You can never have enough flux!"
+    ],
+    "PXL_20260924_073528394.jpg": [
+      "Cleaned it down afterwards with 99.9% IPA",
+      "You can never have enough IPA!"
+    ],
+    "PXL_20260924_074332574.jpg": [
+      "Time to tear down the PS5... again.",
+      "The first time I tore it down four weeks ago, I quickly realised that I needed a microscope and rework station to complete this project."
+    ],
+    "PXL_20260924_075409989.jpg": [
+      "I always take a photo of the screws like this so I can put them back exactly where they came from. I have no idea why Sony uses so many different screw lengths!"
+    ],
+    "PXL_20260924_075855854.jpg": [
+      "More screws, more photos. At least four different lengths and styles are used just for this cover alone!"
+    ],
+    "PXL_20260924_082814676.jpg": [
+      "I watched at least eight hours of YouTubers doing this exact job. The console technician community seems to agree that it's best to hang the board over the edge of a table and heat the HDMI port from below.",
+      "This was the best video I found, Derek make it look easy, it was not: https://www.youtube.com/watch?v=KBFJtn4Ff3I"
+    ],
+    "PXL_20260924_090648441.jpg": [
+      "When I finally managed to get the old HDMI port off the PCB, I found a nasty surprise: the leftmost pin (Pin 1: TMDS Data 2+) was completely missing its trace\u2014likely ripped right off when the PS5 was hanging by its cable."
+    ],
+    "PXL_20260924_072816707.JPG": [
+      "Before tinning"
+    ],
+    "PXL_20260924_072816708.jpg": [
+      "After tinning"
+    ],
+    "PXL_20260924_082814677.jpg": [
+      "I had never used a rework station before, so when the fire alarm suddenly went off, I had no idea what was happening. It scared the crap out of me, so I decided to temporarily remove the alarm until I finished the job!"
+    ],
+    "PXL_20260924_090648442.jpg": [
+      "I installed the new HDMI port before fixing the broken trace.",
+      "This was the start of the trace-fixing process. It took me two hours to get it right, microsoldering is definitely a skill that requires a lot of practice! I spent ages checking continuity between things that should have continuity, and double-checking everything else to make sure nothing was shorted."
+    ],
+    "WhatsApp Image 2026-09-24 at 19.54.35.jpeg": [
+      "You wouldn't believe how happy I was when this image appeared on screen."
+    ]
+  }
+}

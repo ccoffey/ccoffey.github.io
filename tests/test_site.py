@@ -581,6 +581,39 @@ class TestBuildAndWatcherContracts(unittest.TestCase):
 
             self.assertEqual((output / 'js' / 'app.js').read_text(encoding='utf-8'), 'second')
 
+    def test_incremental_copy_handles_media_addition_rename_and_pruning(self):
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            root = Path(temporary_dir)
+            source = root / 'src'
+            project_media = source / 'quick-builds' / 'demo' / 'media'
+            project_media.mkdir(parents=True)
+            (project_media / 'PXL_20260101_100000000.jpg').write_bytes(b'photo-1')
+
+            output = root / 'output'
+            original_root = build_site.SOURCE_ROOT
+            try:
+                build_site.SOURCE_ROOT = root
+                build_site.copy_source_tree(output)
+
+                # Simulate generated thumbnail in output
+                thumbs_dir = output / 'quick-builds' / 'demo' / 'thumbs'
+                thumbs_dir.mkdir(parents=True)
+                (thumbs_dir / 'PXL_20260101_100000000.webp').write_bytes(b'thumb-webp')
+
+                # Rename media in source
+                (project_media / 'PXL_20260101_100000000.jpg').unlink()
+                (project_media / 'PXL_20260101_110000000.jpg').write_bytes(b'photo-2')
+
+                build_site.copy_source_tree(output, incremental=True)
+            finally:
+                build_site.SOURCE_ROOT = original_root
+
+            out_media = output / 'quick-builds' / 'demo' / 'media'
+            self.assertTrue((out_media / 'PXL_20260101_110000000.jpg').is_file())
+            self.assertFalse((out_media / 'PXL_20260101_100000000.jpg').exists())
+            # Ensure generated thumbnails were preserved
+            self.assertTrue((thumbs_dir / 'PXL_20260101_100000000.webp').is_file())
+
     def test_site_url_must_be_an_https_origin(self):
         self.assertEqual(build_site.validate_site_url('https://cathalcoffey.com/'), 'https://cathalcoffey.com')
         for value in ('', 'http://cathalcoffey.com', 'https://', 'https://cathalcoffey.com/path', 'not a url'):
