@@ -849,8 +849,8 @@ def sync_builds():
             major_items.append(f'''
               <a href="/major-builds/{b['slug']}/" class="nav-dropdown-item{item_act}">
                 <div class="dropdown-item-content">
-                  <span class="dropdown-item-title">{b['title']}</span>
-                  <span class="dropdown-item-desc">{subtitle}</span>
+                  <span class="dropdown-item-title">{escape(b['title'])}</span>
+                  <span class="dropdown-item-desc">{escape(subtitle)}</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>''')
@@ -862,8 +862,8 @@ def sync_builds():
             quick_items.append(f'''
               <a href="/quick-builds/{qb['slug']}/" class="nav-dropdown-item{item_act}">
                 <div class="dropdown-item-content">
-                  <span class="dropdown-item-title">{qb['title']}</span>
-                  <span class="dropdown-item-desc">{subtitle}</span>
+                  <span class="dropdown-item-title">{escape(qb['title'])}</span>
+                  <span class="dropdown-item-desc">{escape(subtitle)}</span>
                 </div>
                 <svg class="dropdown-item-arrow" width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="9 18 15 12 9 6"/></svg>
               </a>''')
