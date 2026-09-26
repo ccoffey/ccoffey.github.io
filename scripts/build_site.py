@@ -143,6 +143,16 @@ def copy_source_tree(output, incremental=False):
             except OSError:
                 pass
 
+    # Prune orphaned project directories (e.g. from deleted builds or switching git branches)
+    for build_type in ("major-builds", "quick-builds"):
+        out_build_root = output / build_type
+        src_build_root = source_tree / build_type
+        if out_build_root.is_dir() and src_build_root.is_dir():
+            src_slugs = {p.name for p in src_build_root.iterdir() if p.is_dir()}
+            for out_build in list(out_build_root.iterdir()):
+                if out_build.is_dir() and out_build.name not in src_slugs:
+                    shutil.rmtree(out_build)
+
 
 def remove_generated_output(output, preserve_media_derivatives=False):
     """Ensure the candidate is recreated from source rather than copied artifacts."""

@@ -603,7 +603,7 @@ def process_build_dir(base_dir, slug, url_prefix):
 
     defaults = {
         'title': slug.replace('-', ' ').title(),
-        'subtitle': 'Hardware Build',
+        'subtitle': 'Hardware and electronics build project',
         'description': '',
         'tags': ['Hardware'],
         'dates': 'Active',

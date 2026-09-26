@@ -17,6 +17,7 @@ import glob
 import json
 import os
 import re
+import shutil
 import sys
 import tempfile
 import unittest
@@ -613,6 +614,15 @@ class TestBuildAndWatcherContracts(unittest.TestCase):
             self.assertFalse((out_media / 'PXL_20260101_100000000.jpg').exists())
             # Ensure generated thumbnails were preserved
             self.assertTrue((thumbs_dir / 'PXL_20260101_100000000.webp').is_file())
+
+            # Deleting entire build in source tree should prune it from output
+            shutil.rmtree(source / 'quick-builds' / 'demo')
+            try:
+                build_site.SOURCE_ROOT = root
+                build_site.copy_source_tree(output, incremental=True)
+            finally:
+                build_site.SOURCE_ROOT = original_root
+            self.assertFalse((output / 'quick-builds' / 'demo').exists())
 
     def test_site_url_must_be_an_https_origin(self):
         self.assertEqual(build_site.validate_site_url('https://cathalcoffey.com/'), 'https://cathalcoffey.com')
