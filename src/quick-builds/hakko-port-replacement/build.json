@@ -1,0 +1,47 @@
+{
+  "title": "Hakko Soldering Iron Repair",
+  "subtitle": "Hakko fell of my desk and landed on its SD-60LS port",
+  "description": "I decided to completly replace the existing SD-60LS port after I failed to design a support harness for the damaged port.",
+  "tags": [
+    "3D Printing",
+    "Repair"
+  ],
+  "dates": "October 2026",
+  "order": 6,
+  "cover_image": "PXL_20260925_180415290.jpg",
+  "media_descriptions": {
+    "PXL_20260925_180415290.jpg": [
+      "The FX-888DX is surprisingly heavy. When I accidentally knocked it off my desk, it took a direct hit face-down on its own port."
+    ],
+    "PXL_20260925_181759222.jpg": [
+      "This is a brilliantly engineered product, neatly laid out and exceptionally easy to disassemble."
+    ],
+    "PXL_20260925_181947308.MACRO_FOCUS.jpg": [
+      "This looks like it was chewed up and spat out."
+    ],
+    "PXL_20260926_094925554.jpg": [
+      "y initial fix was to 3D print a support harness that wraps around the damaged port to lock it in place. I used the existing motherboard screws as anchoring points for the structure. Navigating all the internal structures meant a lot of trial and error, so I iterated the design in 5mm increments."
+    ],
+    "PXL_20260926_094932286.jpg": [
+      "I also designed a faceplate to hide the damage on the front. I used transparent filament just because it was already loaded in my printer, but I plan to reprint it in yellow once I'm sure the fit is dialed in."
+    ],
+    "PXL_20260926_101653442.MACRO_FOCUS.jpg": [
+      "This is starting to come together nicely"
+    ],
+    "PXL_20260926_151822147.jpg": [
+      "I happened to have yellow filament that was really close in color to the Hakko faceplate"
+    ],
+    "PXL_20260926_161128593.jpg": [
+      "The finial design that I arrived at"
+    ],
+    "PXL_20260926_161128594.jpg": [
+      "These are all of the incremental designs that I printed along the way."
+    ],
+    "Screenshot 2026-09-26 at 16.42.18.jpg": [
+      "Eventually, I tracked down a replacement port featuring a threaded screw mounting system, which will be way more reliable than my 3D-printed harness."
+    ],
+    "Screenshot 2026-09-26 at 17.04.11.jpg": [
+      "The shipping cost is a real killer here. I hate paying more for delivery on a few grams of plastic than the actual item costs. I really wish companies would support hobbyists by shipping small parts like this via standard letter mail."
+    ]
+  }
+}
