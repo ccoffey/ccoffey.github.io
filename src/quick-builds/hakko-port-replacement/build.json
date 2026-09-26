@@ -1,0 +1,78 @@
+{
+  "title": "Hakko FX-888DX Soldering Station Repair",
+  "subtitle": "My Hakko FX-888DX fell off my desk and landed right on its port",
+  "description": "After struggling to design and 3D print a custom support harness for the damaged port, I ultimately decided to replace the part entirely.",
+  "tags": [
+    "3D Printing",
+    "Repair"
+  ],
+  "dates": "October 2026",
+  "order": 6,
+  "cover_image": "PXL_20260925_180415290.jpg",
+  "media_descriptions": {
+    "PXL_20260925_180415290.jpg": [
+      "The FX-888DX is surprisingly heavy. When I accidentally knocked it off my desk, it took a direct hit face-down on its own port."
+    ],
+    "PXL_20260925_181759222.jpg": [
+      "This is a brilliantly engineered product—neatly laid out and exceptionally easy to disassemble."
+    ],
+    "PXL_20260925_181947308.MACRO_FOCUS.jpg": [
+      "This looks like it was chewed up and spat out."
+    ],
+    "PXL_20260926_094925554.jpg": [
+      "My initial fix was to 3D print a support harness that wraps around the damaged port to lock it in place, using the existing motherboard screws as anchoring points. Navigating all the internal components meant a lot of trial and error, so I iterated the design in small increments."
+    ],
+    "PXL_20260926_094932286.jpg": [
+      "I also designed a faceplate to hide the damage on the front. I used transparent filament just because it was already loaded in my printer, but I plan to reprint it in yellow once I'm sure the fit is dialed in."
+    ],
+    "PXL_20260926_101653442.MACRO_FOCUS.jpg": [
+      "This is starting to come together nicely."
+    ],
+    "PXL_20260926_151822147.jpg": [
+      "I happened to have yellow filament that was a really close color match to the Hakko faceplate."
+    ],
+    "PXL_20260926_161128593.jpg": [
+      "The final design that I arrived at."
+    ],
+    "PXL_20260926_161128594.jpg": [
+      "These are all of the incremental test and fit prints that I went through along the way."
+    ],
+    "Screenshot 2026-09-26 at 16.42.18.jpg": [
+      "Eventually, I tracked down a replacement port featuring a threaded screw mounting system, which is much more reliable than my 3D-printed harness."
+    ],
+    "Screenshot 2026-09-26 at 17.04.11.jpg": [
+      "The shipping cost (€11.99) is a real killer here. I hate paying more for delivery on a few grams of plastic than the actual item costs. I really wish companies would support hobbyists by shipping small parts like this via standard letter mail."
+    ],
+    "WhatsApp Image 2026-09-30 at 21.29.41.jpeg": [
+      "All wired up and ready to test."
+    ],
+    "WhatsApp Image 2026-09-30 at 21.28.44.jpeg": [
+      "It took a few days, but the replacement part eventually arrived."
+    ],
+    "WhatsApp Image 2026-09-30 at 21.29.22.jpeg": [
+      "Using my crappy old soldering iron to fix my beautiful new one. It took forever to heat up!"
+    ],
+    "WhatsApp Video 2026-09-30 at 21.29.08.mp4": [
+      "Good as new!"
+    ]
+  },
+  "photos": {
+    "PXL_20260925_180415290.jpg": 0,
+    "PXL_20260925_181759222.jpg": 1,
+    "PXL_20260925_181947308.MACRO_FOCUS.jpg": 2,
+    "PXL_20260926_094925554.jpg": 3,
+    "PXL_20260926_094932286.jpg": 4,
+    "PXL_20260926_101653442.MACRO_FOCUS.jpg": 5,
+    "PXL_20260926_120018874.jpg": 6,
+    "PXL_20260926_150206227.jpg": 7,
+    "PXL_20260926_151822147.jpg": 8,
+    "PXL_20260926_161128593.jpg": 9,
+    "PXL_20260926_161128594.jpg": 10,
+    "Screenshot 2026-09-26 at 16.42.18.jpg": 11,
+    "Screenshot 2026-09-26 at 17.04.11.jpg": 12,
+    "WhatsApp Image 2026-09-30 at 21.28.44.jpeg": 13,
+    "WhatsApp Image 2026-09-30 at 21.29.41.jpeg": 14,
+    "WhatsApp Image 2026-09-30 at 21.29.22.jpeg": 15,
+    "WhatsApp Video 2026-09-30 at 21.29.08.mp4": 16
+  }
+}
