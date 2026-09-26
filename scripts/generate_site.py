@@ -1117,8 +1117,6 @@ def sync_builds():
             .replace('{{ BODY_CONTENT }}', '\n'.join((hero_section_html, story_section_html, next_steps_section_html)))
             .replace('{{ GALLERY_SUMMARY }}', gallery_summary(b['gallery']))
             .replace('{{ PHOTO_GRID }}', '\n'.join(media_html))
-            .replace('{{ COLLECTION_URL }}', '/#major-builds')
-            .replace('{{ COLLECTION_LABEL }}', 'More major builds')
             .replace('{{ GALLERY_JSON }}', gallery_json))
 
         build_out = os.path.join(MAJOR_BUILDS_DIR, b['slug'], 'index.html')
@@ -1165,8 +1163,6 @@ def sync_builds():
             .replace('{{ NAV_LINKS }}', render_nav('quick', qb['slug']))
             .replace('{{ GALLERY_SUMMARY }}', gallery_summary(qb['gallery']))
             .replace('{{ PHOTO_GRID }}', gallery_markup)
-            .replace('{{ COLLECTION_URL }}', '/#quick-builds')
-            .replace('{{ COLLECTION_LABEL }}', 'More quick builds')
             .replace('{{ GALLERY_JSON }}', gallery_json))
 
         qb_out = os.path.join(QUICK_BUILDS_DIR, qb['slug'], 'index.html')
