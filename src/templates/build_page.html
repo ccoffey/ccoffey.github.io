@@ -692,7 +692,13 @@
 
   </script>
   <script src="/js/major-build.js?v={{ BUILD_ID }}"></script>
-  <script src="/js/comment-admin.js?v={{ BUILD_ID }}"></script>
+  <script>
+    if (location.protocol === "http:" || ["localhost", "127.0.0.1"].includes(location.hostname)) {
+      const s = document.createElement("script");
+      s.src = "/js/comment-admin.js?v={{ BUILD_ID }}";
+      document.body.append(s);
+    }
+  </script>
   <script src="/js/navigation.js?v={{ BUILD_ID }}"></script>
 </body>
 </html>
