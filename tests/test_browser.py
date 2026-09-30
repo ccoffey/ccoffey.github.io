@@ -72,18 +72,38 @@ class QuietRequestHandler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
-        if urlparse(self.path).path == "/__admin/comments/status" and self.server.admin_enabled:
+        if urlparse(self.path).path in ("/__admin/comments/status", "/__admin/gallery/status") and self.server.admin_enabled:
             self.send_json({"enabled": True})
             return
         super().do_GET()
 
     def do_POST(self):
-        if urlparse(self.path).path != "/__admin/comments" or not self.server.admin_enabled:
+        path = urlparse(self.path).path
+        if not self.server.admin_enabled:
             self.send_error(404)
             return
-        length = int(self.headers.get("Content-Length", "0"))
-        payload = json.loads(self.rfile.read(length))
-        self.send_json({"comments": payload["comments"]})
+        if path == "/__admin/comments":
+            length = int(self.headers.get("Content-Length", "0"))
+            payload = json.loads(self.rfile.read(length))
+            self.send_json({"comments": payload["comments"]})
+            return
+        if path == "/__admin/gallery-order":
+            length = int(self.headers.get("Content-Length", "0"))
+            payload = json.loads(self.rfile.read(length))
+            self.send_json({"photos": {fn: i for i, fn in enumerate(payload["order"])}})
+            return
+        if path == "/__admin/gallery/delete":
+            length = int(self.headers.get("Content-Length", "0"))
+            payload = json.loads(self.rfile.read(length))
+            self.send_json({"photos": {}})
+            return
+        if path == "/__admin/gallery/upload":
+            length = int(self.headers.get("Content-Length", "0"))
+            _ = self.rfile.read(length)
+            filename = self.headers.get("X-File-Name", "uploaded.jpg")
+            self.send_json({"target_filename": filename, "photos": {}})
+            return
+        self.send_error(404)
 
 
 class TestHTTPServer(ThreadingHTTPServer):
@@ -536,6 +556,114 @@ class BrowserRegressionTests(unittest.TestCase):
         page.locator("#narrativeToggleText").filter(has_text="Read full story").wait_for()
         page.wait_for_timeout(500)
         self.assertLessEqual(collapsible.bounding_box()["height"], 165)
+
+    def test_gallery_reorder_only_works_locally(self):
+        # 1. In prod (admin disabled): cards are not draggable, grid is not reorderable
+        page = self.new_page(block_media=True)
+        page.goto(self.base_url + PROJECT_PATH, wait_until="commit")
+        page.locator(".photo-card").first.wait_for()
+        page.wait_for_timeout(400)
+        self.assertEqual(page.locator(".photo-grid.is-reorderable").count(), 0)
+        self.assertNotEqual(page.locator(".photo-card").first.get_attribute("draggable"), "true")
+
+        # 2. Locally (admin enabled): cards become draggable and reordering saves order
+        self.enable_local_comment_authoring()
+        page = self.new_page(block_media=True)
+        page.goto(self.base_url + PROJECT_PATH, wait_until="commit")
+        page.locator(".photo-grid.is-reorderable").wait_for(timeout=5000)
+        cards = page.locator(".photo-card")
+        self.assertEqual(cards.first.get_attribute("draggable"), "true")
+
+        first_fn = cards.nth(0).get_attribute("data-filename")
+        second_fn = cards.nth(1).get_attribute("data-filename")
+        self.assertNotEqual(first_fn, second_fn)
+
+        page.evaluate("""() => {
+            const grid = document.querySelector(".photo-grid");
+            const first = grid.children[0];
+            const second = grid.children[1];
+
+            first.dispatchEvent(new DragEvent("dragstart", { bubbles: true, cancelable: true, dataTransfer: new DataTransfer() }));
+            second.dispatchEvent(new DragEvent("dragover", { bubbles: true, cancelable: true, clientX: 99999, dataTransfer: new DataTransfer() }));
+            first.dispatchEvent(new DragEvent("dragend", { bubbles: true, cancelable: true }));
+        }""")
+
+        page.locator(".gallery-reorder-status:not([hidden])").wait_for(timeout=5000)
+        status_text = page.locator(".gallery-reorder-status").inner_text()
+        self.assertIn("Saved", status_text)
+
+        new_first_fn = page.locator(".photo-card").nth(0).get_attribute("data-filename")
+        self.assertEqual(new_first_fn, second_fn)
+
+        # Click the new first card in the reordered gallery
+        page.locator(".photo-card").nth(0).click()
+        page.locator("#lightbox.active").wait_for(timeout=5000)
+
+        # Verify the opened image is the new first image (second_fn), NOT the old one (first_fn)
+        current_opened_fn = page.evaluate("gallery[currentIndex].filename")
+        self.assertEqual(current_opened_fn, second_fn)
+        self.assertNotEqual(current_opened_fn, first_fn)
+
+        counter_text = page.locator("#lightbox-counter").inner_text()
+        self.assertTrue(counter_text.startswith("Photo 1 of ") or counter_text.startswith("Video 1 of "))
+
+    def test_gallery_upload_and_delete_only_work_locally(self):
+        # 1. In prod (admin disabled): upload button, card delete button, and lightbox delete button do not exist
+        page = self.new_page(block_media=True)
+        page.goto(self.base_url + PROJECT_PATH, wait_until="commit")
+        page.locator(".photo-card").first.wait_for()
+        page.wait_for_timeout(400)
+        self.assertEqual(page.locator("#galleryUploadBtn").count(), 0)
+        self.assertEqual(page.locator(".photo-card-delete").count(), 0)
+
+        # Open lightbox
+        page.locator(".photo-card").first.click()
+        page.locator("#lightbox.active").wait_for(timeout=5000)
+        self.assertEqual(page.locator("#lightboxDeleteBtn").count(), 0)
+
+        # 2. Locally (admin enabled): upload button exists, preview cards have delete button, lightbox has delete button
+        self.enable_local_comment_authoring()
+        page = self.new_page(block_media=True)
+        page.goto(self.base_url + PROJECT_PATH, wait_until="commit")
+        page.locator("#galleryUploadBtn").wait_for(timeout=5000)
+        self.assertEqual(page.locator("#galleryUploadBtn").count(), 1)
+        self.assertGreater(page.locator(".photo-card-delete").count(), 0)
+
+        # Set up dialog handler
+        page.on("dialog", lambda dialog: dialog.accept())
+
+        # Test A: Delete from the preview card directly (bottom right corner button)
+        first_card = page.locator(".photo-card").first
+        first_fn = first_card.get_attribute("data-filename")
+        preview_del = first_card.locator(".photo-card-delete")
+        preview_del.wait_for(timeout=5000)
+        preview_del.click()
+
+        # Verify lightbox was NOT opened by clicking the preview delete button
+        self.assertEqual(page.locator("#lightbox.active").count(), 0)
+
+        # Wait for deletion status and card removal
+        status_locator = page.locator(".gallery-reorder-status", has_text="deleted")
+        status_locator.wait_for(timeout=5000)
+        self.assertEqual(page.locator(f'.photo-card[data-filename="{first_fn}"]').count(), 0)
+
+        # Test B: Delete from inside the lightbox, verifying that lightbox closes
+        second_card = page.locator(".photo-card").first
+        second_fn = second_card.get_attribute("data-filename")
+        second_card.click()
+        page.locator("#lightbox.active").wait_for(timeout=5000)
+        page.locator("#lightboxDeleteBtn").wait_for(timeout=5000)
+
+        # Click lightbox delete button
+        page.locator("#lightboxDeleteBtn").click()
+
+        # Verify that the lightbox is immediately closed upon deletion
+        page.locator("#lightbox.active").wait_for(state="hidden", timeout=5000)
+        self.assertEqual(page.locator("#lightbox.active").count(), 0)
+
+        # Wait for card removal
+        status_locator.wait_for(timeout=5000)
+        self.assertEqual(page.locator(f'.photo-card[data-filename="{second_fn}"]').count(), 0)
 
     def test_visual_home_desktop(self):
         page = self.new_page(block_media=False)

@@ -2,7 +2,33 @@
   "title": "Prusa i3 MK3S+ Hotend Repair",
   "subtitle": "My beloved 3D printer refused to print, beeped aggressively, and threw the wonderfully unhelpful error: \"Some problem encountered.\"",
   "description": "The culprit was a frayed heater cartridge wire that snapped the moment I touched it. Since the assembly had seen better days, I did a full refresh; swapping out the heater cartridge, thermistor, heater block, and heatbreak. It's now running like new again.",
-  "tags": ["3D Printing", "Hardware Repair"],
+  "tags": [
+    "3D Printing",
+    "Hardware Repair"
+  ],
   "dates": "September 2026",
-  "order": 4
+  "order": 4,
+  "photos": {
+    "IMG-20260903-WA0001.png": 0,
+    "PXL_20260903_085455289.mp4": 1,
+    "PXL_20260903_102253947.jpg": 2,
+    "PXL_20260903_105342002.MACRO_FOCUS.jpg": 3,
+    "PXL_20260903_113140564.MACRO_FOCUS.jpg": 4,
+    "PXL_20260903_113145780.MACRO_FOCUS.MP.jpg": 5,
+    "PXL_20260903_113157418.MACRO_FOCUS.MP.jpg": 6,
+    "PXL_20260909_094659581.jpg": 7,
+    "PXL_20260909_094822563.jpg": 8,
+    "PXL_20260909_095130442.jpg": 9,
+    "PXL_20260909_103530424.MP.jpg": 10,
+    "PXL_20260909_103758594.jpg": 11,
+    "PXL_20260909_105411880.MACRO_FOCUS.jpg": 12,
+    "PXL_20260909_105637932.MACRO_FOCUS.jpg": 13,
+    "PXL_20260909_125714186.jpg": 14,
+    "PXL_20260909_125727251.jpg": 15,
+    "PXL_20260909_125737428.jpg": 16,
+    "PXL_20260909_130939141.jpg": 17,
+    "PXL_20260909_133501512.jpg": 18,
+    "PXL_20260909_143323078.jpg": 19,
+    "PXL_20260909_190816403.mp4": 20
+  }
 }

@@ -6,7 +6,16 @@
     "3D Printing",
     "OpenSCAD"
   ],
-  "dates": "October 2025 – September 2026",
+  "dates": "October 2025 \u2013 September 2026",
   "order": 5,
-  "cover_image": "PXL_20251108_160713233.jpg"
+  "cover_image": "PXL_20251108_160713233.jpg",
+  "photos": {
+    "PXL_20251026_095712979.jpg": 0,
+    "PXL_20251106_202650755.jpg": 1,
+    "PXL_20251107_142756504.jpg": 2,
+    "PXL_20251107_143651665.jpg": 3,
+    "PXL_20251108_160713233.jpg": 4,
+    "PXL_20251109_124010947.MP.jpg": 5,
+    "PXL_20260906_080803110.MP.jpg": 6
+  }
 }

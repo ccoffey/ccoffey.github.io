@@ -177,6 +177,7 @@ def validate_output(output):
         output / "index.html",
         output / "css" / "style.css",
         output / "js" / "comment-admin.js",
+        output / "js" / "gallery-reorder.js",
         output / "js" / "major-build.js",
         output / "js" / "navigation.js",
         output / ".nojekyll",

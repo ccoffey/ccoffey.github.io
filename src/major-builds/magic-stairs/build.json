@@ -13,5 +13,37 @@
   "hero_video": "PXL_20260513_082421428.mp4",
   "next_steps": [
     "Hide the wiring between steps with custom 3d printed trunking that looks like it's just part of the staircase."
-  ]
+  ],
+  "photos": {
+    "PXL_20260322_093042104.mp4": 0,
+    "PXL_20260330_082833882.mp4": 1,
+    "PXL_20260419_155828005.jpg": 2,
+    "PXL_20260419_161551000.jpg": 3,
+    "PXL_20260425_142540415.jpg": 4,
+    "PXL_20260425_144132232.jpg": 5,
+    "PXL_20260513_082421428.mp4": 6,
+    "PXL_20260513_082454321.mp4": 7,
+    "PXL_20260514_180841483.jpg": 8,
+    "PXL_20260514_180849860.jpg": 9,
+    "PXL_20260524_175825232.mp4": 10,
+    "PXL_20260524_180052662.mp4": 11,
+    "PXL_20260525_123146216.jpg": 12,
+    "PXL_20260525_123219607.mp4": 13,
+    "PXL_20260602_190117270.jpg": 14,
+    "PXL_20260602_193331808.jpg": 15,
+    "PXL_20260603_154027912.jpg": 16,
+    "2026-06-04T100000_step-0-bare-board.png": 17,
+    "2026-06-04T100100_step-1-attiny-and-headers.png": 18,
+    "2026-06-04T100200_step-2-flash-the-board.png": 19,
+    "2026-06-04T100300_step-3-resistors-and-capacitors.png": 20,
+    "2026-06-04T100400_step-4-ws2815-led.png": 21,
+    "2026-06-04T100500_step-5-vl53l0x-sensor.png": 22,
+    "2026-06-04T100600_step-6-finished-board.jpeg": 23,
+    "IMG-20260607-WA0003.jpg": 24,
+    "PXL_20260607_093542166.jpg": 25,
+    "PXL_20260622_200459358.MP.jpg": 26,
+    "PXL_20260622_200639616.jpg": 27,
+    "PXL_20260906_140714726.jpg": 28,
+    "PXL_20260906_140726828.jpg": 29
+  }
 }

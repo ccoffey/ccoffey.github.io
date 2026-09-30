@@ -23,6 +23,7 @@ BUILD_SLUG_PATTERN = re.compile(r'[a-z0-9](?:[a-z0-9+-]*[a-z0-9])?')
 BUILD_CONFIG_KEYS = {
     'title', 'subtitle', 'description', 'tags', 'dates', 'order', 'story',
     'status', 'cover_image', 'hero_video', 'next_steps', 'media_descriptions',
+    'photos',
 }
 
 SITE_CONFIG = {}
@@ -94,6 +95,16 @@ def validate_build_config(config, slug):
         if not isinstance(steps, list) or any(not isinstance(step, str) or not step.strip() for step in steps):
             raise ValueError(f"[{slug}] 'next_steps' must be a list of non-empty strings.")
 
+    if 'photos' in config:
+        photos = config['photos']
+        if not isinstance(photos, dict):
+            raise ValueError(f"[{slug}] 'photos' must be an object keyed by filename.")
+        for filename, index in photos.items():
+            if not isinstance(filename, str) or not is_safe_media_filename(filename):
+                raise ValueError(f"[{slug}] photo keys must be plain media filenames.")
+            if not isinstance(index, int) or isinstance(index, bool) or index < 0:
+                raise ValueError(f"[{slug}] photo index for '{filename}' must be a non-negative integer.")
+
     if 'media_descriptions' in config:
         descriptions = config['media_descriptions']
         if not isinstance(descriptions, dict):
@@ -124,6 +135,10 @@ def validate_media_references(config, slug, raw_files):
         if not filename.lower().endswith(extensions):
             expected = 'image' if field == 'cover_image' else 'video'
             raise ValueError(f"[{slug}] '{field}' must reference an {expected} file: '{filename}'.")
+
+    for filename in config.get('photos', {}):
+        if filename not in media_files:
+            raise ValueError(f"[{slug}] photos references missing media file '{filename}'.")
 
     for filename in config.get('media_descriptions', {}):
         if filename not in media_files:
@@ -164,13 +179,10 @@ DATE_IN_FILENAME = re.compile(
 
 
 def parse_media_datetime(filename):
-    """Extract an unambiguous ISO-style date (and optional time) from a filename."""
+    """Extract an unambiguous ISO-style date (and optional time) from a filename, or None."""
     match = DATE_IN_FILENAME.search(filename)
     if not match:
-        raise ValueError(
-            f"Couldn't parse a date from media filename '{filename}'. Rename it to include "
-            "YYYY-MM-DD, YYYY_MM_DD, YYYY.MM.DD, or YYYYMMDD (optionally followed by a time)."
-        )
+        return None
 
     values = match.groupdict()
     try:
@@ -178,20 +190,21 @@ def parse_media_datetime(filename):
             int(values['year']), int(values['month']), int(values['day']),
             int(values['hour'] or 0), int(values['minute'] or 0), int(values['second'] or 0),
         )
-    except ValueError as error:
-        raise ValueError(
-            f"Couldn't parse a valid date from media filename '{filename}'. Rename it to include "
-            "YYYY-MM-DD, YYYY_MM_DD, YYYY.MM.DD, or YYYYMMDD (optionally followed by a time)."
-        ) from error
+    except ValueError:
+        return None
 
 
 def parse_photo_date(filename):
     dt = parse_media_datetime(filename)
+    if not dt:
+        return '', ''
     return dt.strftime('%B %-d, %Y'), dt.strftime('%b %-d, %Y')
 
 
 def get_photo_sort_key(filename):
     dt = parse_media_datetime(filename)
+    if not dt:
+        return (9999, 99, 99, 99, 99, 99)
     return (dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second)
 
 def strip_exif_from_file(filepath):
@@ -331,7 +344,7 @@ def optimize_full_photo(photo_path, max_dim=2560, quality=85):
                     img_res = img.copy()
                 
                 extension = os.path.splitext(photo_path)[1].lower()
-                tmp_dst = photo_path + ".tmp" + extension
+                tmp_dst = os.path.join(os.path.dirname(photo_path), "." + os.path.basename(photo_path) + ".tmp" + extension)
                 if extension in ('.jpg', '.jpeg'):
                     if img_res.mode not in ('RGB', 'L'):
                         img_res = img_res.convert('RGB')
@@ -534,10 +547,11 @@ def render_gallery_card(item, title, index):
           <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15a4 4 0 0 1-4 4H8l-5 3V7a4 4 0 0 1 4-4h10a4 4 0 0 1 4 4z"></path><path d="M8 9h8M8 13h5"></path></svg>
         </span>'''
 
+    date_pill = f'<span class="photo-date-pill">{date_attr}</span>' if date_attr else ''
     return f'''
-      <button type="button" id="{fn_id}" data-filename="{fn_id}" class="{card_class}" style="--ar: {item.get('aspect_ratio', 1.333)};" onclick="openLightbox({index})" aria-label="{escape(label, quote=True)}">
+      <button type="button" id="{fn_id}" data-filename="{fn_id}" class="{card_class}" style="--ar: {item.get('aspect_ratio', 1.333)};" onclick="openLightbox('{fn_id}')" aria-label="{escape(label, quote=True)}">
         {picture_markup}
-        <span class="photo-date-pill">{date_attr}</span>{description_indicator}{media_indicator}
+        {date_pill}{description_indicator}{media_indicator}
       </button>'''
 
 def render_story_box(story_html):
@@ -629,12 +643,6 @@ def process_build_dir(base_dir, slug, url_prefix):
 
     # 1. Deduplicate media files by SHA-256 hash
     raw_files = deduplicate_project_media(media_dir, raw_files, slug)
-
-    # Media is shown chronologically, so every source filename must carry an
-    # unambiguous date. Validate before modifying or generating derivatives.
-    for f in raw_files:
-        if f.lower().endswith(MEDIA_EXTENSIONS):
-            parse_media_datetime(f)
 
     # 2. Sanitize photos (EXIF) and optimize oversized full-size photos
     for f in raw_files:
@@ -734,8 +742,18 @@ def process_build_dir(base_dir, slug, url_prefix):
                 'comments': media_descriptions.get(f, [])
             })
 
-    # Sort photos chronologically (oldest first: start of build through completion)
-    photos.sort(key=lambda p: get_photo_sort_key(p['filename']))
+    photo_indexes = config.get('photos', {})
+
+    def get_media_sort_key(item_or_filename):
+        filename = item_or_filename['filename'] if isinstance(item_or_filename, dict) else item_or_filename
+        if filename in photo_indexes:
+            return (0, photo_indexes[filename], filename)
+        dt = parse_media_datetime(filename)
+        dt_tuple = (dt.year, dt.month, dt.day, dt.hour, dt.minute, dt.second) if dt else (9999, 99, 99, 99, 99, 99)
+        return (1, dt_tuple, filename)
+
+    # Sort photos based on explicit index (or chronological fallback)
+    photos.sort(key=get_media_sort_key)
 
     # Determine cover image: check build.json config first, fallback to latest photo
     configured_cover = config.get('cover_image', '')
@@ -790,7 +808,7 @@ def process_build_dir(base_dir, slug, url_prefix):
         })
 
     gallery = photos + gallery_videos
-    gallery.sort(key=lambda item: get_photo_sort_key(item['filename']))
+    gallery.sort(key=get_media_sort_key)
 
     return {
         'slug': slug,

@@ -449,6 +449,14 @@ class TestGeneratorInvariants(unittest.TestCase):
             generate_site.validate_build_config({'order': True}, 'test-build')
         with self.assertRaisesRegex(ValueError, "non-empty list"):
             generate_site.validate_build_config({'tags': []}, 'test-build')
+        with self.assertRaisesRegex(ValueError, "'photos' must be an object"):
+            generate_site.validate_build_config({'photos': ['photo.jpg']}, 'test-build')
+        with self.assertRaisesRegex(ValueError, "photo index for 'photo.jpg' must be a non-negative integer"):
+            generate_site.validate_build_config({'photos': {'photo.jpg': -1}}, 'test-build')
+        with self.assertRaisesRegex(ValueError, "photo index for 'photo.jpg' must be a non-negative integer"):
+            generate_site.validate_build_config({'photos': {'photo.jpg': True}}, 'test-build')
+        with self.assertRaisesRegex(ValueError, "photo keys must be plain media filenames"):
+            generate_site.validate_build_config({'photos': {'../photo.jpg': 0}}, 'test-build')
 
     def test_build_slug_allows_existing_plus_signs_but_rejects_paths(self):
         generate_site.validate_build_slug('prusa-mk3s+-hotend-repair')
@@ -467,6 +475,10 @@ class TestGeneratorInvariants(unittest.TestCase):
         with self.assertRaisesRegex(ValueError, "must be a plain filename"):
             generate_site.validate_media_references(
                 {'hero_video': '../clip.mp4'}, 'test-build', ['clip.mp4']
+            )
+        with self.assertRaisesRegex(ValueError, "photos references missing media file"):
+            generate_site.validate_media_references(
+                {'photos': {'missing.jpg': 0}}, 'test-build', ['actual.jpg']
             )
 
     def test_comment_json_is_safe_for_inline_script(self):
@@ -515,6 +527,99 @@ class TestGeneratorInvariants(unittest.TestCase):
                 ['Preserve this'],
             )
 
+    def test_local_gallery_reorder_persists_order(self):
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            config_path = Path(temporary_dir) / 'build.json'
+            media_dir = Path(temporary_dir) / 'media'
+            media_dir.mkdir()
+            (media_dir / 'a.jpg').touch()
+            (media_dir / 'b.jpg').touch()
+            (media_dir / 'c.jpg').touch()
+
+            config_path.write_text(
+                json.dumps({
+                    'title': 'Test',
+                    'photos': {
+                        'a.jpg': 0,
+                        'b.jpg': 1,
+                        'c.jpg': 2,
+                    },
+                }),
+                encoding='utf-8',
+            )
+
+            saved = dev_server.write_gallery_order(
+                str(config_path), ['c.jpg', 'a.jpg', 'b.jpg']
+            )
+            self.assertEqual(saved, {'c.jpg': 0, 'a.jpg': 1, 'b.jpg': 2})
+            self.assertEqual(
+                json.loads(config_path.read_text(encoding='utf-8'))['photos'],
+                {'c.jpg': 0, 'a.jpg': 1, 'b.jpg': 2},
+            )
+
+    def test_local_gallery_delete_removes_file_and_reindexes(self):
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            config_path = Path(temporary_dir) / 'build.json'
+            media_dir = Path(temporary_dir) / 'media'
+            media_dir.mkdir()
+            (media_dir / 'a.jpg').touch()
+            (media_dir / 'b.jpg').touch()
+            (media_dir / 'c.jpg').touch()
+
+            config_path.write_text(
+                json.dumps({
+                    'title': 'Test',
+                    'cover_image': 'b.jpg',
+                    'photos': {
+                        'a.jpg': 0,
+                        'b.jpg': 1,
+                        'c.jpg': 2,
+                    },
+                    'media_descriptions': {
+                        'b.jpg': ['A comment on b'],
+                        'a.jpg': ['A comment on a'],
+                    },
+                }),
+                encoding='utf-8',
+            )
+
+            saved = dev_server.delete_gallery_photo(str(config_path), 'b.jpg')
+            self.assertFalse((media_dir / 'b.jpg').exists())
+            self.assertEqual(saved, {'a.jpg': 0, 'c.jpg': 1})
+            data = json.loads(config_path.read_text(encoding='utf-8'))
+            self.assertEqual(data['photos'], {'a.jpg': 0, 'c.jpg': 1})
+            self.assertNotIn('b.jpg', data['media_descriptions'])
+            self.assertEqual(data['media_descriptions']['a.jpg'], ['A comment on a'])
+            self.assertEqual(data['cover_image'], 'c.jpg')
+
+    def test_local_gallery_upload_saves_file_and_appends_to_photos(self):
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            config_path = Path(temporary_dir) / 'build.json'
+            media_dir = Path(temporary_dir) / 'media'
+            media_dir.mkdir()
+            (media_dir / 'existing.jpg').touch()
+
+            config_path.write_text(
+                json.dumps({
+                    'title': 'Test',
+                    'photos': {
+                        'existing.jpg': 0,
+                    },
+                }),
+                encoding='utf-8',
+            )
+
+            file_content = b'fake image data'
+            target_fn, saved_photos = dev_server.save_gallery_upload(
+                str(config_path), 'My New Photo.jpg', file_content
+            )
+            self.assertEqual(target_fn, 'My_New_Photo.jpg')
+            self.assertTrue((media_dir / 'My_New_Photo.jpg').is_file())
+            self.assertEqual((media_dir / 'My_New_Photo.jpg').read_bytes(), file_content)
+            self.assertEqual(saved_photos, {'existing.jpg': 0, 'My_New_Photo.jpg': 1})
+            data = json.loads(config_path.read_text(encoding='utf-8'))
+            self.assertEqual(data['photos'], {'existing.jpg': 0, 'My_New_Photo.jpg': 1})
+
     def test_parse_photo_date(self):
         filenames = (
             '20260906.jpg',
@@ -530,9 +635,44 @@ class TestGeneratorInvariants(unittest.TestCase):
                 self.assertEqual(long_d, 'September 6, 2026')
                 self.assertEqual(short_d, 'Sep 6, 2026')
 
-    def test_parse_photo_date_rejects_undated_filenames(self):
-        with self.assertRaisesRegex(ValueError, "Couldn't parse a date from media filename 'photo.jpg'"):
-            generate_site.parse_photo_date('photo.jpg')
+    def test_parse_photo_date_supports_undated_filenames(self):
+        long_d, short_d = generate_site.parse_photo_date('photo.jpg')
+        self.assertEqual(long_d, '')
+        self.assertEqual(short_d, '')
+
+    def test_process_build_supports_undated_media_and_sorts_by_photo_index(self):
+        with tempfile.TemporaryDirectory() as temporary_dir:
+            slug = 'test-undated'
+            build_dir = Path(temporary_dir) / slug
+            media_dir = build_dir / 'media'
+            media_dir.mkdir(parents=True)
+
+            from PIL import Image
+            img1 = Image.new('RGB', (100, 100), color='blue')
+            img1.save(media_dir / 'step-b.jpg')
+            img2 = Image.new('RGB', (100, 100), color='red')
+            img2.save(media_dir / 'step-a.jpg')
+
+            (build_dir / 'build.json').write_text(
+                json.dumps({
+                    'title': 'Undated Build',
+                    'photos': {
+                        'step-b.jpg': 0,
+                        'step-a.jpg': 1,
+                    },
+                }),
+                encoding='utf-8',
+            )
+
+            result = generate_site.process_build_dir(temporary_dir, slug, '/major-builds')
+            self.assertEqual(len(result['gallery']), 2)
+            self.assertEqual(result['gallery'][0]['filename'], 'step-b.jpg')
+            self.assertEqual(result['gallery'][1]['filename'], 'step-a.jpg')
+            self.assertEqual(result['gallery'][0]['date'], '')
+            self.assertEqual(result['gallery'][0]['short_date'], '')
+
+            card_markup = generate_site.render_gallery_card(result['gallery'][0], 'Undated Build', 0)
+            self.assertNotIn('photo-date-pill', card_markup)
 
     def test_get_photo_sort_key(self):
         k1 = generate_site.get_photo_sort_key('PXL_20260115_100000000.jpg')

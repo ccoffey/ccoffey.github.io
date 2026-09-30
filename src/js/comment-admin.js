@@ -9,7 +9,7 @@
 
   function commentsFrom(container) {
     return [...container.querySelectorAll(".lightbox-comment-text[data-comment-index]")]
-      .map((comment) => comment.textContent.trim())
+      .map((c) => c.textContent.trim())
       .filter(Boolean);
   }
 
@@ -54,7 +54,6 @@
       item.comments = [...(savedCommentsByMedia.get(key) || [])];
       galleryHooks.rerender();
       setSaveStatus(document.getElementById("lightbox-description"), error.message || "Could not save comment.", true);
-      console.error(error.message || "Could not save comment.");
     }
   }
 
@@ -89,7 +88,6 @@
       }
     });
     stack.append(composer);
-    return composer;
   }
 
   function decorate(container) {
@@ -99,8 +97,7 @@
     const item = hooks()?.currentItem();
     if (item) rememberSavedComments(item);
 
-    for (const text of [...stack.querySelectorAll(".lightbox-comment-text")]) {
-      const index = [...stack.querySelectorAll(".lightbox-comment-text")].indexOf(text);
+    stack.querySelectorAll(".lightbox-comment-text").forEach((text, index) => {
       text.dataset.commentIndex = String(index);
       text.contentEditable = "true";
       text.spellcheck = true;
@@ -123,16 +120,16 @@
       remove.setAttribute("aria-label", `Delete comment ${index + 1}`);
       remove.addEventListener("mousedown", (event) => event.preventDefault());
       remove.addEventListener("click", () => {
-        const item = hooks()?.currentItem();
-        if (!item) return;
-        item.comments.splice(index, 1);
+        const current = hooks()?.currentItem();
+        if (!current) return;
+        current.comments.splice(index, 1);
         hooks().rerender();
         document.querySelector("#lightbox-description .lightbox-comment-composer")?.focus();
-        save(document.getElementById("lightbox-description"), item.comments);
+        save(document.getElementById("lightbox-description"), current.comments);
       });
       text.before(row);
       row.append(text, remove);
-    }
+    });
 
     addComposer(stack);
 
@@ -149,11 +146,16 @@
   };
 
   fetch(statusEndpoint)
-    .then((response) => (response.ok ? response.json() : null))
+    .then((res) => (res.ok ? res.json() : null))
     .then((status) => {
       if (!status?.enabled) return;
       enabled = true;
       hooks()?.rerender();
+      if (!document.querySelector('script[src*="gallery-reorder.js"]')) {
+        const s = document.createElement("script");
+        s.src = "/js/gallery-reorder.js";
+        document.body.append(s);
+      }
     })
     .catch(() => {});
 })();

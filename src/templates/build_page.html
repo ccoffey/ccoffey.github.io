@@ -118,6 +118,15 @@
     });
 
     const gallery = {{ GALLERY_JSON }};
+    window.gallery = gallery;
+
+    window.updateGalleryOrder = function(newOrder) {
+      if (!Array.isArray(newOrder)) return;
+      const galleryMap = new Map(gallery.map(item => [item.filename, item]));
+      const updated = newOrder.map(fn => galleryMap.get(fn)).filter(Boolean);
+      gallery.splice(0, gallery.length, ...updated);
+    };
+
     let currentIndex = 0;
     let lightboxImageRequestId = 0;
 
@@ -380,8 +389,12 @@
       }
     }
 
-    function openLightbox(index, updateHistory = true) {
-      if (index < 0 || index >= gallery.length) return;
+    function openLightbox(target, updateHistory = true) {
+      let index = target;
+      if (typeof target === "string") {
+        index = gallery.findIndex(item => item.filename === target);
+      }
+      if (typeof index !== "number" || index < 0 || index >= gallery.length) return;
       if (!lightbox.classList.contains("active") && document.activeElement instanceof HTMLElement) {
         lightboxReturnFocus = document.activeElement;
       }
@@ -461,7 +474,10 @@
       const previewSrc = item.thumb_webp || item.thumb || item.full;
 
       lightboxTitle.textContent = "{{ TITLE }}";
-      lightboxDate.textContent = item.date;
+      lightboxDate.textContent = item.date || "";
+      const dateSeparator = lightboxDate.previousElementSibling;
+      if (dateSeparator) dateSeparator.hidden = !item.date;
+      lightboxDate.hidden = !item.date;
       const mediaLabel = item.type === "video" ? "Video" : "Photo";
       lightboxCounter.textContent = `${mediaLabel} ${currentIndex + 1} of ${gallery.length}`;
       renderLightboxComments(item.comments);
@@ -657,6 +673,16 @@
     window.galleryCommentAdmin = {
       slug: "{{ SLUG }}",
       currentItem: () => gallery[currentIndex],
+      currentIndex: () => currentIndex,
+      openLightbox: openLightbox,
+      closeLightbox: closeLightbox,
+      removePhoto: (filename) => {
+        const idx = gallery.findIndex(item => item.filename === filename);
+        if (idx !== -1) {
+          gallery.splice(idx, 1);
+        }
+        closeLightbox();
+      },
       rerender: () => {
         const item = gallery[currentIndex];
         renderLightboxComments(item.comments);
