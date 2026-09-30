@@ -1,0 +1,72 @@
+{
+  "title": "MacBook Air Repair",
+  "subtitle": "It sat in our attic for years waiting for me to acquire the hardware repair skills necessary to tackle it",
+  "description": "My wife vaguely remembers a water bottle leaking in her bag, which also contained her MacBook.",
+  "tags": [
+    "Repair"
+  ],
+  "dates": "October 2026",
+  "order": 2,
+  "cover_image": "WhatsApp Image 2026-09-30 at 22.42.44 (1).jpeg",
+  "media_descriptions": {
+    "WhatsApp Image 2026-09-30 at 22.07.13.jpeg": [
+      "My Yojock meter shows voltage but zero amps being drawn, so this MacBook is definitely not going to turn on. I get the exact same result from the other USB-C port."
+    ],
+    "WhatsApp Image 2026-09-30 at 22.42.35.jpeg": [
+      "My first impression looking under the hood? Wow, this is a gorgeous piece of hardware."
+    ],
+    "WhatsApp Image 2026-09-30 at 22.42.44.jpeg": [
+      "I'm totally new to this, but I'm guessing that tarnish on the little metal shield could be explained by liquid."
+    ],
+    "WhatsApp Image 2026-09-30 at 22.42.44 (1).jpeg": [
+      "Okay... given that the connector is completely destroyed, I'm now certain I'm not the first amateur to open this up and take a look."
+    ],
+    "WhatsApp Image 2026-09-30 at 22.42.45.jpeg": [
+      "I took the audio jack board out to inspect it under my microscope. The good news is there\u2019s no obvious liquid damage underneath it."
+    ],
+    "IMG_003.JPG": [
+      "Again, I'm new to this, but this definitely looks like liquid damage to me."
+    ],
+    "IMG_004.JPG": [
+      "This connector is absolute toast! What the hell even happened here?"
+    ],
+    "IMG_001.JPG": [
+      "Now I've got the model number 820-01929-A. Maybe just replacing this board will be enough to bring the MacBook back to life!"
+    ],
+    "Screenshot 2026-09-30 at 23.25.45.png": [
+      "I can have it by Friday? Yes please!"
+    ],
+    "WhatsApp Image 2026-10-01 at 09.29.47.jpeg": [
+      "I pulled the logic board out to swap out the old audio jack flex cable. Thankfully, there's no liquid damage underneath it."
+    ],
+    "WhatsApp Image 2026-10-01 at 09.29.47 (1).jpeg": [
+      "Removed the old chewed up audio jack flex cable"
+    ],
+    "WhatsApp Image 2026-10-02 at 16.52.50.jpeg": [
+      "The new cable and audio jack board arrived!"
+    ],
+    "WhatsApp Image 2026-10-02 at 16.52.57.jpeg": [
+      "After installing the new audio jack board, I'm seeing a current draw, but the laptop still won't turn on. I'm going to let it charge for 30 minutes since the battery is completely dead from sitting in the attic for a few years."
+    ],
+    "WhatsApp Image 2026-10-02 at 16.52.43.jpeg": [
+      "Thirty minutes later, it powers on and the Apple logo appears. What a beautiful sight!",
+      "Next up, I need to clean this filthy screen."
+    ]
+  },
+  "photos": {
+    "WhatsApp Image 2026-09-30 at 22.07.13.jpeg": 0,
+    "WhatsApp Image 2026-09-30 at 22.42.35.jpeg": 1,
+    "WhatsApp Image 2026-09-30 at 22.42.44.jpeg": 2,
+    "WhatsApp Image 2026-09-30 at 22.42.44 (1).jpeg": 3,
+    "WhatsApp Image 2026-09-30 at 22.42.45.jpeg": 4,
+    "IMG_001.JPG": 5,
+    "IMG_003.JPG": 6,
+    "IMG_004.JPG": 7,
+    "Screenshot 2026-09-30 at 23.25.45.png": 8,
+    "WhatsApp Image 2026-10-01 at 09.29.47.jpeg": 9,
+    "WhatsApp Image 2026-10-01 at 09.29.47 (1).jpeg": 10,
+    "WhatsApp Image 2026-10-02 at 16.52.50.jpeg": 11,
+    "WhatsApp Image 2026-10-02 at 16.52.57.jpeg": 12,
+    "WhatsApp Image 2026-10-02 at 16.52.43.jpeg": 13
+  }
+}
