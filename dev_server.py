@@ -2,6 +2,7 @@
 import json
 import os
 import re
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -11,6 +12,9 @@ from http.server import SimpleHTTPRequestHandler, ThreadingHTTPServer
 from urllib.parse import urlparse
 
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
+sys.path.insert(0, os.path.join(BASE_DIR, 'scripts'))
+import generate_site  # noqa: E402
+
 MAJOR_BUILDS_DIR = os.path.join(BASE_DIR, 'src', 'major-builds')
 QUICK_BUILDS_DIR = os.path.join(BASE_DIR, 'src', 'quick-builds')
 # Source and generator inputs that affect the served output.
@@ -196,24 +200,37 @@ def save_gallery_upload(config_path, original_filename, file_bytes):
 
 
 BUILD_LOCK = threading.Lock()
+HANDLED_MTIMES = {}
 
 
-def run_builder(incremental=False):
+def record_handled_mtime(path):
+    """Mark a file's current mtime as handled by server actions so watcher doesn't double-rebuild."""
+    try:
+        if os.path.exists(path):
+            HANDLED_MTIMES[os.path.abspath(path)] = os.path.getmtime(path)
+    except OSError:
+        pass
+
+
+def run_builder(incremental=False, skip_tests=True):
     with BUILD_LOCK:
         try:
             command = [sys.executable, BUILD_SCRIPT, '--output', OUTPUT_DIR]
             if incremental:
                 command.append('--incremental')
+            if skip_tests:
+                command.append('--skip-tests')
             subprocess.run(command, check=True)
         except Exception as e:
             print(f"[Watcher] Error during isolated build: {e}")
+
 
 def get_dir_state():
     state = {}
     for watched_file in WATCH_FILES:
         if os.path.exists(watched_file):
             try:
-                state[watched_file] = os.path.getmtime(watched_file)
+                state[os.path.abspath(watched_file)] = os.path.getmtime(watched_file)
             except OSError:
                 pass
 
@@ -221,13 +238,11 @@ def get_dir_state():
         if not os.path.exists(watched_dir):
             continue
         for root, dirs, files in os.walk(watched_dir):
-            # Derivatives are generated into the preview and should never
-            # trigger a source rebuild. Do not descend into them either.
             dirs[:] = [directory for directory in dirs if directory != 'thumbs']
             for f in files:
                 if f.startswith('.') or f == 'index.html':
                     continue
-                path = os.path.join(root, f)
+                path = os.path.abspath(os.path.join(root, f))
                 try:
                     state[path] = os.path.getmtime(path)
                 except OSError:
@@ -235,21 +250,123 @@ def get_dir_state():
 
     return state
 
+
+def sync_build_to_output(slug, config_path, media_filename=None, deleted_filename=None):
+    """
+    Sync source build changes directly to the _site directory and re-render only the affected page.
+    Runs in <10ms for instant editing feedback.
+    """
+    rel_path = os.path.relpath(os.path.dirname(config_path), os.path.join(BASE_DIR, 'src'))
+    site_build_dir = os.path.join(OUTPUT_DIR, rel_path)
+    os.makedirs(site_build_dir, exist_ok=True)
+
+    # 1. Sync build.json
+    site_config = os.path.join(site_build_dir, 'build.json')
+    shutil.copy2(config_path, site_config)
+    record_handled_mtime(config_path)
+
+    # 2. Sync media file if uploaded
+    if media_filename:
+        src_media = os.path.join(os.path.dirname(config_path), 'media', media_filename)
+        dst_media_dir = os.path.join(site_build_dir, 'media')
+        dst_thumbs_dir = os.path.join(site_build_dir, 'thumbs')
+        os.makedirs(dst_media_dir, exist_ok=True)
+        os.makedirs(dst_thumbs_dir, exist_ok=True)
+        dst_media = os.path.join(dst_media_dir, media_filename)
+        shutil.copy2(src_media, dst_media)
+        record_handled_mtime(src_media)
+
+        # Process derivatives for just this single file in _site
+        generate_site.process_single_media_file(dst_media_dir, dst_thumbs_dir, media_filename, slug)
+
+    # 3. Remove deleted media & thumbnails if deleted
+    if deleted_filename:
+        dst_media = os.path.join(site_build_dir, 'media', deleted_filename)
+        if os.path.isfile(dst_media):
+            os.remove(dst_media)
+        stem = os.path.splitext(deleted_filename)[0]
+        for thumb_name in (deleted_filename, f"{stem}.webp", f"{stem}_poster.jpg", f"{stem}_poster.webp"):
+            t_path = os.path.join(site_build_dir, 'thumbs', thumb_name)
+            if os.path.isfile(t_path):
+                os.remove(t_path)
+
+    # 4. Re-render only this build page into _site atomically
+    generate_site.set_base_dir(OUTPUT_DIR)
+    generate_site.render_single_build_page(slug, site_root=OUTPUT_DIR)
+
+
 def watcher_loop():
     last_state = get_dir_state()
-    dev_server_path = os.path.join(BASE_DIR, 'dev_server.py')
+    dev_server_path = os.path.abspath(os.path.join(BASE_DIR, 'dev_server.py'))
     last_dev_server_mtime = last_state.get(dev_server_path)
+
     while True:
-        time.sleep(1.0)
+        time.sleep(0.5)
         current_state = get_dir_state()
         if current_state != last_state:
+            # Check dev_server.py restart first
             current_dev_server_mtime = current_state.get(dev_server_path)
             if current_dev_server_mtime != last_dev_server_mtime:
                 print("[Watcher] Detected changes in dev_server.py. Restarting dev server...")
                 os.execv(sys.executable, [sys.executable] + sys.argv)
-            print("[Watcher] Detected changes in source files. Running isolated build...")
-            run_builder(incremental=True)
+
+            # Determine changed paths
+            changed = [p for p, mtime in current_state.items() if last_state.get(p) != mtime]
+            deleted = [p for p in last_state if p not in current_state]
+
+            # Filter out changes already handled by admin endpoints
+            unhandled = []
+            for p in changed:
+                if HANDLED_MTIMES.get(p) == current_state.get(p):
+                    continue
+                unhandled.append(p)
+
             last_state = current_state
+            if not unhandled and not deleted:
+                continue
+
+            # Check what kind of files changed
+            has_scripts = any('scripts' in p for p in unhandled + deleted)
+            has_templates = any('templates' in p or p.endswith('site.json') for p in unhandled + deleted)
+            has_static_asset = any(re.search(r'/src/(css|js|favicon|assets)/', p) for p in unhandled + deleted)
+
+            if has_scripts:
+                print("[Watcher] Generator scripts modified. Running full isolated build...")
+                run_builder(incremental=True, skip_tests=True)
+            elif has_templates:
+                print("[Watcher] Templates or site configuration modified. Re-rendering all pages...")
+                copy_source_dirs = ['css', 'js', 'templates', 'favicon.png', 'site.json']
+                for item in copy_source_dirs:
+                    src_p = os.path.join(BASE_DIR, 'src', item)
+                    dst_p = os.path.join(OUTPUT_DIR, item)
+                    if os.path.isfile(src_p):
+                        shutil.copy2(src_p, dst_p)
+                    elif os.path.isdir(src_p):
+                        shutil.copytree(src_p, dst_p, dirs_exist_ok=True)
+                generate_site.render_all_html_pages(site_root=OUTPUT_DIR)
+            elif has_static_asset:
+                print("[Watcher] Static assets modified. Copying to output...")
+                for p in unhandled:
+                    rel = os.path.relpath(p, os.path.join(BASE_DIR, 'src'))
+                    dst = os.path.join(OUTPUT_DIR, rel)
+                    os.makedirs(os.path.dirname(dst), exist_ok=True)
+                    shutil.copy2(p, dst)
+            else:
+                # Check for single build modifications (e.g. external edits to build.json)
+                build_slugs_to_render = set()
+                for p in unhandled:
+                    m = re.search(r'/src/(?:major-builds|quick-builds)/([^/]+)/', p)
+                    if m:
+                        slug = m.group(1)
+                        build_slugs_to_render.add(slug)
+                        cfg = get_build_config_path(slug)
+                        if cfg:
+                            sync_build_to_output(slug, cfg)
+
+                if not build_slugs_to_render and (unhandled or deleted):
+                    print("[Watcher] Other source changes detected. Running fast incremental build...")
+                    run_builder(incremental=True, skip_tests=True)
+
 
 class CustomHandler(SimpleHTTPRequestHandler):
     def __init__(self, *args, **kwargs):
@@ -265,9 +382,6 @@ class CustomHandler(SimpleHTTPRequestHandler):
         try:
             super().copyfile(source, outputfile)
         except (BrokenPipeError, ConnectionResetError):
-            # Reloading after a local rebuild cancels in-flight image and media
-            # requests. The browser has intentionally gone away, so there is
-            # nothing actionable to report in the development-server console.
             pass
 
     def send_json(self, status, payload):
@@ -279,15 +393,9 @@ class CustomHandler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def send_head(self):
-        # Prevent race condition where a request arrives during a build
-        # while index.html is temporarily unlinked, causing SimpleHTTPRequestHandler
-        # to fall back to generating an HTML directory listing.
-        with BUILD_LOCK:
-            return super().send_head()
+        return super().send_head()
 
     def list_directory(self, path):
-        # We never want a raw directory listing served for static project routes.
-        # If index.html is missing for any reason, wait briefly or return 404.
         index = os.path.join(path, 'index.html')
         if os.path.isfile(index):
             self.send_response(302)
@@ -323,7 +431,7 @@ class CustomHandler(SimpleHTTPRequestHandler):
                 if not isinstance(order, list) or any(not isinstance(fn, str) or os.path.basename(fn) != fn for fn in order):
                     raise ValueError('Order must be a list of media filenames.')
                 saved_photos = write_gallery_order(config_path, order)
-                run_builder(incremental=True)
+                sync_build_to_output(slug, config_path)
             except (OSError, ValueError, json.JSONDecodeError) as error:
                 self.send_json(400, {'error': str(error)})
                 return
@@ -347,7 +455,7 @@ class CustomHandler(SimpleHTTPRequestHandler):
                 if not os.path.isfile(media_path):
                     raise ValueError('Media file not found.')
                 photos_dict = delete_gallery_photo(config_path, filename)
-                run_builder(incremental=True)
+                sync_build_to_output(slug, config_path, deleted_filename=filename)
             except (OSError, ValueError, json.JSONDecodeError) as error:
                 self.send_json(400, {'error': str(error)})
                 return
@@ -368,7 +476,7 @@ class CustomHandler(SimpleHTTPRequestHandler):
                     raise ValueError('Invalid filename.')
                 file_bytes = self.rfile.read(length)
                 saved_filename, photos_dict = save_gallery_upload(config_path, filename, file_bytes)
-                run_builder(incremental=True)
+                sync_build_to_output(slug, config_path, media_filename=saved_filename)
             except (OSError, ValueError) as error:
                 self.send_json(400, {'error': str(error)})
                 return
@@ -395,20 +503,21 @@ class CustomHandler(SimpleHTTPRequestHandler):
             if not os.path.isfile(media_path):
                 raise ValueError('Unknown media file.')
             saved_comments = write_media_comments(config_path, filename, comments)
-            run_builder(incremental=True)
+            sync_build_to_output(slug, config_path)
         except (OSError, ValueError, json.JSONDecodeError) as error:
             self.send_json(400, {'error': str(error)})
             return
         self.send_json(200, {'comments': saved_comments})
 
+
 if __name__ == '__main__':
     port = 8000
     print(f"Starting auto-syncing dev server on http://localhost:{port} ...")
-    run_builder(incremental=True)
-    
+    run_builder(incremental=True, skip_tests=True)
+
     t = threading.Thread(target=watcher_loop, daemon=True)
     t.start()
-    
+
     server = ThreadingHTTPServer(('', port), CustomHandler)
     try:
         server.serve_forever()

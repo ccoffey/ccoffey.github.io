@@ -156,17 +156,17 @@ def copy_source_tree(output, incremental=False):
 
 def remove_generated_output(output, preserve_media_derivatives=False):
     """Ensure the candidate is recreated from source rather than copied artifacts."""
-    for relative in GENERATED_ROOT_FILES:
-        target = output / relative
-        if target.exists():
-            target.unlink()
+    if not preserve_media_derivatives:
+        for relative in GENERATED_ROOT_FILES:
+            target = output / relative
+            if target.exists():
+                target.unlink()
 
-    for build_root in (output / "major-builds", output / "quick-builds"):
-        if not build_root.is_dir():
-            continue
-        for target in build_root.glob("*/index.html"):
-            target.unlink()
-        if not preserve_media_derivatives:
+        for build_root in (output / "major-builds", output / "quick-builds"):
+            if not build_root.is_dir():
+                continue
+            for target in build_root.glob("*/index.html"):
+                target.unlink()
             for target in build_root.glob("*/thumbs"):
                 if target.is_dir():
                     shutil.rmtree(target)
@@ -200,6 +200,7 @@ def main():
         action="store_true",
         help="Reuse existing copied media and generated derivatives (for local metadata/template edits).",
     )
+    parser.add_argument("--skip-tests", action="store_true", help="Skip running the test suite during build")
     parser.add_argument("--build-id", default=default_build_id(), help="Cache-busting build identifier")
     parser.add_argument(
         "--site-lastmod",
@@ -224,7 +225,8 @@ def main():
     env["SITE_LASTMOD"] = args.site_lastmod
     env["SITE_ROOT"] = str(output)
     subprocess.run([sys.executable, str(SOURCE_ROOT / "scripts" / "generate_site.py")], cwd=output, env=env, check=True)
-    subprocess.run([sys.executable, str(SOURCE_ROOT / "tests" / "test_site.py"), "-v"], cwd=output, env=env, check=True)
+    if not args.skip_tests:
+        subprocess.run([sys.executable, str(SOURCE_ROOT / "tests" / "test_site.py"), "-v"], cwd=output, env=env, check=True)
 
     validate_output(output)
 

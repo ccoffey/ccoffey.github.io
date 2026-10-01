@@ -88,10 +88,11 @@
       const slug = window.buildPageConfig?.slug;
       if (!files.length || !slug) return;
       input.value = "";
-      showStatus(`Uploading ${files.length} file(s)…`);
 
       let count = 0;
-      for (const file of files) {
+      for (let i = 0; i < files.length; i++) {
+        const file = files[i];
+        showStatus(`Uploading ${i + 1} of ${files.length}: ${file.name}…`);
         try {
           const res = await fetch(uploadEndpoint, {
             method: "POST",
@@ -110,8 +111,8 @@
           return;
         }
       }
-      showStatus(`Uploaded ${count} item(s). Refreshing…`);
-      setTimeout(() => window.location.reload(), 1000);
+      showStatus(`Uploaded ${count} item(s). Updating gallery…`);
+      window.location.reload();
     });
 
     header.appendChild(label);
