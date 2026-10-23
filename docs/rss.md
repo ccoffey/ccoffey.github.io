@@ -2,7 +2,7 @@
 
 `/feed.xml` contains one RSS 2.0 entry per major or quick build, newest publication
 first. Each entry has the title, subtitle (or description when no subtitle is
-set), a cover image and a link to the project. The homepage footer links to it;
+set), a cover image and a link to the project. The homepage RSS feed button links to it;
 all project pages advertise it to feed readers.
 
 Every project needs `published_date` in its `build.json`, formatted `YYYY-MM-DD`.
