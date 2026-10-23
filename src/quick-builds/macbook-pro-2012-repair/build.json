@@ -1,0 +1,33 @@
+{
+  "published_date": "2026-10-23",
+  "title": "MacBook Pro 2012 Repair",
+  "subtitle": "Refused to turn on or charge",
+  "description": "No LED when the MagSafe charger was plugged in",
+  "tags": [
+    "Repair"
+  ],
+  "dates": "October 2026",
+  "order": 3,
+  "cover_image": "PXL_20261023_121042280.jpg",
+  "media_descriptions": {
+    "PXL_20261023_121042280.jpg": [
+      "Battery was dead and when I plugged in the MagSafe charger the LED did not come on."
+    ],
+    "PXL_20261023_124305691.jpg": [
+      "Luckily I have another broken 13inch Macbook Pro from 2012 which I can use as a donor board. Going to try swapping the MagSafe DC-in power board and see if that fixes it."
+    ],
+    "PXL_20261023_122859520.MACRO_FOCUS.jpg": [
+      "Just going to try swapping these and see what happens."
+    ],
+    "PXL_20261023_124633119.MACRO_FOCUS.jpg": [
+      "Yup, that fixed the issue. That was easy"
+    ],
+    "PXL_20261023_124654255.jpg": [
+      "Love seeing the Apple logo appear again"
+    ]
+  },
+  "photos": {
+    "PXL_20261023_121042280.jpg": 0,
+    "PXL_20261023_124305691.jpg": 1
+  }
+}
