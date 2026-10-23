@@ -898,6 +898,7 @@ def run_tests():
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
 
+    suite.addTests(loader.loadTestsFromTestCase(TestRSS))
     suite.addTests(loader.loadTestsFromTestCase(TestAssetIntegrity))
     suite.addTests(loader.loadTestsFromTestCase(TestSEOAndMetadataContracts))
     suite.addTests(loader.loadTestsFromTestCase(TestPerformanceAndBudgets))
