@@ -6,6 +6,7 @@ _site/
 /.well-known/appspecific/
 /index.html
 /robots.txt
+/feed.xml
 /sitemap.xml
 /major-builds/*/index.html
 /major-builds/*/thumbs/

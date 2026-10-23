@@ -24,6 +24,7 @@ import unittest
 import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from pathlib import Path
+from unittest.mock import patch
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.abspath(os.path.join(TESTS_DIR, ".."))
@@ -96,6 +97,68 @@ def get_html_pages():
     pages.extend(glob.glob(os.path.join(SITE_ROOT, 'major-builds', '*', 'index.html')))
     pages.extend(glob.glob(os.path.join(SITE_ROOT, 'quick-builds', '*', 'index.html')))
     return sorted(pages)
+
+
+class TestRSS(unittest.TestCase):
+    def test_published_feed_covers_every_project_and_resolves_images(self):
+        channel = ET.parse(Path(SITE_ROOT, 'feed.xml')).getroot().find('channel')
+        configs = list(Path(SITE_ROOT).glob('*-builds/*/build.json'))
+        items = channel.findall('item')
+        self.assertEqual(len(items), len(configs))
+        self.assertEqual(len({item.findtext('guid') for item in items}), len(configs))
+        expected = {f"urn:project:{p.parent.parent.name}:{p.parent.name}" for p in configs}
+        self.assertEqual({item.findtext('guid') for item in items}, expected)
+        for item in items:
+            scraper = HTMLAssetScraper()
+            scraper.feed(item.findtext('description'))
+            self.assertTrue(scraper.assets, 'Expected a project cover image')
+            for _, url in scraper.assets:
+                from urllib.parse import unquote, urlparse
+                self.assertTrue(Path(SITE_ROOT, unquote(urlparse(url).path).lstrip('/')).is_file(), url)
+        for page in get_html_pages():
+            scraper = HTMLAssetScraper()
+            scraper.feed(Path(page).read_text())
+            self.assertEqual(scraper.rel_links.get('alternate'), '/feed.xml')
+
+    def test_feed_is_deterministic_escaped_sorted_and_stable_on_edits(self):
+        with tempfile.TemporaryDirectory() as temporary_dir, patch.object(generate_site, 'BASE_DIR', temporary_dir):
+            project = Path(temporary_dir, 'quick-builds', 'demo')
+            (project / 'media').mkdir(parents=True)
+            (project / 'media' / '2026-01-01 photo.jpg').touch()
+            config = {'title': 'A & B <test>', 'subtitle': '<script>alert("test")</script>',
+                      'published_date': '2026-10-23'}
+            config_path = project / 'build.json'
+            config_path.write_text(json.dumps(config))
+            generate_site.generate_rss('https://example.com')
+            feed = Path(temporary_dir, 'feed.xml')
+            initial = feed.read_bytes()
+            generate_site.generate_rss('https://example.com')
+            self.assertEqual(initial, feed.read_bytes())
+            first = ET.fromstring(initial).find('channel/item')
+            self.assertEqual(first.findtext('title'), config['title'])
+            self.assertIn('&lt;script&gt;', first.findtext('description'))
+            self.assertIn('2026-01-01%20photo.jpg', first.findtext('description'))
+            config['title'] = 'Edited title'
+            config_path.write_text(json.dumps(config))
+            newer = Path(temporary_dir, 'major-builds', 'new-project')
+            (newer / 'media').mkdir(parents=True)
+            (newer / 'build.json').write_text(json.dumps({**config, 'published_date': '2026-10-24'}))
+            generate_site.generate_rss('http://127.0.0.1:8000')
+            items = ET.parse(feed).findall('channel/item')
+            self.assertEqual(len(items), 2)
+            self.assertIn('new-project', items[0].findtext('guid'))
+            self.assertEqual(first.findtext('guid'), items[1].findtext('guid'))
+            self.assertEqual(first.findtext('pubDate'), items[1].findtext('pubDate'))
+            self.assertEqual(items[1].findtext('link'), 'http://127.0.0.1:8000/quick-builds/demo/')
+            self.assertIn('http://127.0.0.1:8000/', items[1].findtext('description'))
+            shutil.rmtree(newer)
+            generate_site.generate_rss('http://127.0.0.1:8000')
+            self.assertEqual(len(ET.parse(feed).findall('channel/item')), 1)
+
+    def test_invalid_publication_dates_are_rejected(self):
+        for value in ('2026-02-30', '23 October 2026', '2026-1-1', 20261023):
+            with self.subTest(value=value), self.assertRaises(ValueError):
+                generate_site.validate_build_config({'published_date': value}, 'demo')
 
 
 class TestAssetIntegrity(unittest.TestCase):
@@ -728,6 +791,7 @@ class TestBuildAndWatcherContracts(unittest.TestCase):
             source = root / 'src'
             project_media = source / 'quick-builds' / 'demo' / 'media'
             project_media.mkdir(parents=True)
+            (project_media.parent / 'build.json').write_text('{}', encoding='utf-8')
             (project_media / 'PXL_20260101_100000000.jpg').write_bytes(b'photo-1')
 
             output = root / 'output'
@@ -755,8 +819,9 @@ class TestBuildAndWatcherContracts(unittest.TestCase):
             # Ensure generated thumbnails were preserved
             self.assertTrue((thumbs_dir / 'PXL_20260101_100000000.webp').is_file())
 
-            # Deleting entire build in source tree should prune it from output
-            shutil.rmtree(source / 'quick-builds' / 'demo')
+            # Removing a project config must prune output even if ignored files remain.
+            (project_media.parent / 'build.json').unlink()
+            (project_media.parent / '.DS_Store').touch()
             try:
                 build_site.SOURCE_ROOT = root
                 build_site.copy_source_tree(output, incremental=True)

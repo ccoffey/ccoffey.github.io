@@ -103,6 +103,13 @@ The `_site/` directory is disposable and ignored by Git. Pass `--output <directo
 
 ---
 
+## RSS subscriptions
+
+The generated `/feed.xml` includes every major and quick build with a cover
+image, summary and project link. Set `published_date` (`YYYY-MM-DD`) in each
+project’s `build.json`. See [RSS setup and local testing](docs/rss.md) for
+NetNewsWire instructions and a temporary project you can use to test updates.
+
 ## 📸 Project Configuration & Content
 
 All content and template files live in the `src/` directory.

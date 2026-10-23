@@ -6,6 +6,7 @@
   <title>{{ AUTHOR_NAME }}</title>
   <meta name="description" content="{{ META_DESCRIPTION }}">
 
+  <link rel="alternate" type="application/rss+xml" title="{{ AUTHOR_NAME }} — Builds" href="/feed.xml">
   <link rel="canonical" href="{{ SITE_URL }}/">
   <link rel="icon" type="image/x-icon" href="/favicon.ico">
 
@@ -97,6 +98,8 @@
       {{ QUICK_BUILD_CARDS }}
     </div>
   </div>
+
+  <footer class="container"><p><a href="/feed.xml">Subscribe to new builds via RSS</a></p></footer>
 
   <script src="/js/navigation.js?v={{ BUILD_ID }}"></script>
   <script>
