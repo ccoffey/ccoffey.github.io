@@ -293,6 +293,7 @@ def sync_build_to_output(slug, config_path, media_filename=None, deleted_filenam
     # 4. Re-render only this build page into _site atomically
     generate_site.set_base_dir(OUTPUT_DIR)
     generate_site.render_single_build_page(slug, site_root=OUTPUT_DIR)
+    generate_site.generate_rss()
 
 
 def watcher_loop():
@@ -323,6 +324,14 @@ def watcher_loop():
 
             last_state = current_state
             if not unhandled and not deleted:
+                continue
+
+            # New/deleted projects need an incremental sync of media and the homepage too.
+            project_configs = [p for p in unhandled + deleted if p.endswith('/build.json')]
+            if any(p in deleted or not os.path.exists(os.path.join(
+                OUTPUT_DIR, os.path.relpath(p, os.path.join(BASE_DIR, 'src'))
+            )) for p in project_configs):
+                run_builder(incremental=True, skip_tests=True)
                 continue
 
             # Check what kind of files changed
@@ -512,6 +521,8 @@ class CustomHandler(SimpleHTTPRequestHandler):
 
 if __name__ == '__main__':
     port = 8000
+    # Only RSS links use the preview origin; deployment SEO URLs stay HTTPS.
+    os.environ['FEED_BASE_URL'] = f'http://127.0.0.1:{port}'
     print(f"Starting auto-syncing dev server on http://localhost:{port} ...")
     run_builder(incremental=True, skip_tests=True)
 

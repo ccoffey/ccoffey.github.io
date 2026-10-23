@@ -5,8 +5,12 @@ import os
 import re
 import subprocess
 import tempfile
-from datetime import datetime
+from datetime import UTC, datetime
+from email.utils import format_datetime
 from html import escape
+from pathlib import Path
+from urllib.parse import quote
+from xml.etree import ElementTree as ET
 
 from PIL import Image
 
@@ -55,7 +59,7 @@ BUILD_SLUG_PATTERN = re.compile(r'[a-z0-9](?:[a-z0-9+-]*[a-z0-9])?')
 BUILD_CONFIG_KEYS = {
     'title', 'subtitle', 'description', 'tags', 'dates', 'order', 'story',
     'status', 'cover_image', 'hero_video', 'next_steps', 'media_descriptions',
-    'photos',
+    'photos', 'published_date',
 }
 
 SITE_CONFIG = {}
@@ -113,6 +117,15 @@ def validate_build_config(config, slug):
 
     for field in ('title', 'subtitle', 'description', 'dates', 'story', 'status', 'cover_image', 'hero_video'):
         validate_string_field(config, slug, field)
+
+    if 'published_date' in config:
+        value = config['published_date']
+        if not isinstance(value, str) or not re.fullmatch(r'\d{4}-\d{2}-\d{2}', value):
+            raise ValueError(f"[{slug}] 'published_date' must be YYYY-MM-DD.")
+        try:
+            datetime.strptime(value, '%Y-%m-%d')
+        except ValueError as error:
+            raise ValueError(f"[{slug}] 'published_date' must be a valid date.") from error
 
     if 'order' in config and (not isinstance(config['order'], int) or isinstance(config['order'], bool)):
         raise ValueError(f"[{slug}] 'order' must be an integer.")
@@ -1379,7 +1392,7 @@ def sync_builds():
 
     # Collect Major Builds
     major_slugs = [d for d in os.listdir(MAJOR_BUILDS_DIR) 
-                   if os.path.isdir(os.path.join(MAJOR_BUILDS_DIR, d)) and not d.startswith('.')]
+                   if os.path.isfile(os.path.join(MAJOR_BUILDS_DIR, d, 'build.json')) and not d.startswith('.')]
     major_builds = [process_build_dir(MAJOR_BUILDS_DIR, s, '/major-builds') for s in major_slugs]
     major_builds.sort(key=lambda x: x['order'])
 
@@ -1387,7 +1400,7 @@ def sync_builds():
     quick_builds = []
     if os.path.exists(QUICK_BUILDS_DIR):
         quick_slugs = [d for d in os.listdir(QUICK_BUILDS_DIR)
-                       if os.path.isdir(os.path.join(QUICK_BUILDS_DIR, d)) and not d.startswith('.')]
+                       if os.path.isfile(os.path.join(QUICK_BUILDS_DIR, d, 'build.json')) and not d.startswith('.')]
         quick_builds = [process_build_dir(QUICK_BUILDS_DIR, s, '/quick-builds') for s in quick_slugs]
         quick_builds.sort(key=lambda x: x['order'])
 
@@ -1408,6 +1421,74 @@ def sync_builds():
     # 4. Generate sitemap.xml and robots.txt
     generate_sitemap(major_builds, quick_builds)
     generate_robots()
+    generate_rss()
+
+
+def generate_rss(feed_base_url=None):
+    """Generate a deterministic RSS feed without reprocessing project media."""
+    base_url = (feed_base_url or os.environ.get('FEED_BASE_URL') or SITE_URL).rstrip('/')
+    atom_ns = 'http://www.w3.org/2005/Atom'
+    ET.register_namespace('atom', atom_ns)
+    root = ET.Element('rss', version='2.0')
+    channel = ET.SubElement(root, 'channel')
+    author = get_site_config('author_name', 'Author Name')
+    ET.SubElement(channel, 'title').text = f'{author} — Builds'
+    ET.SubElement(channel, 'link').text = f'{base_url}/'
+    ET.SubElement(channel, 'description').text = f'New projects and builds by {author}.'
+    ET.SubElement(channel, 'language').text = 'en'
+    ET.SubElement(channel, f'{{{atom_ns}}}link', {
+        'href': f'{base_url}/feed.xml', 'rel': 'self', 'type': 'application/rss+xml',
+    })
+
+    entries = []
+    for build_type in ('major-builds', 'quick-builds'):
+        for config_path in sorted(Path(BASE_DIR, build_type).glob('*/build.json')):
+            slug = config_path.parent.name
+            if slug.startswith('.'):
+                continue
+            validate_build_slug(slug)
+            config = json.loads(config_path.read_text(encoding='utf-8'))
+            validate_build_config(config, slug)
+            if 'published_date' not in config:
+                raise ValueError(f"[{slug}] Add 'published_date' (YYYY-MM-DD) for the RSS feed.")
+            published = datetime.strptime(config['published_date'], '%Y-%m-%d').replace(tzinfo=UTC)
+            entries.append((published, build_type, slug, config, config_path.parent))
+
+    entries.sort(key=lambda entry: (-entry[0].timestamp(), entry[1], entry[2]))
+    for published, build_type, slug, config, project_dir in entries:
+        path = f'/{build_type}/{slug}/'
+        url = base_url + path
+        item = ET.SubElement(channel, 'item')
+        ET.SubElement(item, 'title').text = config.get('title', slug)
+        ET.SubElement(item, 'link').text = url
+        # Independent of preview/production origin and edits to project metadata.
+        ET.SubElement(item, 'guid', isPermaLink='false').text = f'urn:project:{build_type}:{slug}'
+        ET.SubElement(item, 'pubDate').text = format_datetime(published, usegmt=True)
+        ET.SubElement(item, 'category').text = 'Major Builds' if build_type == 'major-builds' else 'Quick Builds'
+        images = [p.name for p in (project_dir / 'media').iterdir()
+                  if p.is_file() and p.suffix.lower() in IMAGE_EXTENSIONS]
+        indexes = config.get('photos', {})
+
+        def image_key(filename, indexes=indexes):
+            if filename in indexes:
+                return (0, indexes[filename], filename)
+            date = parse_media_datetime(filename)
+            return (1, date or datetime.max, filename)
+
+        cover = config.get('cover_image') or (sorted(images, key=image_key)[-1] if images else '')
+        content = []
+        if cover:
+            image_url = base_url + path + 'thumbs/' + quote(cover)
+            content.append(f'<p><img src="{escape(image_url, quote=True)}" alt="{escape(config.get("title", slug), quote=True)}"></p>')
+        summary = config.get('subtitle') or config.get('description', '')
+        if summary:
+            content.append(f'<p>{escape(summary)}</p>')
+        content.append(f'<p><a href="{escape(url, quote=True)}">View the build →</a></p>')
+        ET.SubElement(item, 'description').text = ''.join(content)
+    ET.indent(root, space='  ')
+    xml = ET.tostring(root, encoding='unicode', xml_declaration=True)
+    atomic_write(os.path.join(BASE_DIR, 'feed.xml'), xml + '\n')
+    print(f'Generated feed.xml ({len(entries)} projects)')
 
 
 def generate_sitemap(major_builds, quick_builds):

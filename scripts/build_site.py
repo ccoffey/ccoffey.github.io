@@ -10,7 +10,7 @@ from pathlib import Path
 from urllib.parse import urlparse
 
 SOURCE_ROOT = Path(__file__).resolve().parent.parent
-GENERATED_ROOT_FILES = ("index.html", "robots.txt", "sitemap.xml")
+GENERATED_ROOT_FILES = ("index.html", "robots.txt", "sitemap.xml", "feed.xml")
 
 
 def default_build_id():
@@ -148,7 +148,7 @@ def copy_source_tree(output, incremental=False):
         out_build_root = output / build_type
         src_build_root = source_tree / build_type
         if out_build_root.is_dir() and src_build_root.is_dir():
-            src_slugs = {p.name for p in src_build_root.iterdir() if p.is_dir()}
+            src_slugs = {p.name for p in src_build_root.iterdir() if (p / 'build.json').is_file()}
             for out_build in list(out_build_root.iterdir()):
                 if out_build.is_dir() and out_build.name not in src_slugs:
                     shutil.rmtree(out_build)
@@ -175,6 +175,7 @@ def remove_generated_output(output, preserve_media_derivatives=False):
 def validate_output(output):
     required = [
         output / "index.html",
+        output / "feed.xml",
         output / "css" / "style.css",
         output / "js" / "comment-admin.js",
         output / "js" / "gallery-reorder.js",
