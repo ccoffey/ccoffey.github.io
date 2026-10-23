@@ -6,7 +6,7 @@ export default [
     ignores: ["_site/**", "test-results/**"],
   },
   {
-    files: ["js/**/*.js"],
+    files: ["js/**/*.js", "scripts/local-admin/**/*.js"],
     ...js.configs.recommended,
     languageOptions: {
       ecmaVersion: "latest",

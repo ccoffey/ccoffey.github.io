@@ -2,7 +2,7 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "lint:js": "python3 scripts/extract_template_scripts.py && eslint src/js .lint-tmp",
+    "lint:js": "python3 scripts/extract_template_scripts.py && eslint src/js scripts/local-admin .lint-tmp",
     "lint:css": "stylelint 'src/css/**/*.css'",
     "lint:html": "html-validate \"${SITE_ROOT:-_site}/**/*.html\""
   },

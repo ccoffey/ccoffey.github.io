@@ -153,6 +153,13 @@ Key configurations you can define:
 rendered without sanitization, so do not accept unreviewed HTML in pull
 requests. All other `build.json` fields are validated as data during the build.
 
+### Project Order
+
+Run `python3 dev_server.py` and drag homepage project cards to reorder them.
+Changes are saved centrally in `src/site.json`; new projects appear at the top
+automatically. No `order` field is needed in `build.json`. See
+[project ordering](docs/project-ordering.md) for keyboard controls and details.
+
 ### Manual Comment Configuration
 
 While you can author comments directly in the browser via `dev_server.py`, you can also manually define them under the `media_descriptions` key in `build.json`:

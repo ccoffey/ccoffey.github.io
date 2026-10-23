@@ -72,7 +72,15 @@ class QuietRequestHandler(SimpleHTTPRequestHandler):
         self.wfile.write(body)
 
     def do_GET(self):
-        if urlparse(self.path).path in ("/__admin/comments/status", "/__admin/gallery/status") and self.server.admin_enabled:
+        if urlparse(self.path).path == '/__admin/project-order.js' and self.server.admin_enabled:
+            body = (REPO_ROOT / 'scripts' / 'local-admin' / 'project-order.js').read_bytes()
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/javascript')
+            self.send_header('Content-Length', str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if urlparse(self.path).path in ("/__admin/comments/status", "/__admin/gallery/status", "/__admin/projects/status") and self.server.admin_enabled:
             self.send_json({"enabled": True})
             return
         super().do_GET()
@@ -81,6 +89,11 @@ class QuietRequestHandler(SimpleHTTPRequestHandler):
         path = urlparse(self.path).path
         if not self.server.admin_enabled:
             self.send_error(404)
+            return
+        if path == "/__admin/project-order":
+            length = int(self.headers.get('Content-Length', '0'))
+            payload = json.loads(self.rfile.read(length))
+            self.send_json({'order': payload['order']})
             return
         if path == "/__admin/comments":
             length = int(self.headers.get("Content-Length", "0"))
@@ -556,6 +569,49 @@ class BrowserRegressionTests(unittest.TestCase):
         page.locator("#narrativeToggleText").filter(has_text="Read full story").wait_for()
         page.wait_for_timeout(500)
         self.assertLessEqual(collapsible.bounding_box()["height"], 165)
+
+    def test_project_reordering_is_local_and_saves_each_section(self):
+        page = self.new_page(block_media=True)
+        page.goto(self.base_url + '/')
+        self.assertEqual(page.locator('.project-order-tools').count(), 0)
+        self.assertEqual(page.locator('[data-project-slug][draggable="true"]').count(), 0)
+        self.enable_local_comment_authoring()
+        page = self.new_page(block_media=True)
+        page.goto(self.base_url + '/')
+        page.locator('.projects-reorderable').first.wait_for()
+        for kind in ('major-builds', 'quick-builds'):
+            grid = page.locator(f'[data-project-type="{kind}"]')
+            before = grid.locator('[data-project-slug]').evaluate_all('(cards) => cards.map(c => c.dataset.projectSlug)')
+            first = grid.locator('[data-project-slug]').first
+            second = grid.locator('[data-project-slug]').nth(1)
+            target = second.bounding_box()
+            with page.expect_request('**/__admin/project-order') as request:
+                first.drag_to(second, target_position={'x': target['width'] * 0.8, 'y': target['height'] * 0.5})
+            status = page.locator('.project-order-status').nth(0 if kind == 'major-builds' else 1)
+            status.filter(has_text='Saved locally').wait_for()
+            self.assertEqual(request.value.post_data_json, {'build_type': kind, 'order': [before[1], before[0], *before[2:]]})
+            nav = page.locator(f'.nav-dropdown-item[href^="/{kind}/"]').evaluate_all('(links) => links.map(l => l.getAttribute("href").split("/")[2])')
+            self.assertEqual(nav, [before[1], before[0], *before[2:]])
+            with page.expect_request('**/__admin/project-order') as keyboard_request:
+                grid.locator('[data-project-slug]').first.focus()
+                page.keyboard.press('Alt+ArrowDown')
+            status.filter(has_text='Saved locally').wait_for()
+            self.assertEqual(keyboard_request.value.post_data_json['order'], before)
+
+    def test_project_reordering_restores_cards_when_save_fails(self):
+        self.enable_local_comment_authoring()
+        page = self.new_page(block_media=True)
+        page.route('**/__admin/project-order', lambda route: route.fulfill(
+            status=400, content_type='application/json', body='{"error":"Projects have changed. Reload the homepage before reordering."}'
+        ))
+        page.goto(self.base_url + '/')
+        grid = page.locator('[data-project-type="major-builds"]')
+        grid.locator('[draggable="true"]').first.wait_for()
+        before = grid.locator('[data-project-slug]').evaluate_all('(cards) => cards.map(c => c.dataset.projectSlug)')
+        grid.locator('[data-project-slug]').first.focus()
+        page.keyboard.press('Alt+ArrowDown')
+        page.locator('.project-order-status.is-error').wait_for()
+        self.assertEqual(grid.locator('[data-project-slug]').evaluate_all('(cards) => cards.map(c => c.dataset.projectSlug)'), before)
 
     def test_gallery_reorder_only_works_locally(self):
         # 1. In prod (admin disabled): cards are not draggable, grid is not reorderable
