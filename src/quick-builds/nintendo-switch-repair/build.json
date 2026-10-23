@@ -1,0 +1,29 @@
+{
+  "title": "Nintendo Switch Repair",
+  "subtitle": "Not charging, no signs of life at all.",
+  "description": "Last week, my kids' Nintendo Switch completely died and refused to charge. I found a short on the M92T36 power management IC, micro-soldered a replacement chip, and now it's working again",
+  "tags": [
+    "Micro soldering",
+    "Console repair"
+  ],
+  "dates": "September 2026",
+  "order": 5,
+  "cover_image": "WhatsApp Image 2026-09-19 at 18.10.10.jpg",
+  "media_descriptions": {
+    "WhatsApp Image 2026-09-19 at 18.17.46.jpeg": [
+      "My Yojock meter isn't powering on, which confirms the Switch motherboard is drawing zero power."
+    ],
+    "WhatsApp Image 2026-09-19 at 18.32.39.jpeg": [
+      "The M92T36 is the power management chip for the Nintendo Switch."
+    ],
+    "IMG_018_ 2026-09-19 at 18.55.55.png": [
+      "A dead short on the capacitor across pins 8 (GND) and 9 (VBUS) confirms the M92T36 IC is internally shorted to ground.\""
+    ],
+    "Screenshot 2026-09-19 at 18.25.16.png": [
+      "I ordered a brand new M92T36 chip from MBI Tech Parts, a family owned supplier based in Donegal, Ireland."
+    ],
+    "WhatsApp Image 2026-09-19 at 18.10.10.jpg": [
+      "I tested the battery with a multimeter and found that while the charge is very low, it is still healthy."
+    ]
+  }
+}
