@@ -99,6 +99,62 @@ def get_html_pages():
     return sorted(pages)
 
 
+class TestProjectOrder(unittest.TestCase):
+    def test_new_projects_precede_saved_order_and_removed_projects_are_ignored(self):
+        projects = [{'slug': slug} for slug in ('z-new', 'old-b', 'old-a', 'a-new')]
+        config = {'project_order': {'major-builds': ['old-a', 'removed', 'old-b']}}
+        with patch.object(generate_site, 'SITE_CONFIG', config):
+            result = generate_site.order_projects(projects, 'major-builds')
+            self.assertEqual([p['slug'] for p in result], ['a-new', 'z-new', 'old-a', 'old-b'])
+            self.assertEqual([p['slug'] for p in generate_site.order_projects(projects, 'quick-builds')],
+                             ['a-new', 'old-a', 'old-b', 'z-new'])
+
+    def test_invalid_site_sequences_fail_clearly(self):
+        for order in ([], {'other': []}, {'major-builds': 'bad'},
+                      {'major-builds': ['a', 'a']}, {'quick-builds': ['../a']}):
+            with self.subTest(order=order), patch.object(generate_site, 'SITE_CONFIG', {'project_order': order}):
+                with self.assertRaises(ValueError):
+                    generate_site.order_projects([], 'major-builds')
+
+    def test_save_preserves_project_metadata_and_other_site_settings(self):
+        with tempfile.TemporaryDirectory() as directory:
+            root = Path(directory)
+            config_path = root / 'site.json'
+            config_path.write_text(json.dumps({'author_name': 'Test', 'project_order': {'major-builds': ['major']}}))
+            for slug in ('one', 'two'):
+                project = root / 'quick-builds' / slug
+                project.mkdir(parents=True)
+                (project / 'build.json').write_text('{"title": "Unchanged"}')
+            saved = dev_server.write_project_order(config_path, 'quick-builds', ['two', 'one'])
+            self.assertEqual(saved, ['two', 'one'])
+            config = json.loads(config_path.read_text())
+            self.assertEqual(config['author_name'], 'Test')
+            self.assertEqual(config['project_order'], {'major-builds': ['major'], 'quick-builds': ['two', 'one']})
+            for project in root.glob('quick-builds/*/build.json'):
+                self.assertEqual(project.read_text(), '{"title": "Unchanged"}')
+            before = config_path.read_bytes()
+            for order in (['one'], ['one', 'two', 'missing'], ['one', 'one'], ['../one', 'two'], 'one', [1]):
+                with self.subTest(order=order), self.assertRaises(ValueError):
+                    dev_server.write_project_order(config_path, 'quick-builds', order)
+                self.assertEqual(before, config_path.read_bytes())
+            with self.assertRaises(ValueError):
+                dev_server.write_project_order(config_path, '../quick-builds', ['two', 'one'])
+
+    def test_homepage_and_navigation_use_the_same_central_order(self):
+        config = json.loads(Path(SITE_ROOT, 'site.json').read_text())
+        home = Path(SITE_ROOT, 'index.html').read_text()
+        with patch.object(generate_site, 'SITE_CONFIG', config):
+            for kind in ('major-builds', 'quick-builds'):
+                projects = [{'slug': p.parent.name} for p in Path(SITE_ROOT, kind).glob('*/build.json')]
+                expected = [p['slug'] for p in generate_site.order_projects(projects, kind)]
+                cards = re.findall(rf'<a href="/{kind}/([^/]+)/" class="major-build-card-link"', home)
+                nav = re.findall(rf'<a href="/{kind}/([^/]+)/" class="nav-dropdown-item', home)
+                self.assertEqual(cards, expected)
+                self.assertEqual(nav, expected)
+                for path in Path(SITE_ROOT, kind).glob('*/build.json'):
+                    self.assertNotIn('order', json.loads(path.read_text()))
+
+
 class TestRSS(unittest.TestCase):
     def test_published_feed_covers_every_project_and_resolves_images(self):
         channel = ET.parse(Path(SITE_ROOT, 'feed.xml')).getroot().find('channel')
@@ -508,7 +564,7 @@ class TestGeneratorInvariants(unittest.TestCase):
     def test_build_config_rejects_unknown_and_invalid_fields(self):
         with self.assertRaisesRegex(ValueError, "unsupported field"):
             generate_site.validate_build_config({'titlle': 'Typo'}, 'test-build')
-        with self.assertRaisesRegex(ValueError, "'order' must be an integer"):
+        with self.assertRaisesRegex(ValueError, "unsupported field"):
             generate_site.validate_build_config({'order': True}, 'test-build')
         with self.assertRaisesRegex(ValueError, "non-empty list"):
             generate_site.validate_build_config({'tags': []}, 'test-build')
@@ -898,6 +954,7 @@ def run_tests():
     loader = unittest.TestLoader()
     suite = unittest.TestSuite()
 
+    suite.addTests(loader.loadTestsFromTestCase(TestProjectOrder))
     suite.addTests(loader.loadTestsFromTestCase(TestRSS))
     suite.addTests(loader.loadTestsFromTestCase(TestAssetIntegrity))
     suite.addTests(loader.loadTestsFromTestCase(TestSEOAndMetadataContracts))

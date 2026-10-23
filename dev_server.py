@@ -24,6 +24,7 @@ WATCH_DIRS = [
 WATCH_FILES = [
     os.path.join(BASE_DIR, 'scripts', 'generate_site.py'),
     os.path.join(BASE_DIR, 'scripts', 'build_site.py'),
+    os.path.join(BASE_DIR, 'scripts', 'local-admin', 'project-order.js'),
     os.path.join(BASE_DIR, 'dev_server.py'),
 ]
 BUILD_SCRIPT = os.path.join(BASE_DIR, 'scripts', 'build_site.py')
@@ -44,6 +45,29 @@ def get_build_config_path(slug):
             if os.path.isfile(config_path):
                 return config_path
     return None
+
+
+def write_project_order(config_path, build_type, order):
+    """Persist a complete project sequence without touching project metadata."""
+    if build_type not in ('major-builds', 'quick-builds'):
+        raise ValueError('Unknown project type.')
+    if not isinstance(order, list) or any(
+        not isinstance(slug, str) or not BUILD_SLUG_PATTERN.fullmatch(slug) for slug in order
+    ) or len(order) != len(set(order)):
+        raise ValueError('Order must be a list of unique project slugs.')
+    project_root = os.path.join(os.path.dirname(config_path), build_type)
+    available = {name for name in os.listdir(project_root)
+                 if not name.startswith('.') and os.path.isfile(os.path.join(project_root, name, 'build.json'))}
+    if set(order) != available:
+        raise ValueError('Projects have changed. Reload the homepage before reordering.')
+    with open(config_path, encoding='utf-8') as config_file:
+        config = json.load(config_file)
+    orders = config.setdefault('project_order', {})
+    if not isinstance(orders, dict):
+        raise ValueError('site.json project_order must be an object.')
+    orders[build_type] = order
+    generate_site.atomic_write(config_path, json.dumps(config, indent=2, ensure_ascii=False) + '\n')
+    return order
 
 
 def write_media_comments(config_path, filename, comments):
@@ -419,13 +443,42 @@ class CustomHandler(SimpleHTTPRequestHandler):
 
     def do_GET(self):
         path = urlparse(self.path).path
-        if path in ('/__admin/comments/status', '/__admin/gallery/status', '/__admin/status'):
+        if path == '/__admin/project-order.js':
+            with open(os.path.join(BASE_DIR, 'scripts', 'local-admin', 'project-order.js'), 'rb') as script:
+                body = script.read()
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/javascript; charset=utf-8')
+            self.send_header('Content-Length', str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if path in ('/__admin/comments/status', '/__admin/gallery/status', '/__admin/status', '/__admin/projects/status'):
             self.send_json(200, {'enabled': True})
             return
         super().do_GET()
 
     def do_POST(self):
         path = urlparse(self.path).path
+        if path == '/__admin/project-order':
+            try:
+                length = int(self.headers.get('Content-Length', '0'))
+                if not 0 < length <= 65536:
+                    raise ValueError('Request body must be between 1 and 65536 bytes.')
+                payload = json.loads(self.rfile.read(length))
+                if not isinstance(payload, dict):
+                    raise ValueError('Request body must be an object.')
+                with BUILD_LOCK:
+                    config_path = os.path.join(BASE_DIR, 'src', 'site.json')
+                    order = write_project_order(config_path, payload.get('build_type'), payload.get('order'))
+                    record_handled_mtime(config_path)
+                    shutil.copy2(config_path, os.path.join(OUTPUT_DIR, 'site.json'))
+                    generate_site.render_all_html_pages(site_root=OUTPUT_DIR)
+            except (OSError, ValueError) as error:
+                self.send_json(400, {'error': str(error)})
+                return
+            self.send_json(200, {'order': order})
+            return
+
         if path == '/__admin/gallery-order':
             try:
                 length = int(self.headers.get('Content-Length', '0'))

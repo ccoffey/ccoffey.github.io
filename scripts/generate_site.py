@@ -57,7 +57,7 @@ IMAGE_EXTENSIONS = ('.jpg', '.jpeg', '.png', '.webp')
 MEDIA_EXTENSIONS = IMAGE_EXTENSIONS + VIDEO_EXTENSIONS
 BUILD_SLUG_PATTERN = re.compile(r'[a-z0-9](?:[a-z0-9+-]*[a-z0-9])?')
 BUILD_CONFIG_KEYS = {
-    'title', 'subtitle', 'description', 'tags', 'dates', 'order', 'story',
+    'title', 'subtitle', 'description', 'tags', 'dates', 'story',
     'status', 'cover_image', 'hero_video', 'next_steps', 'media_descriptions',
     'photos', 'published_date',
 }
@@ -126,9 +126,6 @@ def validate_build_config(config, slug):
             datetime.strptime(value, '%Y-%m-%d')
         except ValueError as error:
             raise ValueError(f"[{slug}] 'published_date' must be a valid date.") from error
-
-    if 'order' in config and (not isinstance(config['order'], int) or isinstance(config['order'], bool)):
-        raise ValueError(f"[{slug}] 'order' must be an integer.")
 
     if 'tags' in config:
         tags = config['tags']
@@ -763,7 +760,6 @@ def process_build_dir(base_dir, slug, url_prefix):
         'description': '',
         'tags': ['Hardware'],
         'dates': 'Active',
-        'order': 99,
         'story': '<p>Build details coming soon.</p>'
     }
     for k, v in defaults.items():
@@ -950,7 +946,6 @@ def process_build_dir(base_dir, slug, url_prefix):
         'description': config.get('description', ''),
         'tags': config.get('tags', []),
         'dates': config.get('dates', ''),
-        'order': config.get('order', 99),
         'story': config.get('story', ''),
         'status': config.get('status', ''),
         'cover_image': cover_image,
@@ -962,6 +957,25 @@ def process_build_dir(base_dir, slug, url_prefix):
         'gallery': gallery,
         'url_prefix': url_prefix
     }
+
+def order_projects(projects, build_type):
+    """Put new projects first, then apply the saved site-wide sequence."""
+    orders = get_site_config('project_order', {})
+    if not isinstance(orders, dict) or set(orders) - {'major-builds', 'quick-builds'}:
+        raise ValueError("site.json 'project_order' must map build types to lists of project slugs.")
+    for kind, slugs in orders.items():
+        if not isinstance(slugs, list) or any(not isinstance(slug, str) for slug in slugs):
+            raise ValueError(f"site.json project_order.{kind} must be a list of project slugs.")
+        for slug in slugs:
+            validate_build_slug(slug)
+        if len(slugs) != len(set(slugs)):
+            raise ValueError(f"site.json project_order.{kind} contains duplicate slugs.")
+    ranks = {slug: index for index, slug in enumerate(orders.get(build_type, []))}
+    return sorted(projects, key=lambda project: (
+        1 if project['slug'] in ranks else 0,
+        ranks.get(project['slug'], 0), project['slug'],
+    ))
+
 
 def get_all_build_nav_items():
     """Quickly read titles and subtitles for navigation from all build.json files."""
@@ -980,10 +994,9 @@ def get_all_build_nav_items():
                 major_items.append({
                     'slug': s,
                     'title': cfg.get('title', s),
-                    'subtitle': cfg.get('subtitle', ''),
-                    'order': cfg.get('order', 99)
+                    'subtitle': cfg.get('subtitle', '')
                 })
-        major_items.sort(key=lambda x: x['order'])
+        major_items = order_projects(major_items, 'major-builds')
 
     quick_items = []
     if os.path.exists(QUICK_BUILDS_DIR):
@@ -1000,10 +1013,9 @@ def get_all_build_nav_items():
                 quick_items.append({
                     'slug': s,
                     'title': cfg.get('title', s),
-                    'subtitle': cfg.get('subtitle', ''),
-                    'order': cfg.get('order', 99)
+                    'subtitle': cfg.get('subtitle', '')
                 })
-        quick_items.sort(key=lambda x: x['order'])
+        quick_items = order_projects(quick_items, 'quick-builds')
 
     return major_items, quick_items
 
@@ -1266,7 +1278,7 @@ def render_home_page(major_builds, quick_builds, home_tmpl=None, build_id=None, 
         else:
             picture_html = f'<img src="{thumb_src}" alt="{b_title}" loading="lazy">'
         major_cards_html.append(f'''
-      <a href="/major-builds/{b['slug']}/" class="major-build-card-link">
+      <a href="/major-builds/{b['slug']}/" class="major-build-card-link" data-project-slug="{b['slug']}">
         <div class="major-build-card">
           <div class="grid-card-media">
             <div class="card-media-backdrop" style="background-image: url('{thumb_src}');"></div>
@@ -1321,7 +1333,7 @@ def render_home_page(major_builds, quick_builds, home_tmpl=None, build_id=None, 
           </div>'''
 
         quick_cards_html.append(f'''
-      <a href="/quick-builds/{qb['slug']}/" class="major-build-card-link">
+      <a href="/quick-builds/{qb['slug']}/" class="major-build-card-link" data-project-slug="{qb['slug']}">
         <div class="major-build-card">
           {media_markup}
           <div class="grid-card-body">
@@ -1394,7 +1406,7 @@ def sync_builds():
     major_slugs = [d for d in os.listdir(MAJOR_BUILDS_DIR) 
                    if os.path.isfile(os.path.join(MAJOR_BUILDS_DIR, d, 'build.json')) and not d.startswith('.')]
     major_builds = [process_build_dir(MAJOR_BUILDS_DIR, s, '/major-builds') for s in major_slugs]
-    major_builds.sort(key=lambda x: x['order'])
+    major_builds = order_projects(major_builds, 'major-builds')
 
     # Collect Quick Builds
     quick_builds = []
@@ -1402,7 +1414,7 @@ def sync_builds():
         quick_slugs = [d for d in os.listdir(QUICK_BUILDS_DIR)
                        if os.path.isfile(os.path.join(QUICK_BUILDS_DIR, d, 'build.json')) and not d.startswith('.')]
         quick_builds = [process_build_dir(QUICK_BUILDS_DIR, s, '/quick-builds') for s in quick_slugs]
-        quick_builds.sort(key=lambda x: x['order'])
+        quick_builds = order_projects(quick_builds, 'quick-builds')
 
     major_nav, quick_nav = get_all_build_nav_items()
     build_id = os.environ.get('BUILD_ID') or str(int(datetime.now().timestamp()))

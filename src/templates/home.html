@@ -86,7 +86,7 @@
       <p class="section-main-desc">Ambitious electronics, software and mechanical builds, often taking months to complete</p>
     </div>
 
-    <div class="major-builds-grid">
+    <div class="major-builds-grid" data-project-type="major-builds">
       {{ MAJOR_BUILD_CARDS }}
     </div>
 
@@ -98,13 +98,24 @@
       <p class="section-main-desc">Home improvements &amp; fixing broken things instead of throwing them out</p>
     </div>
 
-    <div class="major-builds-grid quick-builds-grid">
+    <div class="major-builds-grid quick-builds-grid" data-project-type="quick-builds">
       {{ QUICK_BUILD_CARDS }}
     </div>
   </div>
 
   <script src="/js/navigation.js?v={{ BUILD_ID }}"></script>
   <script>
+    // Load editing controls only when the local server advertises support.
+    fetch('/__admin/projects/status')
+      .then(response => response.ok ? response.json() : null)
+      .then(status => {
+        if (!status?.enabled) return;
+        const script = document.createElement('script');
+        script.src = '/__admin/project-order.js';
+        document.body.append(script);
+      })
+      .catch(() => {});
+
     // GA4: RSS has a dedicated event; preserve existing contact event reporting.
     document.querySelectorAll('.hero-actions .action-link').forEach(link => {
       link.addEventListener('click', function() {

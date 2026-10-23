@@ -8,5 +8,24 @@
     "linkedin": "https://linkedin.com/in/cathalcoffey",
     "github": "https://github.com/ccoffey",
     "email": "coffey.cathal@gmail.com"
+  },
+  "project_order": {
+    "major-builds": [
+      "claw-machine",
+      "arcade",
+      "chimera",
+      "mop-bot",
+      "magic-stairs"
+    ],
+    "quick-builds": [
+      "ps5-hdmi-repair",
+      "macbook-air-repair",
+      "macbook-pro-2012-repair",
+      "hakko-port-replacement",
+      "prusa-mk3s+-hotend-repair",
+      "washing-machine-repair",
+      "office-chair-repair",
+      "wall-vent-covers"
+    ]
   }
 }

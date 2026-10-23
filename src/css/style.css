@@ -1658,3 +1658,16 @@ header.hero {
   color: var(--text-muted);
   max-width: 420px;
 }
+
+/* Local project ordering controls, inserted only by the development server. */
+.project-order-tools {
+  color: var(--text-muted);
+  font-size: 0.875rem;
+  margin-bottom: 1rem;
+}
+
+.project-order-status { margin-left: 0.75rem; }
+.project-order-status.is-error { color: #b91c1c; }
+.projects-reorderable > .major-build-card-link { cursor: grab; }
+.projects-reorderable > .project-dragging { opacity: 0.45; }
+.projects-reorderable[aria-busy="true"] > .major-build-card-link { cursor: progress; }
