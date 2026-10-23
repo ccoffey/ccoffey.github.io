@@ -112,3 +112,40 @@ to that command and serve `_site` with `python3 -m http.server 8000 --directory 
 After deployment, subscribe to `https://cathalcoffey.com/feed.xml` for real updates.
 The preview and public feeds are separate subscriptions even though their item
 IDs match.
+
+## Google Analytics button tracking
+
+Deployment enables GA4 through the existing `GA_MEASUREMENT_ID` repository
+variable. The homepage sends exactly one custom event per button click:
+
+| Button | Event | `contact_method` |
+| --- | --- | --- |
+| RSS feed | `click_rss` | `rss` |
+| GitHub | `click_contact` | `github` |
+| Site source | `click_contact` | `site-source` |
+| LinkedIn | `click_contact` | `linkedin` |
+| Email | `click_contact` | `email` |
+
+Each event also includes `link_url`. Existing contact event names and parameter
+values are preserved. RSS clicks are recorded when the button is clicked; feed
+reader refreshes and subscriptions are not counted by this JavaScript event.
+
+After deployment, find `click_rss` in GA4's Events report. **Event count** shows
+how often it was clicked; **Total users** shows the number of users GA recorded
+triggering it. Repeated clicks can therefore exceed the user count. Realtime
+can help verify collection before standard reports finish processing.
+
+To break down the existing `click_contact` event by button in reports or
+Explorations, register `contact_method` as an event-scoped custom dimension
+under Admin → Custom definitions, unless it already exists. Use `link_url` as
+another event-scoped dimension if destination breakdowns are useful. New
+custom dimensions can take 24–48 hours to become reportable.
+
+Google's documentation:
+- [Custom event reports](https://support.google.com/analytics/answer/12229021)
+- [Event parameters and custom dimensions](https://developers.google.com/analytics/devguides/collection/ga4/event-parameters)
+- [Custom dimension processing times](https://support.google.com/analytics/answer/14240153)
+
+Local builds leave Analytics disabled unless `GA_MEASUREMENT_ID` is explicitly
+set. Keep it unset during routine local testing to avoid adding test clicks to
+production reports.

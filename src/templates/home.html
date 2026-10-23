@@ -105,12 +105,12 @@
 
   <script src="/js/navigation.js?v={{ BUILD_ID }}"></script>
   <script>
-    // GA4 Event Tracking: Contact buttons (GitHub, LinkedIn, Email)
+    // GA4: RSS has a dedicated event; preserve existing contact event reporting.
     document.querySelectorAll('.hero-actions .action-link').forEach(link => {
       link.addEventListener('click', function() {
         const method = this.getAttribute('data-contact') || this.textContent.trim().toLowerCase();
         if (typeof gtag === 'function') {
-          gtag('event', 'click_contact', {
+          gtag('event', method === 'rss' ? 'click_rss' : 'click_contact', {
             contact_method: method,
             link_url: this.getAttribute('href')
           });
