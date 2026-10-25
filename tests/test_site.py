@@ -25,6 +25,7 @@ import xml.etree.ElementTree as ET
 from html.parser import HTMLParser
 from pathlib import Path
 from unittest.mock import patch
+from urllib.parse import unquote
 
 TESTS_DIR = os.path.dirname(os.path.abspath(__file__))
 REPO_ROOT = os.path.abspath(os.path.join(TESTS_DIR, ".."))
@@ -251,7 +252,7 @@ class TestAssetIntegrity(unittest.TestCase):
                 if src.startswith(('http://', 'https://', '//', 'data:')):
                     continue
                 checked_count += 1
-                clean_src = src.split('?')[0].split('#')[0]
+                clean_src = unquote(src.split('?')[0].split('#')[0])
                 if clean_src.startswith('/'):
                     target = os.path.join(SITE_ROOT, clean_src.lstrip('/'))
                 else:
@@ -560,6 +561,26 @@ class TestGeneratorInvariants(unittest.TestCase):
                 'many.jpg': ['First comment', 'Second comment']
             }
         )
+
+    def test_srcset_encodes_media_filenames_in_gallery_and_homepage(self):
+        filename = "Photo 1, #50% café's.webp"
+        path = f"/quick-builds/demo/thumbs/{filename}"
+        gallery = generate_site.render_gallery_card({'thumb': path, 'thumb_webp': path}, 'Demo', 0)
+        project = {'slug': 'demo', 'title': 'Demo', 'subtitle': '',
+                   'cover_image': filename, 'tags': [], 'gallery': []}
+        with tempfile.TemporaryDirectory() as directory, patch.object(generate_site, 'BASE_DIR', directory):
+            homepage = generate_site.render_home_page([project], [project], major_nav='', quick_nav='')
+        for markup, expected in ((gallery, [path]), (homepage, [
+            f"/major-builds/demo/thumbs/{filename}", path,
+        ])):
+            scraper = HTMLAssetScraper()
+            scraper.feed(markup)
+            candidates = [url for kind, url in scraper.assets if kind == 'source']
+            self.assertEqual([unquote(url) for url in candidates], expected)
+            for url in candidates:
+                self.assertFalse(any(character.isspace() or character == ',' for character in url), url)
+                self.assertIn('%23', url)
+                self.assertIn('%25', url)
 
     def test_build_config_rejects_unknown_and_invalid_fields(self):
         with self.assertRaisesRegex(ValueError, "unsupported field"):

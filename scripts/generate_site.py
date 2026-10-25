@@ -647,7 +647,7 @@ def json_for_script(value):
 
 def render_gallery_card(item, title, index):
     thumb_attr = escape(item.get('thumb', ''), quote=True)
-    thumb_webp_attr = escape(item.get('thumb_webp', ''), quote=True)
+    thumb_webp_attr = escape(quote(item.get('thumb_webp', ''), safe='/'), quote=True)
     date_attr = escape(item.get('short_date', ''), quote=True)
     media_type = item.get('type', 'image')
     card_class = 'photo-card video-card' if media_type == 'video' else 'photo-card'
@@ -1272,7 +1272,7 @@ def render_home_page(major_builds, quick_builds, home_tmpl=None, build_id=None, 
         tags_html = ''.join(f'<span class="tech-tag">{escape(tag)}</span>' for tag in b['tags'])
         if thumb_webp_src:
             picture_html = f'''<picture>
-              <source type="image/webp" srcset="{thumb_webp_src}">
+              <source type="image/webp" srcset="{escape(quote(thumb_webp_src, safe='/'), quote=True)}">
               <img src="{thumb_src}" alt="{b_title}" loading="lazy">
             </picture>'''
         else:
@@ -1310,7 +1310,7 @@ def render_home_page(major_builds, quick_builds, home_tmpl=None, build_id=None, 
         if thumb_src:
             if thumb_webp_src:
                 picture_html = f'''<picture>
-              <source type="image/webp" srcset="{thumb_webp_src}">
+              <source type="image/webp" srcset="{escape(quote(thumb_webp_src, safe='/'), quote=True)}">
               <img src="{thumb_src}" alt="{qb_title}" loading="lazy">
             </picture>'''
             else:
