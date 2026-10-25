@@ -602,6 +602,8 @@ def process_single_media_file(media_dir, thumbs_dir, filename, slug):
                 if img.mode in ('RGBA', 'P') and not f_lower.endswith('.png'):
                     img = img.convert('RGB')
                 img.save(dst_orig, optimize=True, quality=82)
+                if f_lower.endswith('.png') and os.path.getsize(dst_orig) > 500 * 1024:
+                    img.quantize(colors=256, method=Image.Quantize.FASTOCTREE).save(dst_orig, optimize=True)
                 img.save(dst_webp, 'WEBP', quality=80)
                 print(f"[{slug}] Generated thumbnails for {filename}")
         except Exception as e:
@@ -820,6 +822,8 @@ def process_build_dir(base_dir, slug, url_prefix):
                         if img.mode in ('RGBA', 'P') and not f_lower.endswith('.png'):
                             img = img.convert('RGB')
                         img.save(dst_orig, optimize=True, quality=82)
+                        if f_lower.endswith('.png') and os.path.getsize(dst_orig) > 500 * 1024:
+                            img.quantize(colors=256, method=Image.Quantize.FASTOCTREE).save(dst_orig, optimize=True)
                         print(f"[{slug}] Generated thumbnail: {f}")
                 except Exception as e:
                     print(f"[{slug}] Error thumbnailing {f}: {e}")

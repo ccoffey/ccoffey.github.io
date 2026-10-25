@@ -25,6 +25,7 @@ WATCH_FILES = [
     os.path.join(BASE_DIR, 'scripts', 'generate_site.py'),
     os.path.join(BASE_DIR, 'scripts', 'build_site.py'),
     os.path.join(BASE_DIR, 'scripts', 'local-admin', 'project-order.js'),
+    os.path.join(BASE_DIR, 'scripts', 'local-admin', 'emoji-button.js'),
     os.path.join(BASE_DIR, 'dev_server.py'),
 ]
 BUILD_SCRIPT = os.path.join(BASE_DIR, 'scripts', 'build_site.py')
@@ -89,7 +90,7 @@ def write_media_comments(config_path, filename, comments):
     with tempfile.NamedTemporaryFile(
         mode='w', encoding='utf-8', dir=config_dir, delete=False, suffix='.json'
     ) as temporary_file:
-        json.dump(config, temporary_file, indent=2)
+        json.dump(config, temporary_file, indent=2, ensure_ascii=False)
         temporary_file.write('\n')
         temporary_path = temporary_file.name
     os.replace(temporary_path, config_path)
@@ -124,7 +125,7 @@ def write_gallery_order(config_path, ordered_filenames):
     with tempfile.NamedTemporaryFile(
         mode='w', encoding='utf-8', dir=config_dir, delete=False, suffix='.json'
     ) as temporary_file:
-        json.dump(config, temporary_file, indent=2)
+        json.dump(config, temporary_file, indent=2, ensure_ascii=False)
         temporary_file.write('\n')
         temporary_path = temporary_file.name
     os.replace(temporary_path, config_path)
@@ -164,7 +165,7 @@ def delete_gallery_photo(config_path, filename):
     with tempfile.NamedTemporaryFile(
         mode='w', encoding='utf-8', dir=config_dir, delete=False, suffix='.json'
     ) as temporary_file:
-        json.dump(config, temporary_file, indent=2)
+        json.dump(config, temporary_file, indent=2, ensure_ascii=False)
         temporary_file.write('\n')
         temporary_path = temporary_file.name
     os.replace(temporary_path, config_path)
@@ -214,7 +215,7 @@ def save_gallery_upload(config_path, original_filename, file_bytes):
     with tempfile.NamedTemporaryFile(
         mode='w', encoding='utf-8', dir=config_dir, delete=False, suffix='.json'
     ) as temporary_file:
-        json.dump(config, temporary_file, indent=2)
+        json.dump(config, temporary_file, indent=2, ensure_ascii=False)
         temporary_file.write('\n')
         temporary_path = temporary_file.name
     os.replace(temporary_path, config_path)
@@ -445,6 +446,15 @@ class CustomHandler(SimpleHTTPRequestHandler):
         path = urlparse(self.path).path
         if path == '/__admin/project-order.js':
             with open(os.path.join(BASE_DIR, 'scripts', 'local-admin', 'project-order.js'), 'rb') as script:
+                body = script.read()
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/javascript; charset=utf-8')
+            self.send_header('Content-Length', str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
+        if path == '/__admin/emoji-button.js':
+            with open(os.path.join(BASE_DIR, 'scripts', 'local-admin', 'emoji-button.js'), 'rb') as script:
                 body = script.read()
             self.send_response(200)
             self.send_header('Content-Type', 'text/javascript; charset=utf-8')

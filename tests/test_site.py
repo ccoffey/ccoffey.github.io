@@ -644,15 +644,18 @@ class TestGeneratorInvariants(unittest.TestCase):
             )
 
             saved = dev_server.write_media_comments(
-                str(config_path), 'photo.jpg', [' First ', '', 'Second ']
+                str(config_path), 'photo.jpg', [' First 🛠️ ', '', 'Second 🚀 ']
             )
-            self.assertEqual(saved, ['First', 'Second'])
+            self.assertEqual(saved, ['First 🛠️', 'Second 🚀'])
+            raw_json = config_path.read_text(encoding='utf-8')
+            self.assertIn('🛠️', raw_json)
+            self.assertIn('🚀', raw_json)
             self.assertEqual(
-                json.loads(config_path.read_text(encoding='utf-8'))['media_descriptions']['photo.jpg'],
-                ['First', 'Second'],
+                json.loads(raw_json)['media_descriptions']['photo.jpg'],
+                ['First 🛠️', 'Second 🚀'],
             )
             self.assertEqual(
-                json.loads(config_path.read_text(encoding='utf-8'))['media_descriptions']['other.jpg'],
+                json.loads(raw_json)['media_descriptions']['other.jpg'],
                 ['Keep this comment'],
             )
 

@@ -659,7 +659,12 @@
 
     document.addEventListener("keydown", (e) => {
       if (!lightbox.classList.contains("active")) return;
-      if (e.target.isContentEditable || e.target.tagName === "INPUT" || e.target.tagName === "TEXTAREA") return;
+      if (
+        e.target.isContentEditable ||
+        e.target.tagName === "INPUT" ||
+        e.target.tagName === "TEXTAREA" ||
+        (e.target.closest && e.target.closest(".emoji-picker, .lightbox-comment-emoji-btn"))
+      ) return;
       if (e.key === "Tab") {
         const focusable = [...lightbox.querySelectorAll('button:not([hidden]):not([disabled]), [href], video[controls]')]
           .filter(element => element.getClientRects().length > 0);

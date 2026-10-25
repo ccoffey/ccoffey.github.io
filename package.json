@@ -8,6 +8,7 @@
   },
   "devDependencies": {
     "@eslint/js": "9.36.0",
+    "@joeattardi/emoji-button": "^4.6.4",
     "eslint": "9.36.0",
     "globals": "16.3.0",
     "html-validate": "10.4.0",

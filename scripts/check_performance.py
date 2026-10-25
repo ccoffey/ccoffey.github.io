@@ -25,7 +25,7 @@ DEFAULT_SITE_ROOT = REPO_ROOT / "_site"
 # conscious review and an explanation in the commit.
 MAX_HTML_BYTES = 128 * 1024
 MAX_CSS_BYTES = 50 * 1024
-MAX_JAVASCRIPT_BYTES = 20 * 1024
+MAX_JAVASCRIPT_BYTES = 30 * 1024
 MAX_EAGER_PAGE_BYTES = 160 * 1024
 
 

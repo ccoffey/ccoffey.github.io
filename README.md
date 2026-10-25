@@ -85,7 +85,7 @@ python3 dev_server.py
 ```
 Open [http://127.0.0.1:8000/](http://127.0.0.1:8000/). 
 
-**Authoring Comments:** When accessed via this dev server, the gallery includes the **Local Comment Authoring** feature. Click a comment bubble to edit it in place, type into the always-ready *Write a comment…* bubble, or click the `×` to delete it. Changes save directly to your local JSON metadata and trigger a rebuild. 
+**Authoring Comments:** When accessed via this dev server, the gallery includes the **Local Comment Authoring** feature. Click a comment bubble to edit it in place, type into the always-ready *Write a comment…* bubble, or click the `×` to delete it. When text editing, an emoji picker button is shown (or press `Alt+E` / `Ctrl+E`) to pick and insert emojis into your comment. Changes save directly to your local JSON metadata and trigger a rebuild. 
 
 > **Note**: These authoring endpoints do not exist on the deployed production site.
 

@@ -3,7 +3,7 @@ import globals from "globals";
 
 export default [
   {
-    ignores: ["_site/**", "test-results/**"],
+    ignores: ["_site/**", "test-results/**", "scripts/local-admin/emoji-button.js"],
   },
   {
     files: ["js/**/*.js", "scripts/local-admin/**/*.js"],

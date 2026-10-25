@@ -80,6 +80,14 @@ class QuietRequestHandler(SimpleHTTPRequestHandler):
             self.end_headers()
             self.wfile.write(body)
             return
+        if urlparse(self.path).path == '/__admin/emoji-button.js' and self.server.admin_enabled:
+            body = (REPO_ROOT / 'scripts' / 'local-admin' / 'emoji-button.js').read_bytes()
+            self.send_response(200)
+            self.send_header('Content-Type', 'text/javascript')
+            self.send_header('Content-Length', str(len(body)))
+            self.end_headers()
+            self.wfile.write(body)
+            return
         if urlparse(self.path).path in ("/__admin/comments/status", "/__admin/gallery/status", "/__admin/projects/status") and self.server.admin_enabled:
             self.send_json({"enabled": True})
             return
@@ -553,6 +561,128 @@ class BrowserRegressionTests(unittest.TestCase):
         remove.click()
         page.wait_for_function(f"() => gallery[currentIndex].comments.length === {initial_count}")
         self.assertTrue(next_composer.evaluate("node => document.activeElement === node"))
+
+    def test_emoji_picker_inserts_emoji_into_composer(self):
+        self.enable_local_comment_authoring()
+        page = self.open_commented_lightbox()
+        composer = page.get_by_label("New comment")
+        composer.wait_for()
+        initial_count = page.evaluate("gallery[currentIndex].comments.length")
+
+        composer.focus()
+        composer_row = page.locator(".lightbox-comment-composer-row")
+        emoji_btn = composer_row.locator(".lightbox-comment-emoji-btn")
+        self.assertEqual(emoji_btn.count(), 1)
+        emoji_btn.click()
+
+        picker = page.locator(".emoji-picker")
+        picker.wait_for()
+        self.assertTrue(picker.is_visible())
+
+        # Off-the-shelf component configured without search and without recents
+        self.assertEqual(page.locator(".emoji-picker__search").count(), 0)
+        self.assertEqual(page.locator(".emoji-picker__category-button[data-category='recents']").count(), 0)
+
+        emoji_item = picker.locator(".emoji-picker__emoji").first
+        emoji_item.wait_for()
+        chosen = emoji_item.inner_text().strip()
+        emoji_item.click()
+
+        self.assertIn(chosen, composer.inner_text())
+
+        composer.focus()
+        composer.press("Enter")
+        page.wait_for_function(f"() => gallery[currentIndex].comments.length === {initial_count + 1}")
+        page.get_by_role("status").filter(has_text="Saved locally").wait_for()
+        self.assertEqual(page.evaluate("gallery[currentIndex].comments.at(-1)"), chosen)
+
+    def test_emoji_picker_keyboard_shortcut_and_category_navigation(self):
+        self.enable_local_comment_authoring()
+        page = self.open_commented_lightbox()
+        composer = page.get_by_label("New comment")
+        composer.wait_for()
+
+        composer.focus()
+        page.keyboard.press("Alt+e")
+        picker = page.locator(".emoji-picker")
+        picker.wait_for()
+        self.assertTrue(picker.is_visible())
+
+        # Switch category via off-the-shelf category buttons
+        category_buttons = picker.locator(".emoji-picker__category-button")
+        self.assertGreater(category_buttons.count(), 1)
+        category_buttons.nth(1).click()
+
+        emoji_item = picker.locator(".emoji-picker__emoji").first
+        emoji_item.wait_for()
+        chosen = emoji_item.inner_text().strip()
+        emoji_item.click()
+        self.assertIn(chosen, composer.inner_text())
+
+    def test_emoji_picker_escape_and_dismiss_preserves_lightbox(self):
+        self.enable_local_comment_authoring()
+        page = self.open_commented_lightbox()
+        composer = page.get_by_label("New comment")
+        composer.wait_for()
+
+        # 1. Escape key closes picker without choosing an emoji and keeps lightbox active
+        composer.focus()
+        page.keyboard.press("Alt+e")
+        picker = page.locator(".emoji-picker")
+        picker.wait_for()
+        self.assertTrue(picker.is_visible())
+
+        page.keyboard.press("Escape")
+        page.wait_for_function("() => !document.querySelector('.emoji-picker') || document.querySelector('.emoji-picker__wrapper')?.style.display === 'none'")
+        self.assertTrue(page.evaluate("document.getElementById('lightbox').classList.contains('active')"))
+        self.assertTrue(composer.evaluate("node => document.activeElement === node"))
+
+        # 2. Clicking outside on backdrop closes picker without closing lightbox
+        composer_row = page.locator(".lightbox-comment-composer-row")
+        emoji_btn = composer_row.locator(".lightbox-comment-emoji-btn")
+        emoji_btn.click()
+        picker.wait_for()
+        self.assertTrue(picker.is_visible())
+
+        page.locator(".lightbox-backdrop").click(position={"x": 20, "y": 20})
+        page.wait_for_function("() => !document.querySelector('.emoji-picker') || document.querySelector('.emoji-picker__wrapper')?.style.display === 'none'")
+        self.assertTrue(page.evaluate("document.getElementById('lightbox').classList.contains('active')"))
+
+        # 3. Clicking emoji button again toggles picker closed
+        emoji_btn.click()
+        picker.wait_for()
+        self.assertTrue(picker.is_visible())
+        emoji_btn.click()
+        page.wait_for_function("() => !document.querySelector('.emoji-picker') || document.querySelector('.emoji-picker__wrapper')?.style.display === 'none'")
+        self.assertTrue(page.evaluate("document.getElementById('lightbox').classList.contains('active')"))
+
+    def test_emoji_picker_edits_existing_comment(self):
+        self.enable_local_comment_authoring()
+        page = self.open_commented_lightbox()
+        first_row = page.locator(".lightbox-comment-editor-row").first
+        first_text = first_row.locator(".lightbox-comment-text")
+        first_text.wait_for()
+
+        first_text.focus()
+        first_emoji_btn = first_row.locator(".lightbox-comment-emoji-btn")
+        first_emoji_btn.click()
+
+        picker = page.locator(".emoji-picker")
+        picker.wait_for()
+        emoji_item = picker.locator(".emoji-picker__emoji").first
+        emoji_item.wait_for()
+        chosen = emoji_item.inner_text().strip()
+        emoji_item.click()
+
+        first_text.focus()
+        first_text.press("Enter")
+        page.get_by_role("status").filter(has_text="Saved locally").wait_for()
+        self.assertIn(chosen, page.evaluate("gallery[currentIndex].comments[0]"))
+
+    def test_emoji_picker_absent_in_reader_mode(self):
+        page = self.open_commented_lightbox()
+        self.assertEqual(page.locator(".lightbox-comment-emoji-btn").count(), 0)
+        self.assertEqual(page.locator(".emoji-picker").count(), 0)
 
     def test_back_closes_lightbox_and_forward_restores_it(self):
         page = self.new_page()
