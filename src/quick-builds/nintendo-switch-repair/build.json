@@ -1,4 +1,5 @@
 {
+  "published_date": "2026-10-25",
   "title": "Nintendo Switch Repair",
   "subtitle": "Not charging, no signs of life at all.",
   "description": "Last week, my kids' Nintendo Switch completely died and refused to charge. I found a short on the M92T36 power management IC, micro-soldered a replacement chip, and now it's working again",
@@ -7,7 +8,6 @@
     "Console repair"
   ],
   "dates": "September 2026",
-  "order": 5,
   "cover_image": "WhatsApp Image 2026-09-19 at 18.10.10.jpg",
   "photos": {
     "WhatsApp Image 2026-09-19 at 18.10.10.jpg": 0,
