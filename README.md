@@ -153,6 +153,11 @@ Key configurations you can define:
 rendered without sanitization, so do not accept unreviewed HTML in pull
 requests. All other `build.json` fields are validated as data during the build.
 
+Image comments support clickable `https://example.com` URLs and Markdown links:
+`[Board photograph](https://example.com/board.jpg)`. Links open in a new tab.
+Focus an existing comment to edit its original text; leaving it restores the
+formatted link. HTML in comments remains plain text.
+
 ### Project Order
 
 Run `python3 dev_server.py` and drag homepage project cards to reorder them.

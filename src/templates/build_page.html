@@ -184,6 +184,41 @@
       updateLightboxCommentVisibility();
     }
 
+    function renderCommentText(element, comment) {
+      element.replaceChildren();
+      element.dataset.commentSource = comment;
+      const tokens = /\[([^\]\n]+)\]\((https?:\/\/(?:[^\s()]|\([^()\s]*\))+)\)|(https?\\?:\/\/[^\s<>]+)/g;
+      let offset = 0;
+      for (const match of comment.matchAll(tokens)) {
+        element.append(document.createTextNode(comment.slice(offset, match.index)));
+        let url = match[2] || match[3];
+        let suffix = '';
+        if (!match[2]) {
+          while (/[.,;!?:\]}]$/.test(url) ||
+                 (url.endsWith(')') && (url.match(/\)/g) || []).length > (url.match(/\(/g) || []).length)) {
+            suffix = url.slice(-1) + suffix;
+            url = url.slice(0, -1);
+          }
+        }
+        const destination = url.replace(/^(https?)\\:/, '$1:');
+        try {
+          const parsed = new URL(destination);
+          if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Unsupported link');
+          const link = document.createElement('a');
+          link.href = parsed.href;
+          link.textContent = match[1] || destination;
+          link.target = '_blank';
+          link.rel = 'noopener noreferrer';
+          link.contentEditable = 'false';
+          element.append(link, document.createTextNode(suffix));
+        } catch {
+          element.append(document.createTextNode(match[0]));
+        }
+        offset = match.index + match[0].length;
+      }
+      element.append(document.createTextNode(comment.slice(offset)));
+    }
+
     function renderLightboxComments(comments) {
       lightboxDescription.replaceChildren();
       const localAuthoring = Boolean(window.localCommentAdmin?.isEnabled());
@@ -208,7 +243,7 @@
       for (const comment of comments || []) {
         const text = document.createElement("p");
         text.className = "lightbox-comment-text";
-        text.textContent = comment;
+        renderCommentText(text, comment);
         stack.append(text);
       }
       group.append(inlineToggle, avatar, stack);
@@ -673,6 +708,7 @@
 
     window.galleryCommentAdmin = {
       slug: "{{ SLUG }}",
+      renderText: renderCommentText,
       currentItem: () => gallery[currentIndex],
       currentIndex: () => currentIndex,
       openLightbox: openLightbox,

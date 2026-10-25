@@ -9,7 +9,7 @@
 
   function commentsFrom(container) {
     return [...container.querySelectorAll(".lightbox-comment-text[data-comment-index]")]
-      .map((c) => c.textContent.trim())
+      .map((c) => (c.dataset.commentSource ?? c.textContent).trim())
       .filter(Boolean);
   }
 
@@ -103,8 +103,17 @@
       text.spellcheck = true;
       text.classList.add("is-editable");
       text.setAttribute("aria-label", `Comment ${index + 1}`);
-      text.addEventListener("input", () => scheduleSave(container));
-      text.addEventListener("blur", () => save(container));
+      text.addEventListener("focus", () => {
+        if (text.querySelector('a')) text.textContent = text.dataset.commentSource;
+      });
+      text.addEventListener("input", () => {
+        text.dataset.commentSource = text.textContent;
+        scheduleSave(container);
+      });
+      text.addEventListener("blur", () => {
+        save(container);
+        hooks()?.renderText(text, text.dataset.commentSource);
+      });
       text.addEventListener("keydown", (event) => {
         if (event.key === "Enter" && !event.shiftKey) {
           event.preventDefault();

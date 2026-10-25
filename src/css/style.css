@@ -1401,6 +1401,11 @@ header.hero {
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.5);
   white-space: pre-wrap;
 }
+.lightbox-comment-text a {
+  color: #b9f6d3;
+  text-decoration: underline;
+  overflow-wrap: anywhere;
+}
 .lightbox-comment-save-status {
   margin: 0;
   color: rgba(230, 237, 243, 0.8);

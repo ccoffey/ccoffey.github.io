@@ -454,6 +454,55 @@ class BrowserRegressionTests(unittest.TestCase):
         self.assertFalse(comments.is_hidden())
         self.assertFalse(stack.is_hidden())
 
+    def test_comment_links_render_urls_and_markdown_without_html(self):
+        page = self.open_commented_lightbox()
+        comments = [
+            'Source: https://example.com/image.jpg.',
+            '[Annotated board](https://example.com/board_(oled).jpg)',
+            r'Escaped: https\://example.com/image.jpg',
+            '<img src=x onerror=alert(1)> [Bad](javascript:alert(1))',
+        ]
+        page.evaluate("""comments => {
+            gallery[currentIndex].comments = comments;
+            window.galleryCommentAdmin.rerender();
+        }""", comments)
+        links = page.locator('.lightbox-comment-text a')
+        self.assertEqual(links.count(), 3)
+        self.assertEqual(links.nth(0).inner_text(), 'https://example.com/image.jpg')
+        self.assertEqual(links.nth(1).inner_text(), 'Annotated board')
+        self.assertEqual(links.nth(1).get_attribute('href'), 'https://example.com/board_(oled).jpg')
+        self.assertEqual(links.nth(2).get_attribute('href'), 'https://example.com/image.jpg')
+        for link in links.all():
+            self.assertEqual(link.get_attribute('target'), '_blank')
+            self.assertEqual(link.get_attribute('rel'), 'noopener noreferrer')
+        self.assertEqual(page.locator('.lightbox-comment-text img').count(), 0)
+        self.assertIn('[Bad](javascript:alert(1))', page.locator('.lightbox-comment-text').last.inner_text())
+
+    def test_comment_link_editing_preserves_markdown_source(self):
+        self.enable_local_comment_authoring()
+        page = self.open_commented_lightbox()
+        page.get_by_label('New comment').wait_for()
+        source = '[Board source](https://example.com/board.jpg)'
+        composer = page.get_by_label('New comment')
+        composer.fill(source)
+        composer.press('Enter')
+        page.get_by_role('status').filter(has_text='Saved locally').wait_for()
+        comment = page.locator('.lightbox-comment-text[data-comment-index]').last
+        self.assertEqual(comment.locator('a').inner_text(), 'Board source')
+        # Clicking a rendered link should open it, without replacing the saved Markdown.
+        page.route('https://example.com/**', lambda route: route.fulfill(body='Source'))
+        with page.expect_popup() as popup:
+            comment.locator('a').click()
+        popup.value.close()
+        self.assertEqual(page.evaluate('gallery[currentIndex].comments.at(-1)'), source)
+        comment.focus()
+        self.assertEqual(comment.inner_text(), source)
+        comment.fill(source + ' updated')
+        comment.press('Enter')
+        page.get_by_role('status').filter(has_text='Saved locally').wait_for()
+        self.assertEqual(comment.locator('a').inner_text(), 'Board source')
+        self.assertEqual(page.evaluate('gallery[currentIndex].comments.at(-1)'), source + ' updated')
+
     def test_local_comment_authoring_edits_messages_in_place(self):
         self.enable_local_comment_authoring()
         page = self.open_commented_lightbox()
@@ -463,7 +512,7 @@ class BrowserRegressionTests(unittest.TestCase):
         first = page.locator(".lightbox-comment-text[data-comment-index]").first
         first.fill("a")
         first.press("Enter")
-        page.wait_for_function("gallery[currentIndex].comments[0] === 'a'")
+        page.wait_for_function("() => gallery[currentIndex].comments[0] === 'a'")
         self.assertLess(first.bounding_box()["width"], 200)
         self.assertEqual(page.locator("#lightbox-description").evaluate("node => getComputedStyle(node).overflowY"), "visible")
         remove = page.get_by_role("button", name="Delete comment 1")
@@ -491,7 +540,7 @@ class BrowserRegressionTests(unittest.TestCase):
         composer.press("Shift+Enter")
         composer.type("Second line")
         composer.press("Enter")
-        page.wait_for_function(f"gallery[currentIndex].comments.length === {initial_count + 1}")
+        page.wait_for_function(f"() => gallery[currentIndex].comments.length === {initial_count + 1}")
         page.get_by_role("status").filter(has_text="Saved locally").wait_for()
         next_composer = page.get_by_label("New comment")
         self.assertEqual(page.locator(".lightbox-comment-composer").count(), 1)
@@ -502,7 +551,7 @@ class BrowserRegressionTests(unittest.TestCase):
         )
 
         remove.click()
-        page.wait_for_function(f"gallery[currentIndex].comments.length === {initial_count}")
+        page.wait_for_function(f"() => gallery[currentIndex].comments.length === {initial_count}")
         self.assertTrue(next_composer.evaluate("node => document.activeElement === node"))
 
     def test_back_closes_lightbox_and_forward_restores_it(self):
