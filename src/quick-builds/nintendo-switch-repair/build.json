@@ -26,7 +26,12 @@
     "2026-09-28 at 15.10.00.MOV": 13,
     "IMG_008.JPG": 14,
     "IMG_009.JPG": 15,
-    "IMG_011.JPG": 16
+    "IMG_011.JPG": 16,
+    "WhatsApp Video 2026-10-09 at 14.13.39.mp4": 17,
+    "IMG_012.JPG": 18,
+    "IMG_017.JPG": 19,
+    "Screenshot 2026-10-25 at 10.51.05.png": 20,
+    "ChatGPT Image 25 Oct 2026, 10_30_30.png": 21
   },
   "media_descriptions": {
     "WhatsApp Image 2026-09-19 at 18.17.46.jpeg": [
@@ -83,10 +88,19 @@
     ],
     "IMG_012.JPG": [
       "Good news: I managed to install the new M92T36 chip. \nBad news: My hand was so shaky that I knocked at least five components off their pads while trying to place it.",
-      "What a mess!!!"
+      "Now would be a great time not to panic"
     ],
     "IMG_017.JPG": [
       "Only one at the top of the chip but that is also going to need re-alignment."
+    ],
+    "ChatGPT Image 25 Oct 2026, 10_30_30.png": [
+      "I found this hand-annotated schematic online [here](https://files.zzattack.org/img/console/switch/oled/Components/bottom.jpg) and cropped it. Thank you internet stranger, I owe you one."
+    ],
+    "Screenshot 2026-10-25 at 10.51.05.png": [
+      "I ordered the components I needed, plus some."
+    ],
+    "IMG_021.JPG": [
+      "I tried to straighten the crooked capacitor and it broke in half, so I removed it and cleaned the area."
     ]
   }
 }
